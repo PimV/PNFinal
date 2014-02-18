@@ -1,0 +1,90 @@
+.checkSpan {
+    font-size: 12px;
+}
+
+.checkSpan >:hover {
+    cursor: pointer;
+}
+
+.ui-slider  {
+    width: 250px;
+}
+
+
+.searchForm {
+    margin: 0 auto;
+    width: 700px;
+    height: 500px;
+    margin-bottom: 75px;
+    position: relative;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.blockLabel{
+    margin: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.blockInputSearch > label > .searchOptions {
+    margin-left: 15px;
+    margin-top: 10px;
+    margin: auto;
+    font-weight: normal;
+    margin-right: 10px;
+}
+
+.blockInputSearch > label  {
+    margin-left: 15px;
+    margin-top: 10px;
+    font-size: 12px;
+    display: block;
+    font-weight: normal;
+    vertical-align: middle;
+}
+
+.textSearch {
+    margin-left: 15px;
+    width: 250px;
+}
+
+.bottom {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+#amount {
+    border: 0;
+    color: #ff9900;
+    font-weight: bold;
+}
+
+.searchButton {
+    float: right;
+    border-radius: 15px;
+    height: 50px;
+    width: 350px;
+    color: #FFF;
+    background-color: #385E9C;
+    background-image: -moz-linear-gradient(top, #336FD0, #385E9C);
+    background-image: -ms-linear-gradient(top, #336FD0, #385E9C);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#336FD0), to(#385E9C));
+    background-image: -webkit-linear-gradient(top, #336FD0, #385E9C);
+    background-image: -o-linear-gradient(top, #336FD0, #385E9C);
+    background-image: linear-gradient(top, #336FD0, #385E9C);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#336FD0', endColorstr='#385E9C', GradientType=0);
+}
+.searchButton:hover,
+.searchButton:active
+{
+
+    color: #000;
+}

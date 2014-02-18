@@ -1,0 +1,84 @@
+<?php
+$this->headLink()
+        ->appendStylesheet($this->basePath() . '/css/search/form.css')
+        ->appendStylesheet($this->basePath() . '/css/search/results.css');
+$this->headScript()
+        ->appendFile($this->basePath() . '/js/search/search.js');
+$title = "Search our database";
+$this->headTitle($title);
+?>
+<h1><?php echo $this->escapeHtml($title); ?></h1>
+
+<?php
+echo $this->form()->openTag($form);
+
+echo '<div class="blockInputSearch">';
+echo '<div class="blockLabel">';
+echo $this->formLabel($form->get('text'));
+echo '</div>';
+echo $this->formElement($form->get('text'));
+echo $this->formElementErrors($form->get('text'));
+echo $this->formLabel($form->get('default_operator'));
+echo $this->formElement($form->get('default_operator'));
+echo $this->formElementErrors($form->get('default_operator'));
+echo '</div>';
+
+
+echo '<div class="blockInputSearch left">';
+echo '<div class="blockLabel">';
+echo $this->formLabel($form->get('categories'));
+echo '<p class="checkSpan">(<span onclick="checkCat();">check</span>/<span onclick="uncheckCat();">uncheck</span>)</p>';
+echo '</div>';
+echo $this->formElement($form->get('categories'));
+echo $this->formElementErrors($form->get('categories'));
+echo '</div>';
+
+//echo '<div class="blockInputSearch left">';
+//echo '<div class="blockLabel">';
+//echo $this->formLabel($form->get('categories'));
+//echo '<p class="checkSpan">(<span onclick="checkCat();">check</span>/<span onclick="uncheckCat();">uncheck</span>)</p>';
+//echo '</div>';
+//echo $this->formElement($form->get('categories'));
+//echo $this->formElementErrors($form->get('categories'));
+//echo '</div>';
+
+echo '<div class="blockInputSearch left">';
+echo '<div class="blockLabel">';
+echo $this->formLabel($form->get('languages'));
+echo '<p class="checkSpan">(<span onclick="checkLang();">check</span>/<span onclick="uncheckLang();">uncheck</span>)</p>';
+echo '</div>';
+echo $this->formElement($form->get('languages'));
+echo $this->formElementErrors($form->get('languages'));
+echo '</div>';
+
+echo '<div class="blockInputSearch left">';
+echo '<div class="blockLabel">';
+echo 'Price Range ';
+echo $this->formLabel($form->get('enableSlider'));
+echo $this->formElement($form->get('enableSlider'));
+echo $this->formElementErrors($form->get('enableSlider'));
+echo '<p class="checkSpan"><input type="text" id="amount" readonly/></p>';
+echo '</div>';
+echo '<label>';
+echo '<div id="slider-range"></div></label>';
+echo '</div>';
+
+echo '<div class="blockInputSearch bottom">';
+echo $this->formButton($form->get('searchButton'));
+echo '</div>';
+
+echo $this->form()->closeTag();
+?>
+<p id="resultCount"></p>
+<div id="results">
+    <div class="result">
+
+    </div>
+</div>
+<div id="spinner" class="spinner" style="display:none;">Loading your data, give me a sec!
+    <img id="img-spinner" src="/ZF2HR/public/img/ajax-loader.gif" alt="Loading"/>
+</div>
+
+<strong>Module:</strong>        Search Page &raquo;
+<strong>Controller:</strong>    Index &raquo;
+<strong>Action:</strong>        index
