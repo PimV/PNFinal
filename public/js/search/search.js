@@ -8,15 +8,16 @@ var slider;
 //Other filter buttons;
 var enableSlider;
 var default_operator;
+//Pagination
+var paginatorDiv = $('.page-selector');
+var paginator = $('.pagesDropDown');
+var currentPage;
 $(function() {
     if (!window.console)
         console = {log: function() {
             }};
     setMinMaxSlider();
 });
-
-
-
 $(document).ready(function() {
 
     if (typeof String.prototype.trim !== 'function') {
@@ -30,7 +31,8 @@ $(document).ready(function() {
     default_operator = $('input:checkbox.default_operator');
     slider = $('#slider-range');
     enableSlider = $('.enableSlider');
-
+    paginatorDiv = $('.page-selector');
+    paginator = $('.pagesDropDown');
     /**
      * Event listeners
      */
@@ -43,8 +45,9 @@ $(document).ready(function() {
     });
     paginator.on('change', function(resp) {
         //Show new results 
-    });
+        searchDatabaseNow(paginator.val());
 
+    });
 });
 $(window).keydown(function(event) {
     if (event.keyCode === 13) {
@@ -53,8 +56,6 @@ $(window).keydown(function(event) {
         return false;
     }
 });
-
-
 function setMinMaxSlider() {
     $.ajax({
         url: "search/init",
@@ -97,71 +98,52 @@ function setMinMaxSlider() {
     });
 }
 
-function searchDatabaseNow(show) {
+function searchDatabaseNow(page) {
+    console.log("Current page: " + page);
+    currentPage = page;
     $('#results').css('display', 'none');
     console.log("Searching...");
     $('#results').css('display', 'none');
     $('.result').html("");
     var url = 'search/search';
-    if (show === 'all') {
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: {showAll: true},
-            async: true,
-            beforeSend: function() {
-                $("#spinner").show();
-            },
-            dataType: 'json',
-            success: function(resp) {
-                processRequestedESData(resp);
-                $("#spinner").hide();
-            },
-            error: function(resp) {
-                console.log("Error: " + resp);
-                $("#spinner").hide();
-            }
-        });
+    var priceRange;
+    if (enableSlider.prop('checked')) {
+        priceRange = [minPrice, maxPrice];
     } else {
-        var priceRange;
-        if (enableSlider.prop('checked')) {
-            priceRange = [minPrice, maxPrice];
-        } else {
-            priceRange = null;
-        }
-
-        var operator = "AND";
-        if ($('.default_operator').prop('checked')) {
-            operator = "OR";
-        }
-
-        var catOpts = getCatOpts();
-        var langOpts = getLangOpts();
-
-        var keywords = $('.textSearch').val().trim();
-        if (keywords.length < 1) {
-            keywords = " ";
-        }
-
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: {operator: operator, priceRange: priceRange, catOpts: catOpts, langOpts: langOpts, keywords: keywords},
-            async: true,
-            beforeSend: function() {
-                $("#spinner").show();
-            },
-            dataType: 'json',
-            success: function(resp) {
-                processRequestedESData(resp);
-                $("#spinner").hide();
-            },
-            error: function(resp) {
-                console.log(resp);
-                $("#spinner").hide();
-            }
-        });
+        priceRange = null;
     }
+
+    var operator = "AND";
+    if ($('.default_operator').prop('checked')) {
+        operator = "OR";
+    }
+
+    var catOpts = getCatOpts();
+    var langOpts = getLangOpts();
+    var keywords = $('.textSearch').val().trim();
+    if (keywords.length < 1) {
+        keywords = " ";
+    }
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: {page: page, operator: operator, priceRange: priceRange, catOpts: catOpts, langOpts: langOpts, keywords: keywords},
+        async: true,
+        beforeSend: function() {
+            $("#spinner").show();
+        },
+        dataType: 'json',
+        success: function(resp) {
+            processRequestedESData(resp);
+            $("#spinner").hide();
+        },
+        error: function(resp) {
+            console.log(resp);
+            $("#spinner").hide();
+        }
+    });
+
     event.preventDefault ? event.preventDefault() : event.returnValue = false;
     return false;
 }
@@ -180,49 +162,34 @@ function processRequestedESData(resp) {
     if (resultCount === 0) {
         $('.result').append("After a small search, no results were found...");
     }
-    //Animate to results
+//Animate to results
     $('#results').css('display', 'block');
     if ($('html, body').is(':animated') === false) {
         $('html, body').animate({
-            scrollTop: $('#results').offset().top
+            scrollTop: $('#results').offset().top - 60
         }, 800);
     }
-    //Instantiate paginator
-    var paginatorDiv = $('.pageSelector');
+//Instantiate paginator
+    var paginatorDiv = $('.page-selector');
     var paginator = $('.pagesDropDown');
+    paginator.html("");
     //Hide paginator if less than 10 results
-    if (resultCount > 10) {
+    if (resultCount < 1) {
+        paginatorDiv.hide();
+    } else {
         paginatorDiv.show();
     }
-    //Add amount of pages to paginator
+//Add amount of pages to paginator
     var pages = resultCount / 10;
-    for (var i = 1; i <= pages; i++) {
-        paginator.append('<option value="' + i + '">' + i + '</option');
+    for (var i = 0; i <= pages; i++) {
+        paginator.append('<option value="' + (i + 1) + '">' + (i + 1) + '</option');
     }
-
+    if (currentPage) {
+        paginator.val(currentPage);
+    }
+    $('#pageOf').html(" of " + Math.ceil(pages));
 }
 
-function processRequestedData(resp) {
-    $('.result').html("");
-    var resultCount = 0;
-    for (var i in resp) {
-        resultCount++;
-        siteHtml = '<div class="siteName">Name: ' + resp[i]['name'] + '</a></div>';
-        siteHtml += '<div class="siteUrl">Site URL: <a href="http://' + resp[i]['url'] + '">' + resp[i]['url'] + '</a></div>';
-        siteHtml += '<div class="sitePrice">Price: $' + resp[i]['price'] + '</div><br/>';
-        $('.result').append(siteHtml);
-    }
-    if (resultCount === 0) {
-        $('.result').append("After a small search, no results were found...");
-    }
-    $('#results').css('display', 'block');
-    if ($('html, body').is(':animated') === false) {
-        $('html, body').animate({
-            scrollTop: $('#results').offset().top
-        }, 800);
-    }
-
-}
 
 function getCatOpts() {
     var catOpts = [];

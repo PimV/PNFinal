@@ -188,7 +188,14 @@ class IndexController extends AbstractActionController {
         );
 
         $url = "http://127.0.0.1:9200/jdbc/_search";
-
+        $pagination = "?from=&size=10";
+        if (isset($_POST['page'])) {
+            $page = $_POST['page'];
+        } else {
+            $page = 1;
+        }
+        $pagination = '?from=' . (($page - 1) * 10) . '&size=10';
+        $url = $url . $pagination;
         $dataObject = json_encode($body);
         $ch = curl_init();
 
