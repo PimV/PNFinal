@@ -45,17 +45,48 @@ class IndexController extends AbstractActionController {
         $this->buildSearchQueryBody();
     }
 
+    public function initAction() {
+        $url = "http://127.0.0.1:9200/jdbc/_search?pretty=true";
+        $data = array(
+            "facets" => array(
+                "stat1" => array(
+                    "statistical" => array(
+                        "field" => "price"
+                    )
+                )
+            )
+        );
+        $dataObject = json_encode($data);
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataObject);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $server_output = curl_exec($ch);
+
+        curl_close($ch);
+
+        echo $server_output;
+        die;
+    }
+
     private function buildSearchQueryBody() {
+        //Data variables
         $keywords;
         $priceRange;
         $categoryIds;
         $languageIds;
 
+        //Body variables
         $termsWords = null;
         $termsCatIds = null;
         $termsLangIds = null;
         $range = null;
 
+        //Set keywords array for cURL body
         if (isset($_POST['keywords'])) {
             $keywords = trim($_POST['keywords']);
             if (strlen($keywords) > 0) {
@@ -70,7 +101,7 @@ class IndexController extends AbstractActionController {
                 );
             }
         }
-
+        //Set languageId array for cURL body
         if (isset($_POST['langOpts'])) {
             $languageIds = $_POST['langOpts'];
             $termsLangIds = array(
@@ -82,6 +113,7 @@ class IndexController extends AbstractActionController {
                 )
             );
         }
+        //Set categoryId array for cURL body
         if (isset($_POST['catOpts'])) {
             $categoryIds = $_POST['catOpts'];
             $termsCatIds = array(
@@ -93,7 +125,7 @@ class IndexController extends AbstractActionController {
                 )
             );
         }
-
+        //Set range array for cURL body (always on MUST)
         if (isset($_POST['priceRange']) && $_POST['priceRange'] != null) {
             $priceRange = $_POST['priceRange'];
             $range = array(
@@ -113,36 +145,20 @@ class IndexController extends AbstractActionController {
                 $shouldArray = array();
 
                 $mustArray = array();
-                if (count($range) > 0) {
-                    $mustArray[] = $range;
-                }
-                if (count($termsCatIds) > 0) {
-                    $mustArray[] = $termsCatIds;
-                }
-                if (count($termsLangIds) > 0) {
-                    $mustArray[] = $termsLangIds;
-                }
-                if (count($termsWords) > 0) {
-                    $mustArray[] = $termsWords;
-                }
+                $mustArray = $this->appendToArray($range, $mustArray);
+                $mustArray = $this->appendToArray($termsCatIds, $mustArray);
+                $mustArray = $this->appendToArray($termsLangIds, $mustArray);
+                $mustArray = $this->appendToArray($termsWords, $mustArray);
 
                 $mustNotArray = array();
             } else {
                 $shouldArray = array();
-                if (count($termsCatIds) > 0) {
-                    $shouldArray[] = $termsCatIds;
-                }
-                if (count($termsLangIds) > 0) {
-                    $shouldArray[] = $termsLangIds;
-                }
-                if (count($termsWords) > 0) {
-                    $shouldArray[] = $termsWords;
-                }
+                $shouldArray = $this->appendToArray($termsCatIds, $shouldArray);
+                $shouldArray = $this->appendToArray($termsLangIds, $shouldArray);
+                $shouldArray = $this->appendToArray($termsWords, $shouldArray);
 
                 $mustArray = array();
-                if (count($range) > 0) {
-                    $mustArray[] = $range;
-                }
+                $mustArray = $this->appendToArray($range, $mustArray);
 
                 $mustNotArray = array();
             }
@@ -190,32 +206,11 @@ class IndexController extends AbstractActionController {
         die;
     }
 
-    public function initAction() {
-        $url = "http://127.0.0.1:9200/jdbc/_search?pretty=true";
-        $data = array(
-            "facets" => array(
-                "stat1" => array(
-                    "statistical" => array(
-                        "field" => "price"
-                    )
-                )
-            )
-        );
-        $dataObject = json_encode($data);
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataObject);
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $server_output = curl_exec($ch);
-
-        curl_close($ch);
-
-        echo $server_output;
-        die;
+    private function appendToArray($arrayToAppend, $appendTo) {
+        if (count($arrayToAppend) > 0) {
+            $appendTo[] = $arrayToAppend;
+        }
+        return $appendTo;
     }
 
 }
