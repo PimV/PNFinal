@@ -41,6 +41,9 @@ $(document).ready(function() {
             slider.slider('disable');
         }
     });
+    paginator.on('change', function(resp) {
+        //Show new results 
+    });
 
 });
 $(window).keydown(function(event) {
@@ -164,24 +167,37 @@ function searchDatabaseNow(show) {
 }
 
 function processRequestedESData(resp) {
-    console.log("Received Data");
-    $('.result').html("");
-    var resultCount = 0;
+    $('.result').html(""); //Clear results
+    var resultCount = resp['hits']['total']; //Set resultCount
+    //Show all results
     $.each(resp['hits']['hits'], function(i, obj) {
         siteHtml = '<div class="siteName">Name: ' + obj['_source']['name'] + '</a></div>';
         siteHtml += '<div class="siteUrl">Site URL: <a href="http://' + obj['_source']['url'] + '">' + obj['_source']['url'] + '</a></div>';
         siteHtml += '<div class="sitePrice">Price: $' + obj['_source']['price'] + '</div><br/>';
         $('.result').append(siteHtml);
-        resultCount++;
     });
+    //Show message if no results were found
     if (resultCount === 0) {
         $('.result').append("After a small search, no results were found...");
     }
+    //Animate to results
     $('#results').css('display', 'block');
     if ($('html, body').is(':animated') === false) {
         $('html, body').animate({
             scrollTop: $('#results').offset().top
         }, 800);
+    }
+    //Instantiate paginator
+    var paginatorDiv = $('.pageSelector');
+    var paginator = $('.pagesDropDown');
+    //Hide paginator if less than 10 results
+    if (resultCount > 10) {
+        paginatorDiv.show();
+    }
+    //Add amount of pages to paginator
+    var pages = resultCount / 10;
+    for (var i = 1; i <= pages; i++) {
+        paginator.append('<option value="' + i + '">' + i + '</option');
     }
 
 }
