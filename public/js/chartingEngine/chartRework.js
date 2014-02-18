@@ -200,6 +200,7 @@ function generateChart(dataSeries, renderContainer, google_key) {
             text: '<div>' + configs[google_key]['chartTitle'] + '</div>'
         },
         xAxis: {
+            type: configs[google_key]['xScale']
         },
         yAxis: {
             type: configs[google_key]['yScale']
@@ -209,7 +210,6 @@ function generateChart(dataSeries, renderContainer, google_key) {
             hideDelay: 5000
         },
         series: {
-            data: [0, 0]
         }
     };
     var chart = null;
@@ -223,7 +223,7 @@ function generateChart(dataSeries, renderContainer, google_key) {
         if (configs[google_key]['xScale'] === 'datetime') {
             chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data});
         } else {
-            chart.addSeries({name: serie.serie.name, data: serie.serie.data});
+            chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data});
         }
 
     });

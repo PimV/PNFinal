@@ -81,7 +81,9 @@ class IndexController extends AbstractActionController {
         $languageIds;
 
         //Body variables
-        $termsWords = null;
+        $termsName = null;
+        $termsDescription = null;
+        $termsURL = null;
         $termsCatIds = null;
         $termsLangIds = null;
         $range = null;
@@ -93,10 +95,23 @@ class IndexController extends AbstractActionController {
                 $keywords = explode(' ', $keywords);
                 $termsWords = array(
                     "terms" => array(
-                        "_all" =>
+                        "name" =>
                         $keywords,
-                        "minimum_should_match" => 1
-                    ,
+                        "minimum_should_match" => 0
+                    )
+                );
+                $termsDescription = array(
+                    "terms" => array(
+                        "description" =>
+                        $keywords,
+                        "minimum_should_match" => 0
+                    )
+                );
+                $termsURL = array(
+                    "terms" => array(
+                        "url" =>
+                        $keywords,
+                        "minimum_should_match" => 0
                     )
                 );
             }
@@ -143,19 +158,25 @@ class IndexController extends AbstractActionController {
             $operator = $_POST['operator'];
             if ($operator === "AND") {
                 $shouldArray = array();
+                $shouldArray = $this->appendToArray($termsName, $shouldArray);
+                $shouldArray = $this->appendToArray($termsDescription, $shouldArray);
+                $shouldArray = $this->appendToArray($termsURL, $shouldArray);
 
                 $mustArray = array();
                 $mustArray = $this->appendToArray($range, $mustArray);
                 $mustArray = $this->appendToArray($termsCatIds, $mustArray);
                 $mustArray = $this->appendToArray($termsLangIds, $mustArray);
-                $mustArray = $this->appendToArray($termsWords, $mustArray);
+
 
                 $mustNotArray = array();
             } else {
                 $shouldArray = array();
+                $shouldArray = $this->appendToArray($termsDescription, $shouldArray);
+                $shouldArray = $this->appendToArray($termsName, $shouldArray);
+                $shouldArray = $this->appendToArray($termsURL, $shouldArray);
                 $shouldArray = $this->appendToArray($termsCatIds, $shouldArray);
                 $shouldArray = $this->appendToArray($termsLangIds, $shouldArray);
-                $shouldArray = $this->appendToArray($termsWords, $shouldArray);
+
 
                 $mustArray = array();
                 $mustArray = $this->appendToArray($range, $mustArray);
