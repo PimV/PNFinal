@@ -45,8 +45,11 @@ class IndexController extends AbstractActionController {
         $this->buildSearchQueryBody();
     }
 
+    /**
+     * Not used due to no price-slider!
+     */
     public function initAction() {
-        $url = "http://127.0.0.1:9200/test_sites/_search?pretty=true";
+        $url = "http://127.0.0.1:9200/sites_source/_search?pretty=true";
         $data = array(
             "facets" => array(
                 "stat1" => array(
@@ -81,37 +84,37 @@ class IndexController extends AbstractActionController {
         $languageIds;
 
         //Body variables
-        $termsName = null;
-        $termsDescription = null;
         $termsURL = null;
+        $termsKeywords = null;
         $termsCatIds = null;
         $termsLangIds = null;
         $range = null;
 
         //Set keywords array for cURL body
+        if (isset($_POST['url'])) {
+            $urls = trim($_POST['url']);
+            if (strlen($urls) > 0) {
+                $urls = explode(' ', $urls);
+                $urlQueryString = "";
+                foreach ($urls as $singleURL) {
+                    $urlQueryString .= "*" . $singleURL . "* OR ";
+                }
+                $urlQueryString = substr($urlQueryString, 0, strlen($urlQueryString) - 3);
+                $termsURL = array(
+                    "query_string" => array(
+                        "query" => $urlQueryString,
+                        "fields" => array("name", "description")
+                    )
+                );
+            }
+        }
         if (isset($_POST['keywords'])) {
             $keywords = trim($_POST['keywords']);
             if (strlen($keywords) > 0) {
                 $keywords = explode(' ', $keywords);
-                $termsName = array(
+                $termsKeywords = array(
                     "terms" => array(
-                        "name" =>
-                        $keywords
-                        //"minimum_should_match" => 1
-                    )
-                );
-                $termsDescription = array(
-                    "terms" => array(
-                        "description" =>
-                        $keywords
-                       //"minimum_should_match" => 1
-                    )
-                );
-                $termsURL = array(
-                    "terms" => array(
-                        "url" =>
-                        $keywords
-                        //"minimum_should_match" => 1
+                        "keywords" => $keywords
                     )
                 );
             }
@@ -156,31 +159,31 @@ class IndexController extends AbstractActionController {
         //Set the body for the ElasticSearch cURL Post Request
         if (isset($_POST['operator'])) {
             $operator = $_POST['operator'];
-            if ($operator === "AND") {
-                $shouldArray = array();
-                $shouldArray = $this->appendToArray($termsName, $shouldArray);
-                $shouldArray = $this->appendToArray($termsDescription, $shouldArray);
-                $shouldArray = $this->appendToArray($termsURL, $shouldArray);
+            $shouldArray = array();
+            $mustArray = array();
+            $mustNotArray = array();
 
-                $mustArray = array();
+            $shouldArray = $this->appendToArray($termsKeywords, $shouldArray);
+            $shouldArray = $this->appendToArray($termsURL, $shouldArray);
+            if ($operator === "AND") {
+
+
+                // $mustArray = array();
                 $mustArray = $this->appendToArray($range, $mustArray);
                 $mustArray = $this->appendToArray($termsCatIds, $mustArray);
                 $mustArray = $this->appendToArray($termsLangIds, $mustArray);
 
                 $mustNotArray = array();
             } else {
-                $shouldArray = array();
-                $shouldArray = $this->appendToArray($termsDescription, $shouldArray);
-                $shouldArray = $this->appendToArray($termsName, $shouldArray);
-                $shouldArray = $this->appendToArray($termsURL, $shouldArray);
+                //$shouldArray = array();
                 $shouldArray = $this->appendToArray($termsCatIds, $shouldArray);
                 $shouldArray = $this->appendToArray($termsLangIds, $shouldArray);
 
 
-                $mustArray = array();
+                //$mustArray = array();
                 $mustArray = $this->appendToArray($range, $mustArray);
 
-                $mustNotArray = array();
+                //$mustNotArray = array();
             }
         }
 
@@ -207,7 +210,7 @@ class IndexController extends AbstractActionController {
             )
         );
 
-        $url = "http://127.0.0.1:9200/test_sites/_search";
+        $url = "http://127.0.0.1:9200/sites_source/_search";
         $pagination = "?from=&size=10";
         if (isset($_POST['page'])) {
             $page = $_POST['page'];

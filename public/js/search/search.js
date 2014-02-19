@@ -16,7 +16,7 @@ $(function() {
     if (!window.console)
         console = {log: function() {
             }};
-    setMinMaxSlider();
+    //setMinMaxSlider();
 });
 $(document).ready(function() {
 
@@ -120,15 +120,19 @@ function searchDatabaseNow(page) {
 
     var catOpts = getCatOpts();
     var langOpts = getLangOpts();
-    var keywords = $('.textSearch').val().trim();
+    var keywords = $('#keywordSearch').val().trim();
     if (keywords.length < 1) {
         keywords = " ";
+    }
+    var urls = $('#urlSearch').val().trim();
+    if (urls.length < 1) {
+        urls = " ";
     }
 
     $.ajax({
         url: url,
         type: 'POST',
-        data: {page: page, operator: operator, priceRange: priceRange, catOpts: catOpts, langOpts: langOpts, keywords: keywords},
+        data: {url: urls, page: page, operator: operator, priceRange: priceRange, catOpts: catOpts, langOpts: langOpts, keywords: keywords},
         async: true,
         beforeSend: function() {
             $("#spinner").show();
@@ -154,8 +158,8 @@ function processRequestedESData(resp) {
     //Show all results
     $.each(resp['hits']['hits'], function(i, obj) {
         siteHtml = '<div class="siteName">Name: ' + obj['_source']['name'] + '</a></div>';
-        siteHtml += '<div class="siteUrl">Site URL: <a href="http://' + obj['_source']['url'] + '">' + obj['_source']['url'] + '</a></div>';
-        siteHtml += '<div class="sitePrice">Price: $' + obj['_source']['price'] + '</div><br/>';
+        siteHtml += '<div class="siteUrl">Site URL: <a href="http://' + obj['_source']['name'] + '">' + obj['_source']['name'] + '</a></div>';
+        siteHtml += '<div class="sitePrice">Tags: ' + obj['_source']['keywords'] + '</div><br/>';
         $('.result').append(siteHtml);
     });
     //Show message if no results were found
@@ -166,8 +170,8 @@ function processRequestedESData(resp) {
     $('#results').css('display', 'block');
     if ($('html, body').is(':animated') === false) {
         $('html, body').animate({
-            scrollTop: $('#results').offset().top - 60
-        }, 800);
+            scrollTop: $('#results').position().top - 60
+        }, 1300);
     }
 //Instantiate paginator
     var paginatorDiv = $('.page-selector');
@@ -181,7 +185,18 @@ function processRequestedESData(resp) {
     }
 //Add amount of pages to paginator
     var pages = resultCount / 10;
+    var lastPageEmpty = false;
+    if (resultCount % 10 === 0) {
+        lastPageEmpty = true;
+
+    }
+
     for (var i = 0; i <= pages; i++) {
+        if (lastPageEmpty === true) {
+            if (i === (pages)) {
+                break;
+            }
+        }
         paginator.append('<option value="' + (i + 1) + '">' + (i + 1) + '</option');
     }
     if (currentPage) {
