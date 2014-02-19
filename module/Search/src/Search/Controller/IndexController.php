@@ -46,7 +46,7 @@ class IndexController extends AbstractActionController {
     }
 
     public function initAction() {
-        $url = "http://127.0.0.1:9200/jdbc/_search?pretty=true";
+        $url = "http://127.0.0.1:9200/test_sites/_search?pretty=true";
         $data = array(
             "facets" => array(
                 "stat1" => array(
@@ -93,25 +93,25 @@ class IndexController extends AbstractActionController {
             $keywords = trim($_POST['keywords']);
             if (strlen($keywords) > 0) {
                 $keywords = explode(' ', $keywords);
-                $termsWords = array(
+                $termsName = array(
                     "terms" => array(
                         "name" =>
-                        $keywords,
-                        "minimum_should_match" => 0
+                        $keywords
+                        //"minimum_should_match" => 1
                     )
                 );
                 $termsDescription = array(
                     "terms" => array(
                         "description" =>
-                        $keywords,
-                        "minimum_should_match" => 0
+                        $keywords
+                       //"minimum_should_match" => 1
                     )
                 );
                 $termsURL = array(
                     "terms" => array(
                         "url" =>
-                        $keywords,
-                        "minimum_should_match" => 0
+                        $keywords
+                        //"minimum_should_match" => 1
                     )
                 );
             }
@@ -167,7 +167,6 @@ class IndexController extends AbstractActionController {
                 $mustArray = $this->appendToArray($termsCatIds, $mustArray);
                 $mustArray = $this->appendToArray($termsLangIds, $mustArray);
 
-
                 $mustNotArray = array();
             } else {
                 $shouldArray = array();
@@ -208,7 +207,7 @@ class IndexController extends AbstractActionController {
             )
         );
 
-        $url = "http://127.0.0.1:9200/jdbc/_search";
+        $url = "http://127.0.0.1:9200/test_sites/_search";
         $pagination = "?from=&size=10";
         if (isset($_POST['page'])) {
             $page = $_POST['page'];
