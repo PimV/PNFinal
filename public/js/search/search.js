@@ -158,22 +158,31 @@ function processRequestedESData(resp) {
     //Show all results
     $.each(resp['hits']['hits'], function(i, obj) {
         siteHtml = '<div class="siteName">Name: ' + obj['_source']['name'] + '</a></div>';
-        siteHtml += '<div class="siteUrl">Site URL: <a href="http://' + obj['_source']['name'] + '">' + obj['_source']['name'] + '</a></div>';
+        siteHtml += '<div class="siteUrl">Site URL: <a href="' + obj['_source']['name'] + '">' + obj['_source']['name'] + '</a></div>';
+        if (obj['_source']['keywords'] === null) {
+            obj['_source']['keywords'] = "No tags found.";
+        }
         siteHtml += '<div class="sitePrice">Tags: ' + obj['_source']['keywords'] + '</div><br/>';
+        siteHtml += '<div class="siteCreated">Tags: ' + obj['_source']['date_created'] + '</div><br/>';
+        var date = new Date(obj['_source']['date_modified']);
+        var dateString = date.getDay() + "/" + date.getMonth() + "/" + date.getUTCFullYear() + " Time: " + date.getHours() + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds();
+        siteHtml += '<div class="siteModified">Tags: ' + dateString + '</div><br/>';
+        siteHtml += '<div class="isOnline">Tags: ' + obj['_source']['is_online'] + '</div><br/>';
+        siteHtml += '<div class="lastOnlineCheck">Tags: ' + obj['_source']['last_online'] + '</div><br/>';
         $('.result').append(siteHtml);
     });
     //Show message if no results were found
     if (resultCount === 0) {
         $('.result').append("After a small search, no results were found...");
     }
-//Animate to results
+    //Animate to results
     $('#results').css('display', 'block');
     if ($('html, body').is(':animated') === false) {
         $('html, body').animate({
             scrollTop: $('#results').position().top - 60
         }, 1300);
     }
-//Instantiate paginator
+    //Instantiate paginator
     var paginatorDiv = $('.page-selector');
     var paginator = $('.pagesDropDown');
     paginator.html("");
@@ -183,7 +192,7 @@ function processRequestedESData(resp) {
     } else {
         paginatorDiv.show();
     }
-//Add amount of pages to paginator
+    //Add amount of pages to paginator
     var pages = resultCount / 10;
     var lastPageEmpty = false;
     if (resultCount % 10 === 0) {

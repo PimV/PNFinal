@@ -11,6 +11,7 @@ var container = null;
 //Chart variable defaults
 var charts = [];
 var chartTitle;
+var highChartType;
 var chartType;
 var sortType = null;
 var xScale = 'linear';
@@ -37,20 +38,33 @@ if (typeof String.prototype.trim !== 'function') {
         return this.replace(/^\s+|\s+$/g, '');
     };
 }
+/**
+ * Method call on window load whenever loadDataDynamically is called. Initiates
+ * all the variables needed to load spreadsheet data and to push this data into
+ * a Highchart.
+ * @param {type} google_key
+ * @param {type} container
+ * @returns {undefined}
+ */
 function loadDataDynamically(google_key, container) {
     $("#spinner").fadeIn("slow");
     console.log("Grabbing your data for spreadsheet with key: " + google_key);
     sheetCount = 0;
     sheets[google_key] = [];
     configs[google_key] = [];
-
-
     requestSpreadsheetInfo(google_key, container);
-
 }
 
+/**
+ * Load the per-spreadsheet data (primarily the sheetCount) by posting to the Google Data API.
+ * On success returning a JSON-Object containing the spreadsheet data. After 
+ * setting the amount of sheets the spreadsheet contains, a sequence starts to 
+ * load all data from this spreadsheet.
+ * @param {String} google_key
+ * @param {String} container
+ * @returns {undefined}
+ */
 function requestSpreadsheetInfo(google_key, container) {
-
     $.ajax({
         url: 'https://spreadsheets.google.com/feeds/worksheets/' + google_key + '/public/basic?alt=json',
         type: 'GET',
@@ -71,10 +85,18 @@ function requestSpreadsheetInfo(google_key, container) {
     });
 }
 
+/**
+ * Load the per-spreadsheet config-data by posting to the Google Data API.
+ * On success returning a JSON-Object containing the spreadsheet data and then 
+ * sent to be processed by the processConfigSheet method. After the config has
+ * been processed, the per-sheet data will be requested.
+ * @param {String} google_key
+ * @param {Integer} cfgSheetId
+ * @param {String} container
+ * @returns {undefined}
+ */
 function requestConfigSheet(google_key, cfgSheetId, container) {
-
     var url = 'http://spreadsheets.google.com/feeds/cells/' + google_key + '/' + cfgSheetId + '/public/values?alt=json&amp';
-
     $.ajax({
         url: '/ZF2HR/public/js/chartingEngine/request-data-rework.php',
         type: 'POST',
@@ -93,10 +115,17 @@ function requestConfigSheet(google_key, cfgSheetId, container) {
     });
 }
 
+/**
+ * Load the per-sheet data by posting to the Google Data API.
+ * On success returning a JSON-Object containing the per-sheet data and then 
+ * sent to be processed by the processSheet method.
+ * @param {String} google_key
+ * @param {Integer} sheetId
+ * @param {String} container
+ * @returns {undefined}
+ */
 function requestSheetData(google_key, sheetId, container) {
-
     var url = 'http://spreadsheets.google.com/feeds/list/' + google_key + '/' + sheetId + '/public/values?alt=json&amp';
-
     $.ajax({
         url: '/ZF2HR/public/js/chartingEngine/request-data-rework.php',
         type: 'POST',
@@ -112,8 +141,17 @@ function requestSheetData(google_key, sheetId, container) {
     });
 }
 
+/**
+ * Determine whether to process this sheet with id 'sheetId' or not. 
+ * Data Input: json_response (JSON-Object)
+ * If sheet has to be processed: send sheetData to the parseData method to be parsed.
+ * @param {String} google_key
+ * @param {Integer} sheetId
+ * @param {JSON-Object} json_response
+ * @param {String} container
+ * @returns {undefined}
+ */
 function processSheet(google_key, sheetId, json_response, container) {
-
     var sheetTitle = json_response['feed']['title']['$t'];
     if (!sheetTitle.startsWith('_')) {
         sheets[google_key][sheetId] = json_response;
@@ -121,19 +159,42 @@ function processSheet(google_key, sheetId, json_response, container) {
     }
 }
 
+/**
+ * Add the config sheet to an array with key 'google_key' and value the JSON-Object 'json_response'
+ * @param {String} google_key
+ * @param {Integer} sheetId
+ * @param {JSON-Object} json_response
+ * @returns {undefined}
+ */
 function processConfigSheet(google_key, sheetId, json_response) {
     configs[google_key] = [];
     configs[google_key]['json'] = json_response;
 }
 
+/**
+ * Load the config data into an array with they key 'google_key' and value according to the
+ * config type.
+ * @param {String} google_key
+ * @returns {undefined}
+ */
 function loadConfigData(google_key) {
     configs[google_key]['chartTitle'] = configs[google_key]['json']['feed']['entry'][1].content['$t'];
-    configs[google_key]['chartType'] = configs[google_key]['json']['feed']['entry'][3].content['$t'];
-    configs[google_key]['sortType'] = configs[google_key]['json']['feed']['entry'][5].content['$t'];
-    configs[google_key]['xScale'] = configs[google_key]['json']['feed']['entry'][7].content['$t'];
-    configs[google_key]['yScale'] = configs[google_key]['json']['feed']['entry'][9].content['$t'];
+    configs[google_key]['highChartType'] = configs[google_key]['json']['feed']['entry'][3].content['$t'];
+    configs[google_key]['chartType'] = configs[google_key]['json']['feed']['entry'][5].content['$t'];
+    configs[google_key]['sortType'] = configs[google_key]['json']['feed']['entry'][7].content['$t'];
+    configs[google_key]['xScale'] = configs[google_key]['json']['feed']['entry'][9].content['$t'];
+    configs[google_key]['yScale'] = configs[google_key]['json']['feed']['entry'][11].content['$t'];
+    return configs;
 }
 
+/**
+ * Parses the data given by the JSON-object. After parsing it will start the method
+ * to create the chart.
+ * @param {JSON-Object} json
+ * @param {String} sheetTitle
+ * @param {String} container
+ * @param {String} google_key
+ */
 function parseData(json, sheetTitle, container, google_key) {
     var dataSeries = [];
     var columnNames = getColumnNames(json);
@@ -147,8 +208,8 @@ function parseData(json, sheetTitle, container, google_key) {
             var key = entry.title['$t'];
             var value = parseInt(entry[contentColName.id]['$t']);
             if (configs[google_key]['xScale'] === 'datetime') {
-                key = new Date(key).getTime();
-                series.push({name: key, x: key, y: value});
+                key = parseInt((+new Date(key).getTime() + (60 * 60 * 1000)));
+                series.push({x: key, y: value});
             } else {
                 series.push({name: key, y: value});
             }
@@ -160,8 +221,10 @@ function parseData(json, sheetTitle, container, google_key) {
     generateChart(dataSeries, container, google_key);
 }
 
-/*
- * TO-DO: Optimize
+/**
+ * Retrieves the first row containing all the column names (First row = X/Y)
+ * @param {JSON-Object} json
+ * @returns {String} First row (containing columnNames)
  */
 function getColumnNames(json) {
     var contentColNames = [];
@@ -186,55 +249,19 @@ function getColumnNames(json) {
 }
 
 function generateChart(dataSeries, renderContainer, google_key) {
-
-    loadConfigData(google_key);
+    var configObject = loadConfigData(google_key);
     checkSortingType(google_key, dataSeries);
     renderContainer = checkContainer(renderContainer);
-
-    var options = {
-        chart: {
-            renderTo: renderContainer,
-            zoomType: 'y'
-        },
-        title: {
-            text: '<div>' + configs[google_key]['chartTitle'] + '</div>'
-        },
-        xAxis: {
-            type: configs[google_key]['xScale']
-        },
-        yAxis: {
-            type: configs[google_key]['yScale']
-        },
-        tooltip: {
-            shared: false,
-            hideDelay: 5000
-        },
-        series: {
-        }
-    };
-    var chart = null;
-    if (configs[google_key]['chartType'] === 'StockChart') {
-        chart = new Highcharts.StockChart(options);
+    if (configs[google_key]['highChartType'] === 'Highstock') {
+        //Create HighstockChart
+        stockChartGenerate(dataSeries, renderContainer, configObject, google_key);
     } else {
-        options.chart.type = configs[google_key]['chartType'];
-        chart = new Highcharts.Chart(options);
+        //Create HighChart
+        chartGenerate(dataSeries, renderContainer, configObject, google_key);
     }
-    $.each(dataSeries, function(i, serie) {
-        if (configs[google_key]['xScale'] === 'datetime') {
-            chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data});
-        } else {
-            chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data});
-        }
-
-    });
-    chart.setTitle({text: dataSeries[0].chartTitle});
-
-    charts.push({containerName: renderContainer, chart: chart});
     $('#spinner').hide();
-
-
-
 }
+
 
 function checkContainer(renderContainer) {
     if ($("#" + renderContainer).length !== 0) {
@@ -291,4 +318,66 @@ function sortHighToLow(data) {
         return returnVal;
     });
     return data;
+}
+
+function chartGenerate(dataSeries, renderContainer, configFile, google_key) {
+    var series = dataSeries;
+    var rC = renderContainer;
+    var cF = configFile;
+    var google_key = google_key;
+
+    var options = {
+        chart: {
+            renderTo: rC,
+            zoomType: 'xy',
+            type: cF[google_key]['chartType']
+        },
+        title: {
+            text: '<div>' + cF[google_key]['chartTitle'] + '</div>'
+        },
+        xAxis: {
+            type: cF[google_key]['xScale']
+        },
+        yAxis: {
+            type: cF[google_key]['yScale']
+        },
+        tooltip: {
+            shared: false
+        }
+    };
+    var chart = new Highcharts.Chart(options);
+    $.each(dataSeries, function(i, serie) {
+        chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data});
+    });
+    chart.setTitle({text: dataSeries[0].chartTitle});
+}
+
+function stockChartGenerate(dataSeries, renderContainer, configFile, google_key) {
+    var series = dataSeries;
+    var rC = renderContainer;
+    var cF = configFile;
+    var google_key = google_key;
+    console.log(dataSeries[0].serie.data);
+    var options = {
+        chart: {
+            renderTo: rC,
+            zoomType: 'xy'
+        },
+        title: {
+            text: cF[google_key]['chartTitle']
+        },
+        series: [{
+                name: "dataSeries[0].serie.name",
+                data: dataSeries[0].serie.data,
+                type: 'area'
+            }],
+        tooltip: {
+            shared: false
+        }
+    };
+    var chart = new Highcharts.StockChart(options);
+//    $.each(dataSeries, function(i, serie) {
+//        chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data, type: "area"});
+//    });
+    chart.setTitle({text: dataSeries[0].chartTitle});
 }
