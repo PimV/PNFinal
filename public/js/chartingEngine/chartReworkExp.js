@@ -1,5 +1,6 @@
 //Container Duplicates
 var containerExistCount = 0;
+var containerCount = 0;
 //Google Spreadsheet variables
 var google_key = null;
 var sheetCount = 0;
@@ -106,6 +107,7 @@ function requestConfigSheet(google_key, cfgSheetId, container) {
         success: function(resp) {
             processConfigSheet(google_key, cfgSheetId, resp, container);
             for (var i = 1; i < cfgSheetId; i++) {
+                containerCount = i;
                 requestSheetData(google_key, i, container);
             }
         },
@@ -133,7 +135,9 @@ function requestSheetData(google_key, sheetId, container) {
         dataType: 'json',
         async: true,
         success: function(resp) {
+            //containerCount++;
             processSheet(google_key, sheetId, resp, container);
+
         },
         error: function(resp) {
             console.log("Error in sheetData: " + resp.message);
@@ -197,31 +201,55 @@ function loadConfigData(google_key) {
  */
 function parseData(json, sheetTitle, container, google_key) {
     var dataSeries = [];
-    console.log("Getting columnNames for sheetTitle: " + sheetTitle);
     var columnNames = getColumnNames(json);
 
     $.each(columnNames, function(i, contentColName) {
         var series = [];
         var singleChartTitle = sheetTitle;
         loadConfigData(google_key);
-
+        var serieType = contentColName.name.split('.')[1];
         $.each(json['feed']['entry'], function(i, entry) {
-
-            var key = entry.title['$t'];
-            console.log(entry[contentColName.id]['$t']);
-            var value = parseFloat(entry[contentColName.id]['$t'].replace(',', '.'));
-
-            if (configs[google_key]['xScale'] === 'datetime') {
-                key = parseInt((+new Date(key).getTime() + (60 * 60 * 1000)));
-                series.push({x: key, y: value});
+            if (serieType === 'flags') {
+                var x = i;
+                var text = entry[contentColName.id]['$t'];
+                if (text.length > 0) {
+                    series.push({
+                        x: x,
+                        shape: "circlepin",
+                        title: '' + (+series.length + 1),
+                        text: text,
+                    });
+                }
             } else {
-                series.push({name: key, y: value});
+                var key = entry.title['$t'];
+
+                var value = parseFloat(entry[contentColName.id]['$t'].replace(',', '.'));
+                if (isNaN(value) === true) {
+                    value = null;
+                }
+
+                if (configs[google_key]['xScale'] === 'datetime') {
+                    key = parseInt((+new Date(key).getTime() + (60 * 60 * 1000)));
+                    series.push({x: key, y: value});
+                } else {
+                    series.push({name: key, y: value});
+                }
             }
         });
 
-
-        var serieType = contentColName.name.split('.')[1];
-        dataSeries.push({chartTitle: singleChartTitle, serie: {name: contentColName.name.split('.')[0], data: series, type: serieType}});
+        var showInLegend = true;
+        if (serieType === 'flags') {
+            showInLegend = false;
+        }
+        dataSeries.push({
+            chartTitle: singleChartTitle,
+            serie: {
+                name: contentColName.name.split('.')[0],
+                data: series,
+                type: serieType
+            },
+            showInLegend: showInLegend
+        });
     });
     generateChart(dataSeries, container, google_key);
 }
@@ -232,7 +260,6 @@ function parseData(json, sheetTitle, container, google_key) {
  * @returns {String} First row (containing columnNames)
  */
 function getColumnNames(json) {
-    console.log(json);
     var contentColNames = [];
     var firstColumnFound = false;
     $.each(Object.keys(json['feed']['entry'][0]), function(i, name) {
@@ -314,7 +341,9 @@ function checkContainer(renderContainer) {
 }
 
 function appendDiv(mainContainer, subContainer) {
-    $("#" + mainContainer).append('<div style="width: 800px; height: 400px; margin: 0 auto" id="' + subContainer + '" class="chartContainer"></div>');
+    positionClass = "left chartMargin";
+
+    $("#" + mainContainer).append('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
 }
 
 function checkSortingType(google_key, dataSeries) {
@@ -373,9 +402,16 @@ function chartGenerate(dataSeries, renderContainer, configFile, google_key) {
         },
         tooltip: {
             shared: false
+        },
+        plotOptions: {
+            series: {
+                allowPointSelect: true,
+                connectNulls: true
+            }
         }
     };
     var chart = new Highcharts.Chart(options);
+    var flagSerie = null;
     $.each(dataSeries, function(i, serie) {
         if (serie.serie.type === 'pie') {
             chart.addSeries({
@@ -387,12 +423,51 @@ function chartGenerate(dataSeries, renderContainer, configFile, google_key) {
                 size: 100,
                 dataLabels: {
                     enabled: false
-                }});
+                }
+            });
+        }
+        else if (serie.serie.type === 'flags') {
+            flagSerie = serie;
+            addFlags(flagSerie, chart);
         } else {
-            chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data, type: serie.serie.type});
+            chart.addSeries({
+                showInLegend: serie.showInLegend,
+                name: serie.serie.name,
+                x: serie.serie.x,
+                data: serie.serie.data,
+                type: serie.serie.type
+            });
         }
     });
+
     chart.setTitle({text: dataSeries[0].chartTitle});
+}
+
+function addFlags(flagSerie, chart) {
+    if (flagSerie !== null) {
+        var flagPoints = [];
+        $.each(flagSerie.serie.data, function(i, resp) {
+            flagPoints.push(resp.x);
+        });
+        $.each(flagPoints, function(i, resp) {
+            var maxPoint = 0;
+            $.each(chart.series, function(i2, resp) {
+                if (chart.series[i2].data[flagSerie.serie.data[i].x].y > maxPoint) {
+                    maxPoint = chart.series[i2].data[flagSerie.serie.data[i].x].y;
+                }
+            });
+
+            flagSerie.serie.data[i]["y"] = maxPoint;
+            flagSerie.serie.data[i].x = chart.series[0].data[flagSerie.serie.data[i].x].x;
+        });
+        console.log(flagSerie.serie.data);
+        chart.addSeries({
+            name: flagSerie.serie.name,
+            data: flagSerie.serie.data,
+            type: flagSerie.serie.type,
+            showInLegend: flagSerie.showInLegend
+        });
+    }
 }
 
 function stockChartGenerate(dataSeries, renderContainer, configFile, google_key) {
@@ -400,7 +475,6 @@ function stockChartGenerate(dataSeries, renderContainer, configFile, google_key)
     var rC = renderContainer;
     var cF = configFile;
     var google_key = google_key;
-    //console.log(dataSeries[0].serie.data);
     var options = {
         chart: {
             renderTo: rC,
@@ -409,18 +483,20 @@ function stockChartGenerate(dataSeries, renderContainer, configFile, google_key)
         title: {
             text: cF[google_key]['chartTitle']
         },
-        series: [{
-                name: "dataSeries[0].serie.name",
-                data: dataSeries[0].serie.data,
-                type: 'area'
-            }],
         tooltip: {
             shared: false
         }
     };
     var chart = new Highcharts.StockChart(options);
-//    $.each(dataSeries, function(i, serie) {
-//        chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data, type: "area"});
-//    });
+    var flagSerie = null;
+    $.each(dataSeries, function(i, serie) {
+        if (serie.serie.type === 'flags') {
+            flagSerie = serie;
+            addFlags(flagSerie, chart);
+        } else {
+            chart.addSeries({name: serie.serie.name, x: serie.serie.x, data: serie.serie.data, type: "area"});
+        }
+
+    });
     chart.setTitle({text: dataSeries[0].chartTitle});
 }
