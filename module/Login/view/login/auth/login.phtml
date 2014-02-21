@@ -1,0 +1,35 @@
+<?php
+
+$this->headLink()
+        ->appendStylesheet($this->basePath() . '/css/login/login.css');
+
+echo '<div id="container">';
+
+$form = $this->form;
+$form->setAttribute('action', $this->url(
+                'login', array('action' => 'authenticate',)
+));
+
+$form->prepare();
+
+echo $this->form()->openTag($form);
+echo $this->formLabel($this->form->get('username'));
+echo $this->formElement($this->form->get('username'));
+echo $this->formLabel($this->form->get('password'));
+echo $this->formElement($this->form->get('password'));
+//echo $this->form()->get('password');
+echo '<div id="lower">';
+echo $this->formLabel($this->form->get('rememberme'));
+echo $this->formElement($this->form->get('rememberme'));
+echo $this->formElement($this->form->get('submit'));
+echo '</div>';
+echo $this->form()->closeTag();
+
+if ($this->messages) {
+    echo '<ul>';
+    foreach ($this->messages as $message) {
+        echo '<li>' . $message . '</li>';
+    }
+    echo '</ul>';
+}
+echo '</div>';

@@ -215,9 +215,11 @@ function parseData(json, sheetTitle, container, google_key) {
                 if (text.length > 0) {
                     series.push({
                         x: x,
-                        shape: "circlepin",
+                        //shape: "circlepin",
+                        shape: "squarepin",
                         title: '' + (+series.length + 1),
-                        text: text,
+                        //title: text,
+                        text: text
                     });
                 }
             } else {
@@ -282,28 +284,7 @@ function getColumnNames(json) {
             firstColumnFound = true;
         }
     });
-//    $.each(json['feed']['entry'], function(i, entry) {
-////
-////
-//        //console.log(Object.keys(entry));
-//
-//        var columnNames = entry.content['$t'].split(',');
-//        console.log(columnNames);
-//        $.each(columnNames, function(i, colName) {
-//            var contentColName = "gsx$" + colName.split(':')[0].trim();
-//            var columnObject = {name: colName.split(':')[0].trim(), id: contentColName};
-//            var inArray = false;
-//            for (var x = 0; x < contentColNames.length; x++) {
-//                if (contentColNames[x].id === columnObject.id) {
-//                    inArray = true;
-//                    break;
-//                }
-//            }
-//            if (inArray === false) {
-//                contentColNames.push(columnObject);
-//            }
-//        });
-//    });
+
     return contentColNames;
 }
 

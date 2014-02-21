@@ -12,6 +12,7 @@
         "zendframework/zendframework": "2.2.*"
     },
     "require-dev": {
-        "jfloff/highroller-zf2": "dev-master"
+        "jfloff/highroller-zf2": "dev-master",
+        "doctrine/common": "dev-master"
     }
 }

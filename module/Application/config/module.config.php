@@ -13,7 +13,7 @@ return array(
             'home' => array(
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => array(
-                    'route' => '/',
+                    'route' => '/home',
                     'defaults' => array(
                         'controller' => 'Application\Controller\Index',
                         'action' => 'index',
@@ -67,6 +67,42 @@ return array(
                     'defaults' => array(
                         'controller' => 'Search\Controller\Index',
                         'action' => 'index',
+                    ),
+                ),
+            ),
+            'login' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/login',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Login\Controller',
+                        'controller' => 'Auth',
+                        'action' => 'login',
+                    ),
+                ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'process' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/[:action]',
+                            'constraints' => array(
+                                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            'logout' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/login/process/logout',
+                    'defaults' => array(
+                        'controller' => 'Login\Controller\Auth',
+                        'action' => 'logout',
                     ),
                 ),
             ),
@@ -139,6 +175,14 @@ return array(
             array(
                 'label' => 'Search',
                 'route' => 'search',
+            ),
+            array(
+                'label' => 'Login',
+                'route' => 'login',
+            ),
+            array(
+                'label' => 'Logout',
+                'route' => 'logout',
             ),
         ),
     ),
