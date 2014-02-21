@@ -2,12 +2,17 @@
 
 $this->headLink()
         ->appendStylesheet($this->basePath() . '/css/login/login.css');
+echo '<div class="jumbotron">';
+echo '<h1>';
+echo sprintf($this->translate('Authorize First'), '<span class="zf-green">', '</span>');
+echo '</h1>';
+echo '</div>';
 
 echo '<div id="container">';
 
 $form = $this->form;
 $form->setAttribute('action', $this->url(
-                'login', array('action' => 'authenticate',)
+                'login/process', array('action' => 'authenticate',)
 ));
 
 $form->prepare();
