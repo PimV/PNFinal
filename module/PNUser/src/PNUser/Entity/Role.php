@@ -11,6 +11,7 @@ namespace PNUser\Entity;
 
 use BjyAuthorize\Acl\HierarchicalRoleInterface;
 use Doctrine\ORM\Mapping as ORM;
+//Added a commment
 
 /**
  * An example entity that represents a role.
