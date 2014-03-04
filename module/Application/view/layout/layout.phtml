@@ -26,6 +26,7 @@
                 ->prependFile($this->basePath() . '/js/jquery.min.js')
                 ->prependFile($this->basePath() . '/js/respond.min.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                 ->prependFile($this->basePath() . '/js/html5shiv.js', 'text/javascript', array('conditional' => 'lt IE 9',))
+                ->prependFile($this->basePath() . '/js/navigation/user-control.js')
         ;
         ?>
 
@@ -51,12 +52,12 @@
                             ->setUlClass('nav navbar-nav')
                             ->render();
 
-                    echo $this->navigation($this->currentRole . '_navigation')
-                            ->menu()
-                            ->setMinDepth(0)
-                            ->setMaxDepth(0)
-                            ->setUlClass('nav navbar-nav')
-                            ->render();
+//                    echo $this->navigation($this->currentRole . '_navigation')
+//                            ->menu()
+//                            ->setMinDepth(0)
+//                            ->setMaxDepth(0)
+//                            ->setUlClass('nav navbar-nav')
+//                            ->render();
 
                     echo $this->navigation('user_navigation')
                             ->menu()
@@ -65,10 +66,34 @@
                             ->setUlClass('nav navbar-nav')
                             ->render();
                     ?>
+                    <div id="userInfoContainer">
+                        <div id="userInfo">
+                            <label id="forLabel" for="username">Username: </label><span id="username"><?php echo $this->username; ?></span>
+                            <br/>
+                            <label id="forLabel" for="role">Role: </label>
+                            <span id="role">
+                                <select id="roleBox" onchange="switchRole();" <?php if (count($this->roles) < 2) echo 'disabled'; ?>>
+                                    <?php
+                                    foreach ($this->roles as $role) {
+                                        $role2 = $role->getRoleId();
+
+                                        if ($role2 === $this->role->getRoleId()) {
+                                            echo '<option selected value="' . $role2 . '">' . $role2 . '</option>';
+                                        } else {
+                                            echo '<option value="' . $role2 . '">' . $role2 . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
                 </div><!--/.nav-collapse -->
             </div>
         </nav>
         <div class="container">
+            <?php var_dump($this->role);
+            ?>
             <?php echo $this->content; ?>
             <hr>
             <footer>
