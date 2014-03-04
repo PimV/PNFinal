@@ -16,6 +16,17 @@ class Module {
         $this->setViewVariables($app, $sm);
     }
 
+    public function bootstrapSession($sm) {
+        $session = $sm->get('Zend\Session\SessionManager');
+        $session->start();
+
+        $container = new Container('initialized');
+        if (!isset($container->init)) {
+            $session->regenerateId(true);
+            $container->init = 1;
+        }
+    }
+
     public function getConfig() {
         return include (__DIR__ . '/../../config/module.config.php');
     }
