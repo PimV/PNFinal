@@ -5,6 +5,7 @@ namespace PNUser;
 use Zend\Mvc\MvcEvent;
 use Zend\Session\Container;
 use Zend\Session\SessionManager;
+
 class Module {
 
     public function onBootstrap(MvcEvent $e) {
@@ -23,8 +24,14 @@ class Module {
 
         $container = new Container('initialized');
         if (!isset($container->init)) {
-            $session->regenerateId(true);
+
             $container->init = 1;
+        }
+
+        $test = new Container('test');
+        if (!isset($test->foo)) {
+            $session->regenerateId(true);
+            $test->foo = 'bar';
         }
     }
 
