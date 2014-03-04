@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Global Configuration Override
  *
@@ -10,7 +11,18 @@
  * control, so do not include passwords or other sensitive information in this
  * file.
  */
-
 return array(
-    // ...
+    'session' => array(
+        'config' => array(
+            'class' => 'Zend\Session\Config\SessionConfig',
+            'options' => array(
+                'name' => 'pubnext',
+            ),
+        ),
+        'storage' => 'Zend\Session\Storage\SessionSarrayStorage',
+        'validators' => array(
+            'Zend\Session\Validator\RemoteAddr',
+            'Zend\Session\Validator\HttpUserAgent',
+        ),
+    ),
 );
