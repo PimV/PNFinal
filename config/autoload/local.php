@@ -10,7 +10,7 @@ return array(
                     'port' => '3306',
                     'user' => 'PimVerlangen',
                     'password' => 'verlangen',
-                    'dbname' => 'authtest'
+                    'dbname' => 'pnfinal'
                 ),
             ),
         ),
