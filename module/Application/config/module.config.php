@@ -21,9 +21,9 @@ return array(
                 ),
             ),
             // The following is a route to simplify getting started creating
-            // new controllers and actions without needing to create a new
-            // module. Simply drop new controllers in, and you can access them
-            // using the path /application/:controller/:action
+// new controllers and actions without needing to create a new
+// module. Simply drop new controllers in, and you can access them
+// using the path /application/:controller/:action
             'application' => array(
                 'type' => 'Literal',
                 'options' => array(
@@ -44,18 +44,52 @@ return array(
                                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
-                            'defaults' => array(
-                            ),
+                            'defaults' => array(),
                         ),
                     ),
                 ),
             ),
         ),
     ),
+    'navigation' => array(
+        'user_navigation' => array(
+            array(
+                'label' => 'Profile',
+                'route' => 'zfcuser',
+                'controller' => 'user',
+                'action' => 'index',
+            ),
+            array(
+                'label' => 'Login',
+                'route' => 'zfcuser/login',
+                'controller' => 'user',
+                'action' => 'login',
+            ),
+            array(
+                'label' => 'Logout',
+                'route' => 'zfcuser/logout',
+                'controller' => 'user',
+                'action' => 'logout',
+            ),
+        ),
+        'main_navigation' => array(
+            'home' => array(
+                'label' => 'Home',
+                'route' => 'home',
+            ),
+        ),
+        'advertiser_navigation' => array(),
+        'publisher_navigation' => array(),
+        'administrator_navigation' => array(),
+    ),
     'service_manager' => array(
         'abstract_factories' => array(
             'Zend\Cache\Service\StorageCacheAbstractServiceFactory',
             'Zend\Log\LoggerAbstractServiceFactory',
+        ),
+        'factories' => array(
+            'main_navigation' => 'Application\Navigation\Service\MainNavigationFactory',
+            'user_navigation' => 'Application\Navigation\Service\UserNavigationFactory',
         ),
         'aliases' => array(
             'translator' => 'MvcTranslator',
@@ -95,8 +129,7 @@ return array(
     // Placeholder for console routes
     'console' => array(
         'router' => array(
-            'routes' => array(
-            ),
+            'routes' => array(),
         ),
     ),
 );

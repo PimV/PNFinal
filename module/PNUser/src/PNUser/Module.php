@@ -12,7 +12,8 @@ class Module {
         $shared = $events->getSharedManager();
         $sm = $app->getServiceManager();
 
-        $this->addRegisterListener($shared, $e, $sm);
+        $this->addRegisterListener($shared, $sm);
+        $this->setViewVariables($app, $sm);
     }
 
     public function getConfig() {
@@ -29,16 +30,25 @@ class Module {
         );
     }
 
-    private function addRegisterListener($shared, $e, $sm) {
+    private function addRegisterListener($shared, $sm) {
         $shared->attach('ZfcUser\Service\User', 'register.post', function($e) use ($sm) {
             $newUser = $e->getParam('user');
             $entityManager = $sm->get('Doctrine\ORM\EntityManager');
 
             $userRole = new \PNUser\Entity\UserRole(); //Create new UserRole Entity
             $userRole->setUserId($newUser->getId()); //Set the new userId in the UserRole entity
+
             $entityManager->persist($userRole); //Ready-up the query to insert the UserRole into user_role_linker
             $entityManager->flush(); //Execute the query
         });
+    }
+
+    private function setViewVariables($app, $sm) {
+        $auth = $sm->get('BjyAuthorize\Provider\Identity\ProviderInterface');
+        $roles = $auth->getIdentityRoles();
+
+        $viewModel = $app->getMvcEvent()->getViewModel();
+        $viewModel->roles = $roles;
     }
 
 }
