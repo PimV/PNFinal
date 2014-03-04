@@ -1,11 +1,12 @@
 <?php
+
 /**
  * BjyAuthorize Module (https://github.com/bjyoungblood/BjyAuthorize)
  *
  * @link https://github.com/bjyoungblood/BjyAuthorize for the canonical source repository
  * @license http://framework.zend.com/license/new-bsd New BSD License
  */
- 
+
 namespace PNUser\Entity;
 
 use BjyAuthorize\Provider\Role\ProviderInterface;
@@ -21,8 +22,8 @@ use ZfcUser\Entity\UserInterface;
  *
  * @author Tom Oram <tom@scl.co.uk>
  */
-class User implements UserInterface, ProviderInterface
-{
+class User implements UserInterface, ProviderInterface {
+
     /**
      * @var int
      * @ORM\Id
@@ -73,8 +74,7 @@ class User implements UserInterface, ProviderInterface
     /**
      * Initialies the roles variable.
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->roles = new ArrayCollection();
     }
 
@@ -83,8 +83,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return int
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -95,8 +94,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return void
      */
-    public function setId($id)
-    {
+    public function setId($id) {
         $this->id = (int) $id;
     }
 
@@ -105,8 +103,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return string
      */
-    public function getUsername()
-    {
+    public function getUsername() {
         return $this->username;
     }
 
@@ -117,8 +114,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return void
      */
-    public function setUsername($username)
-    {
+    public function setUsername($username) {
         $this->username = $username;
     }
 
@@ -127,8 +123,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return string
      */
-    public function getEmail()
-    {
+    public function getEmail() {
         return $this->email;
     }
 
@@ -139,8 +134,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return void
      */
-    public function setEmail($email)
-    {
+    public function setEmail($email) {
         $this->email = $email;
     }
 
@@ -149,8 +143,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return string
      */
-    public function getDisplayName()
-    {
+    public function getDisplayName() {
         return $this->displayName;
     }
 
@@ -161,8 +154,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return void
      */
-    public function setDisplayName($displayName)
-    {
+    public function setDisplayName($displayName) {
         $this->displayName = $displayName;
     }
 
@@ -171,8 +163,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return string
      */
-    public function getPassword()
-    {
+    public function getPassword() {
         return $this->password;
     }
 
@@ -183,8 +174,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return void
      */
-    public function setPassword($password)
-    {
+    public function setPassword($password) {
         $this->password = $password;
     }
 
@@ -193,8 +183,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return int
      */
-    public function getState()
-    {
+    public function getState() {
         return $this->state;
     }
 
@@ -205,8 +194,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return void
      */
-    public function setState($state)
-    {
+    public function setState($state) {
         $this->state = $state;
     }
 
@@ -215,8 +203,7 @@ class User implements UserInterface, ProviderInterface
      *
      * @return array
      */
-    public function getRoles()
-    {
+    public function getRoles() {
         return $this->roles->getValues();
     }
 
@@ -227,8 +214,18 @@ class User implements UserInterface, ProviderInterface
      *
      * @return void
      */
-    public function addRole($role)
-    {
+    public function addRole($role) {
         $this->roles[] = $role;
     }
+
+    public function setCurrentRole($roleId) {
+        foreach ($this->getRoles() as $role) {
+            if ($role->getRoleId() === $roleId) {
+                $container = new Container('initialized');
+                $container->test = $role;
+                break;
+            }
+        }
+    }
+
 }
