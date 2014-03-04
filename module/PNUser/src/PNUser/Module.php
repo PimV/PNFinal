@@ -43,12 +43,4 @@ class Module {
         });
     }
 
-    private function setViewVariables($app, $sm) {
-        $auth = $sm->get('BjyAuthorize\Provider\Identity\ProviderInterface');
-        $roles = $auth->getIdentityRoles();
-
-        $viewModel = $app->getMvcEvent()->getViewModel();
-        $viewModel->roles = $roles;
-    }
-
 }
