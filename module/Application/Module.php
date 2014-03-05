@@ -21,10 +21,11 @@ class Module {
         $eventManager = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
-
+        $this->bootstrapSession($e);
+        $this->manageRoles($e);
         $this->setUserNavigation($e);
         $this->setCurrentPageActive($eventManager, $e);
-        $this->bootstrapSession($e);
+
         $sm = $e->getApplication()->getServiceManager();
     }
 
@@ -38,7 +39,7 @@ class Module {
             if ($sm->get('zfcuser_auth_service')->hasIdentity()) {
                 $container->role = $sm->get('zfcuser_auth_service')->getIdentity()->getRoles()[0];
             } else {
-                $container->role = null;
+                unset($container->role);
             }
         }
     }
@@ -66,7 +67,7 @@ class Module {
 
                 $sessionSaveHandler = null;
                 if (isset($session['save_handler'])) {
-                    //Class should be fetched from service manger since it will require constructor arguments
+                    //Class should be fetched from service manager since it will require constructor arguments
                     $sessionSaveHandler = $sm->get($session['save_handler']);
                 }
 
@@ -113,6 +114,7 @@ class Module {
         $loginPage = $stdNavContainer->findOneBy('label', 'Login');
         $profilePage = $stdNavContainer->findOneBy('label', 'Profile');
         $logoutPage = $stdNavContainer->findOneBy('label', 'Logout');
+        //$container = new Container('role');
 
         $role = null;
         if ($auth->hasIdentity()) { //If user is logged in
@@ -122,23 +124,24 @@ class Module {
             $logoutPage->setVisible(true);
             //Enable buttons for role navigation
             //Set some test variables
-
-
-            $viewModel->roles = $auth->getIdentity()->getRoles();
-
-            $container = new Container('role');
-            if (isset($container)) {
-                if ($container->role !== null) {
-                    $role = $container->role;
-                }
-            }
+//            $viewModel->roles = $auth->getIdentity()->getRoles();
+//
+//
+//            if (isset($container)) {
+//                if ($container->role !== null) {
+//                    $role = $container->role;
+//                }
+//            }
         } else {
             //Toggle user navigation buttons
             $loginPage->setVisible(true);
             $profilePage->setVisible(false);
             $logoutPage->setVisible(false);
         }
-        $viewModel->role = $role;
+        //  if ($role === null) {
+        //     unset($container->role);
+        //  }
+        // $viewModel->role = $role;
     }
 
     /**
@@ -169,6 +172,29 @@ class Module {
                 return "Could not find active page";
             }
         }, -100);
+    }
+
+    private function manageRoles($e) {
+        $sm = $e->getApplication()->getServiceManager();
+        $app = $e->getApplication();
+        $auth = $sm->get('zfcuser_auth_service');
+        $viewModel = $app->getMvcEvent()->getViewModel();
+        $container = new Container('role');
+
+        $role = null;
+        if ($auth->hasIdentity()) {
+            $roles = $auth->getIdentity()->getRoles();
+            $viewModel->roles = $roles;
+            if (isset($container)) {
+                if ($container->role !== null) {
+                    $role = $container->role;
+                }
+            }
+        }
+        if ($role === null) {
+            unset($container->role);
+        }
+        $viewModel->role = $role;
     }
 
 }
