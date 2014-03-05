@@ -21,6 +21,10 @@ class Module {
         $eventManager = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
+        $sm = $e->getApplication()->getServiceManager();
+        $app = $e->getApplication();
+        $auth = $sm->get('zfcuser_auth_service');
+        $viewModel = $app->getMvcEvent()->getViewModel();
         $this->bootstrapSession($e);
         $this->manageRoles($e);
         $this->setUserNavigation($e);
@@ -124,24 +128,12 @@ class Module {
             $logoutPage->setVisible(true);
             //Enable buttons for role navigation
             //Set some test variables
-//            $viewModel->roles = $auth->getIdentity()->getRoles();
-//
-//
-//            if (isset($container)) {
-//                if ($container->role !== null) {
-//                    $role = $container->role;
-//                }
-//            }
         } else {
             //Toggle user navigation buttons
             $loginPage->setVisible(true);
             $profilePage->setVisible(false);
             $logoutPage->setVisible(false);
         }
-        //  if ($role === null) {
-        //     unset($container->role);
-        //  }
-        // $viewModel->role = $role;
     }
 
     /**
