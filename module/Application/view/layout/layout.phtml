@@ -17,6 +17,7 @@
                 ->prependStylesheet($this->basePath() . '/css/style.css')
                 ->prependStylesheet($this->basePath() . '/css/bootstrap-theme.min.css')
                 ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
+                ->prependStylesheet($this->basePath() . '/css/navigation/sidebar.css')
         ?>
 
         <!-- Scripts -->
@@ -26,7 +27,8 @@
                 ->prependFile($this->basePath() . '/js/jquery.min.js')
                 ->prependFile($this->basePath() . '/js/respond.min.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                 ->prependFile($this->basePath() . '/js/html5shiv.js', 'text/javascript', array('conditional' => 'lt IE 9',))
-                ->prependFile($this->basePath() . '/js/navigation/user-control.js')
+                ->appendFile($this->basePath() . '/js/navigation/user-control.js')
+                ->appendFile($this->basePath() . '/js/navigation/sidebar.js')
         ;
         ?>
 
@@ -65,15 +67,18 @@
                             ->setMaxDepth(0)
                             ->setUlClass('nav navbar-nav')
                             ->render();
-
-                    echo $this->partial('partial/user-info.phtml');
+                    if ($this->role !== null) {
+                        echo $this->partial('partial/user-info.phtml');
+                    }
                     ?>
 
                 </div><!--/.nav-collapse -->
             </div>
         </nav>
-        <div class="container">
-            <?php var_dump($this->role); ?>
+        <div class="container wrapper">
+            <?php echo $this->partial('partial/sidebar.phtml'); ?>
+            <?php var_dump($this->role);
+            ?>
             <?php echo $this->content; ?>
             <hr>
             <footer>
