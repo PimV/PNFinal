@@ -12,6 +12,8 @@ namespace Application;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use Zend\Session\Container;
+use Zend\Session\SessionManager;
 
 class Module {
 
@@ -22,6 +24,69 @@ class Module {
 
         $this->setUserNavigation($e);
         $this->setCurrentPageActive($eventManager, $e);
+        $this->bootstrapSession($e);
+        $sm = $e->getApplication()->getServiceManager();
+    }
+
+    public function bootstrapSession($e) {
+        $sm = $e->getApplication()->getServiceManager();
+        $session = $sm->get('Zend\Session\SessionManager');
+        $session->start();
+
+        $container = new Container('role');
+        if (!isset($container->role)) {
+            if ($sm->get('zfcuser_auth_service')->hasIdentity()) {
+                $container->role = $sm->get('zfcuser_auth_service')->getIdentity()->getRoles()[0];
+            } else {
+                $container->role = null;
+            }
+        }
+    }
+
+    public function getServiceConfig() {
+        return array(
+            'factories' => array(
+                'Zend\Session\SessionManager' => function($sm) {
+            $config = $sm->get('config');
+            if (isset($config['session'])) {
+                $session = $config['session'];
+                $sessionConfig = null;
+                if (isset($session['config'])) {
+                    $class = isset($session['config']['class']) ? $session['config']['class'] : 'Zend\Session\Config\SessionConfig';
+                    $options = isset($session['config']['options']) ? $session['config']['options'] : array();
+                    $sessionConfig = new $class();
+                    $sessionConfig->setOptions($options);
+                }
+
+                $sessionStorage = null;
+                if (isset($session['storage'])) {
+                    $class = $session['storage'];
+                    $sessionStorage = new $class();
+                }
+
+                $sessionSaveHandler = null;
+                if (isset($session['save_handler'])) {
+                    //Class should be fetched from service manger since it will require constructor arguments
+                    $sessionSaveHandler = $sm->get($session['save_handler']);
+                }
+
+                $sessionManager = new SessionManager($sessionConfig, $sessionStorage, $sessionSaveHandler);
+
+                if (isset($session['validators'])) {
+                    $chain = $sessionManager->getValidatorChain();
+                    foreach ($session['validators'] as $validator) {
+                        $validator = new $validator();
+                        $chain->attach('session.validate', array($validator, 'isValid'));
+                    }
+                } else {
+                    $sessionManager = new SessionManager();
+                }
+                Container::setDefaultManager($sessionManager);
+                return $sessionManager;
+            }
+        },
+            ),
+        );
     }
 
     public function getConfig() {
@@ -40,24 +105,40 @@ class Module {
 
     private function setUserNavigation($e) {
         $sm = $e->getApplication()->getServiceManager();
+        $app = $e->getApplication();
         $auth = $sm->get('zfcuser_auth_service');
+        $viewModel = $app->getMvcEvent()->getViewModel();
         //Get user navigation buttons
         $stdNavContainer = $sm->get('user_navigation');
         $loginPage = $stdNavContainer->findOneBy('label', 'Login');
         $profilePage = $stdNavContainer->findOneBy('label', 'Profile');
         $logoutPage = $stdNavContainer->findOneBy('label', 'Logout');
+
+        $role = null;
         if ($auth->hasIdentity()) { //If user is logged in
             //Toggle user navigation buttons
             $loginPage->setVisible(false);
             $profilePage->setVisible(true);
             $logoutPage->setVisible(true);
             //Enable buttons for role navigation
+            //Set some test variables
+
+
+            $viewModel->roles = $auth->getIdentity()->getRoles();
+
+            $container = new Container('role');
+            if (isset($container)) {
+                if ($container->role !== null) {
+                    $role = $container->role;
+                }
+            }
         } else {
             //Toggle user navigation buttons
             $loginPage->setVisible(true);
             $profilePage->setVisible(false);
             $logoutPage->setVisible(false);
         }
+        $viewModel->role = $role;
     }
 
     /**
