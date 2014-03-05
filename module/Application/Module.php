@@ -21,27 +21,26 @@ class Module {
         $eventManager = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
-        $sm = $e->getApplication()->getServiceManager();
         $app = $e->getApplication();
+        $sm = $app->getServiceManager();
         $auth = $sm->get('zfcuser_auth_service');
         $viewModel = $app->getMvcEvent()->getViewModel();
-        $this->bootstrapSession($e);
-        $this->manageRoles($e);
-        $this->setUserNavigation($e);
-        $this->setCurrentPageActive($eventManager, $e);
 
-        $sm = $e->getApplication()->getServiceManager();
+
+        $this->bootstrapSession($sm, $auth);
+        $this->setUserInformation($auth, $viewModel);
+        $this->setUserNavigation($app, $sm, $auth, $viewModel);
+        $this->setCurrentPageActive($eventManager, $e);
     }
 
-    public function bootstrapSession($e) {
-        $sm = $e->getApplication()->getServiceManager();
+    public function bootstrapSession($sm, $auth) {
         $session = $sm->get('Zend\Session\SessionManager');
         $session->start();
 
         $container = new Container('role');
         if (!isset($container->role)) {
-            if ($sm->get('zfcuser_auth_service')->hasIdentity()) {
-                $container->role = $sm->get('zfcuser_auth_service')->getIdentity()->getRoles()[0];
+            if ($auth->hasIdentity()) {
+                $container->role = $auth->getIdentity()->getRoles()[0];
             } else {
                 unset($container->role);
             }
@@ -108,28 +107,21 @@ class Module {
         );
     }
 
-    private function setUserNavigation($e) {
-        $sm = $e->getApplication()->getServiceManager();
-        $app = $e->getApplication();
-        $auth = $sm->get('zfcuser_auth_service');
-        $viewModel = $app->getMvcEvent()->getViewModel();
+    /**
+     * Set the ZfcUser buttons (login/logout/profile) to show/hide where needed.
+     */
+    private function setUserNavigation($app, $sm, $auth, $viewModel) {
         //Get user navigation buttons
         $stdNavContainer = $sm->get('user_navigation');
         $loginPage = $stdNavContainer->findOneBy('label', 'Login');
         $profilePage = $stdNavContainer->findOneBy('label', 'Profile');
         $logoutPage = $stdNavContainer->findOneBy('label', 'Logout');
-        //$container = new Container('role');
 
-        $role = null;
         if ($auth->hasIdentity()) { //If user is logged in
-            //Toggle user navigation buttons
             $loginPage->setVisible(false);
             $profilePage->setVisible(true);
             $logoutPage->setVisible(true);
-            //Enable buttons for role navigation
-            //Set some test variables
         } else {
-            //Toggle user navigation buttons
             $loginPage->setVisible(true);
             $profilePage->setVisible(false);
             $logoutPage->setVisible(false);
@@ -166,17 +158,15 @@ class Module {
         }, -100);
     }
 
-    private function manageRoles($e) {
-        $sm = $e->getApplication()->getServiceManager();
-        $app = $e->getApplication();
-        $auth = $sm->get('zfcuser_auth_service');
-        $viewModel = $app->getMvcEvent()->getViewModel();
+    private function setUserInformation($auth, $viewModel) {
         $container = new Container('role');
 
         $role = null;
+        $username = null;
         if ($auth->hasIdentity()) {
-            $roles = $auth->getIdentity()->getRoles();
-            $viewModel->roles = $roles;
+            $viewModel->roles = $auth->getIdentity()->getRoles();
+            $viewModel->username = explode('@', $auth->getIdentity()->getEmail())[0];
+
             if (isset($container)) {
                 if ($container->role !== null) {
                     $role = $container->role;
