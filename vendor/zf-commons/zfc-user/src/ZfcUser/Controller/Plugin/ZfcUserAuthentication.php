@@ -9,7 +9,7 @@ use ZfcUser\Authentication\Adapter\AdapterChain as AuthAdapter;
 
 class ZfcUserAuthentication extends AbstractPlugin
 {
-    /**
+    /**z
      * @var AuthAdapter
      */
     protected $authAdapter;
