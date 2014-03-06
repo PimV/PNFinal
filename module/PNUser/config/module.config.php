@@ -14,6 +14,45 @@ return array(
             ),
         ),
     ),
+    'router' => array(
+        'routes' => array(
+            'user' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/user',
+                    'defaults' => array(
+                        'controller' => 'PNUser\Controller\User',
+                        'action' => 'index',
+                    ),
+                ),
+                'child_routes' => array(
+                    'switch' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => '/role',
+                            'constraints' => array(
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                                'controller' => 'PNUser\Controller\User',
+                                'action' => 'role',
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    'controllers' => array(
+        'invokables' => array(
+            'PNUser\Controller\User' => 'PNUser\Controller\UserController',
+        ),
+    ),
+    'view_manager' => array(
+        'template_path_stack' => array(
+            'pn-user' => __DIR__ . '/../user'
+        ),
+    ),
     'zfcuser' => array(
         'user_entity_class' => 'PNUser\Entity\User',
         'enable_default_entities' => false,
