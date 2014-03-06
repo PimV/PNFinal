@@ -138,6 +138,7 @@ function searchDatabaseNow(page) {
         success: function(resp) {
             processRequestedESData(resp);
             $("#spinner").hide();
+            //Spinner comd
         },
         error: function(resp) {
             console.log(resp);
