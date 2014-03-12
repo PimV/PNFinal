@@ -15,8 +15,8 @@ var currentPage;
 $(function() {
     if (!window.console)
         console = {log: function() {
-            }};
-    //setMinMaxSlider();
+            }
+        };
 });
 $(document).ready(function() {
 
@@ -117,13 +117,17 @@ function searchDatabaseNow(page) {
 
     var catOpts = getCatOpts();
     var langOpts = getLangOpts();
-    var keywords = $('#keywordSearch').val().trim();
-    if (keywords.length < 1) {
-        keywords = " ";
+    if (typeof $('#keywordSearch').val() !== 'undefined') {
+        var keywords = $('#keywordSearch').val().trim();
+        if (keywords.length < 1) {
+            keywords = " ";
+        }
     }
-    var urls = $('#urlSearch').val().trim();
-    if (urls.length < 1) {
-        urls = " ";
+    if (typeof $('#urlSearch').val() !== 'undefined') {
+        var urls = $('#urlSearch').val().trim();
+        if (urls.length < 1) {
+            urls = " ";
+        }
     }
 
     $.ajax({
@@ -138,14 +142,12 @@ function searchDatabaseNow(page) {
         success: function(resp) {
             processRequestedESData(resp);
             $("#spinner").hide();
-            //Spinner comd
         },
         error: function(resp) {
-            console.log(resp);
+            bootbox.alert("Could not find any results due to an error. Are you sure you disabled AdBlock or other advertising-software? If you did, the cause might be on our side...");
             $("#spinner").hide();
         }
     });
-
     event.preventDefault ? event.preventDefault() : event.returnValue = false;
     return false;
 }
@@ -171,8 +173,11 @@ function processRequestedESData(resp) {
     $('.result').html(""); //Clear results
     var resultCount = resp['hits']['total']; //Set resultCount
 
+    var results = [];
     //Show all results
     $.each(resp['hits']['hits'], function(i, obj) {
+        var result = new Object();
+
         var siteName = obj['_source']['name'];
         var siteUrl = obj['_source']['name'];
         var siteTags = obj['_source']['keywords'];
@@ -183,38 +188,32 @@ function processRequestedESData(resp) {
             isOnline = "Yes";
         }
         var lastOnlineCheck = createDateString(new Date(obj['_source']['last_online']));
+        var siteName = siteName.split('.')[1];
+        var imgUrl = "'/img/screenshots/" + siteName + ".png'";
 
-        siteHtml =
-                '<div class="siteName">\n\
-                    <label class="searchLabel">Name:</label>\n\
-                    <span>' + siteName + '</span>\n\
-                 </div>\n\
-                 <div class="siteUrl">\n\
-                    <label class="searchLabel">Site URL:</label>\n\
-                    <span><a href="' + siteUrl + '">' + siteUrl + '</a></span>\n\
-                 </div>\n\
-                 <div class="siteTags">\n\
-                    <label class="searchLabel">Tags:</label>\n\
-                    <span>' + siteTags + '</span>\n\
-                 </div>\n\
-                 <div class="siteCreated">\n\
-                    <label class="searchLabel">Site Created On:</label>\n\
-                    <span>' + siteCreated + '</span>\n\
-                 </div>\n\
-                 <div class="siteModified">\n\
-                    <label class="searchLabel">Site Modified On:</label>\n\
-                    <span>' + siteModified + '</span>\n\
-                 </div>\n\
-                 <div class="siteIsOnline">\n\
-                    <label class="searchLabel">Site Currently Online?:</label>\n\
-                    <span>' + isOnline + '</span>\n\
-                 </div>\n\
-                 <div class="siteLastCheckOnline">\n\
-                    <label class="searchLabel">Site Last Online Check:</label>\n\
-                    <span>' + lastOnlineCheck + '</span>\n\
-                 </div>\n\
-                 <br/>';
-        $('.result').append(siteHtml);
+        result.siteName = siteName;
+        result.siteUrl = siteUrl;
+        result.siteTags = siteTags;
+        result.siteCreated = siteCreated;
+        result.siteModified = siteModified;
+        result.isOnline = isOnline;
+        result.lastOnlineCheck = lastOnlineCheck;
+        result.imgUrl = imgUrl;
+        results.push(result);
+    });
+    $.ajax({
+        url: '/search/results',
+        type: 'POST',
+        data: {
+            results: results
+        },
+        success: function(resp) {
+            $('.result').append(resp);
+        },
+        error: function(resp) {
+            console.log("error");
+            console.log(resp);
+        }
     });
     //Show message if no results were found
     if (resultCount === 0) {
