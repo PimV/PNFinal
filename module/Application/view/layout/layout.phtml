@@ -3,7 +3,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <?php echo $this->headTitle('ZF2 ' . $this->translate('Skeleton Application'))->setSeparator(' - ')->setAutoEscape(false) ?>
+        <?php echo $this->headTitle('PN ' . $this->translate('PubNext'))->setSeparator(' - ')->setAutoEscape(false) ?>
 
         <?php
         echo $this->headMeta()
@@ -18,17 +18,23 @@
                 ->prependStylesheet($this->basePath() . '/css/bootstrap-theme.min.css')
                 ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
                 ->prependStylesheet($this->basePath() . '/css/navigation/sidebar.css')
+                ->prependStylesheet($this->basePath() . '/css/loadingAnimation/loading.css')
         ?>
 
         <!-- Scripts -->
         <?php
         echo $this->headScript()
+                ->prependFile($this->basePath() . '/js/bootbox.min.js')
                 ->prependFile($this->basePath() . '/js/bootstrap.min.js')
                 ->prependFile($this->basePath() . '/js/jquery.min.js')
                 ->prependFile($this->basePath() . '/js/respond.min.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                 ->prependFile($this->basePath() . '/js/html5shiv.js', 'text/javascript', array('conditional' => 'lt IE 9',))
                 ->appendFile($this->basePath() . '/js/navigation/user-control.js')
                 ->appendFile($this->basePath() . '/js/navigation/sidebar.js')
+                ->appendFile($this->basePath() . '//code.highcharts.com/stock/highstock.src.js')
+                ->appendFile($this->basePath() . 'http://code.highcharts.com/modules/exporting.js')
+                //->appendFile($this->basePath() . '/js/charts/engine.js')
+                ->appendFile($this->basePath() . '/js/charts/engine_v2.js')
         ;
         ?>
 
@@ -42,7 +48,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="<?php echo $this->url('home') ?>"><img src="<?php echo $this->basePath('img/zf2-logo.png') ?>" alt="Zend Framework 2"/>&nbsp;<?php echo $this->translate('Skeleton Application') ?></a>
+                    <a class="navbar-brand" href="<?php echo $this->url('home') ?>"><img src="<?php echo $this->basePath('img/PNLogo.png') ?>" alt="PubNext"/>&nbsp;<?php echo $this->translate('PubNext') ?></a>
                 </div>
                 <div class="collapse navbar-collapse">
 
@@ -54,13 +60,14 @@
                             ->setUlClass('nav navbar-nav')
                             ->render();
 
-//                    echo $this->navigation($this->currentRole . '_navigation')
-//                            ->menu()
-//                            ->setMinDepth(0)
-//                            ->setMaxDepth(0)
-//                            ->setUlClass('nav navbar-nav')
-//                            ->render();
-
+                    if ($this->role !== null) {
+                        echo $this->navigation($this->role->getRoleId() . '_navigation')
+                                ->menu()
+                                ->setMinDepth(0)
+                                ->setMaxDepth(0)
+                                ->setUlClass('nav navbar-nav')
+                                ->render();
+                    }
                     echo $this->navigation('user_navigation')
                             ->menu()
                             ->setMinDepth(0)
@@ -68,7 +75,8 @@
                             ->setUlClass('nav navbar-nav')
                             ->render();
                     if ($this->role !== null) {
-                        echo $this->partial('partial/user-info.phtml');
+                        echo '<input type="hidden" value="' . $this->role->getRoleId() . '" id="roleVar">';
+                        echo $this->partial('partial/user-info/user-info.phtml');
                     }
                     ?>
 
@@ -76,13 +84,19 @@
             </div>
         </nav>
         <div class="container wrapper">
-            <?php echo $this->partial('partial/sidebar.phtml'); ?>
-            <?php var_dump($this->role);
+            <?php
+            if ($this->role !== null) {
+                echo $this->partial('partial/sidebar/sidebar.phtml');
+            }
+
+            echo $this->content;
             ?>
-            <?php echo $this->content; ?>
+            <div id="spinner" class="spinner" style="display:block;">Loading your data, give me a sec!
+                <img id="img-spinner" src="/img/ajax-loader.gif" alt="Loading"/>
+            </div>
             <hr>
             <footer>
-                <p>&copy; 2005 - <?php echo date('Y') ?> by Zend Technologies Ltd. <?php echo $this->translate('All rights reserved.') ?></p>
+                <p>&copy; 2012 - <?php echo date('Y') ?> by SourceRepublic. <?php echo $this->translate('All rights reserved.') ?></p>
             </footer>
         </div> <!-- /container -->
         <?php echo $this->inlineScript() ?>

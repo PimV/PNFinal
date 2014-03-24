@@ -4,9 +4,9 @@ return array(
     'router' => array(
         'routes' => array(
             'search' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
-                    'route' => '/search',
+                    'route' => '/search[/:action]',
                     'defaults' => array(
                         'controller' => 'Search\Controller\Index',
                         'action' => 'index',
@@ -47,19 +47,16 @@ return array(
     'navigation' => array(
         'advertiser_navigation' => array(
             'search' => array(
-                'label' => 'Search',
-                'route' => 'search',
-                'pages' => array(
-                    '1' => array(
-                        'route' => 'search/advertiser',
-                    ),
-                ),
+                'label' => 'Search & Find',
+                'route' => 'search/advertiser',
+                'module' => 'Search',
             ),
         ),
         'publisher_navigation' => array(
             'search' => array(
-                'label' => 'Search',
+                'label' => 'Search & Find',
                 'route' => 'search/publisher',
+                'module' => 'Search',
             )
         ),
     ),

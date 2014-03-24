@@ -1,6 +1,6 @@
 <div class="jumbotron">
     <h1><?php echo sprintf($this->translate('Welcome to %sPubNext%s'), '<span class="zf-green">', '</span>') ?></h1>
-    <p><?php echo sprintf($this->translate('We are pleased to welcome you on our newest platform %sPubNext%Fs, where advertisers and publishers can share or even create an entirely new experience on the subject of content marketing.'), '<a href="http://www.pubnext.pvdns.nl/" target="_blank">', '</a>') ?></p>
+    <p><?php echo sprintf('We are pleased to welcome you on our newest platform %sPubNext%s, where advertisers and publishers can share or even create an entirely new experience on the subject of content marketing.', '<a href="http://www.pubnext.pvdns.nl/">', '</a>', \Zend\Version\Version::VERSION) ?></p>
     <p><a class="btn btn-success btn-lg" href="http://www.pubnext.pvdns.nl/user/login"><?php echo $this->translate('Login and get started!') ?> &raquo;</a></p>
 </div>
 
@@ -13,7 +13,7 @@
             </div>
             <div class="panel-body">
                 <p><?php echo sprintf($this->translate('Collaboration between publishers and advertisers could not have been easier with PubNext, where these parties are intermittently brought together by smart algorithms. A perfect match between advertisers and publishers could result in profit for both. So why not get started right away?'), '<a href="http://framework.zend.com/wiki/display/ZFDEV2/Home">', '</a>', '<a href="http://framework.zend.com/zf2/blog">', '</a>', '<a href="https://github.com/zendframework/zf2/issues">', '</a>') ?></p>
-                <p><a class="btn btn-success pull-right" href="http://www.pvdns.nl/user/login"><?php echo $this->translate('Login') ?> &raquo;</a></p>
+                <p><a class="btn btn-success pull-right" href="http://www.pubnext.pvdns.nl/user/login"><?php echo $this->translate('Login') ?> &raquo;</a></p>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
                 <h3 class="panel-title"><?php echo $this->translate('Examples') ?></h3>
             </div>
             <div class="panel-body">
-                <p><?php echo sprintf($this->translate('Still wary of the nice-talk? Better check out our samples about what you can expect about PubNext by clicking the button down below..'), '<a href="irc://irc.freenode.net/zftalk">', '</a>', '<a href="http://framework.zend.com/wiki/display/ZFDEV/Mailing+Lists">', '</a>') ?></p>
+                <p><?php echo sprintf($this->translate('Still wary of the nice-talk? Better check out our samples about what you can expect if you enter PubNext by clicking the button down below..'), '<a href="irc://irc.freenode.net/zftalk">', '</a>', '<a href="http://framework.zend.com/wiki/display/ZFDEV/Mailing+Lists">', '</a>') ?></p>
                 <p><a class="btn btn-success pull-right" href="http://pvdns.nl/ZF2HR/public/auth"><?php echo $this->translate('Show PubNext as Dummy') ?> &raquo;</a></p>
             </div>
         </div>

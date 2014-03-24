@@ -13,6 +13,7 @@ use BjyAuthorize\Provider\Role\ProviderInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use ZfcUser\Entity\UserInterface;
+use Zend\Session\Container;
 
 /**
  * An example of how to implement a role aware user entity.
@@ -221,8 +222,8 @@ class User implements UserInterface, ProviderInterface {
     public function setCurrentRole($roleId) {
         foreach ($this->getRoles() as $role) {
             if ($role->getRoleId() === $roleId) {
-                $container = new Container('initialized');
-                $container->test = $role;
+                $container = new Container('role');
+                $container->role = $role;
                 break;
             }
         }

@@ -1,0 +1,73 @@
+<?php
+
+//START TOP BLOCK
+echo '<div class="blockInputSearch">';
+try {
+    $element1 = $form->get('urlsearch');
+    echo '<div class="blockLabel">';
+    echo $this->formLabel($element1);
+    echo '</div>';
+    echo $this->formElement($element1);
+    echo $this->formElementErrors($element1);
+} catch (Exception $ex) {
+    
+}
+echo '<div class="blockInputSearch">';
+try {
+    $element2 = $form->get('keywordsearch');
+    echo '<div class="blockLabel">';
+    echo $this->formLabel($element2);
+    echo '</div>';
+    echo $this->formElement($element2);
+    echo $this->formElementErrors($element2);
+} catch (Exception $ex) {
+    
+}
+echo '</div>';
+
+try {
+    $element3 = $form->get('default_operator');
+    echo $this->formLabel($element3);
+    echo $this->formElement($element3);
+    echo $this->formElementErrors($element3);
+} catch (Exception $ex) {
+    
+}
+echo '</div>';
+//END OF TOP BLOCK
+//START CATEGORY BLOCK
+echo '<div class="blockInputSearch left">';
+try {
+    $element4 = $form->get('categories');
+    echo '<div class="blockLabel">';
+    echo 'Categories';
+    echo '<p class="checkSpan">(<span onclick="checkCat();">check</span>/<span onclick="uncheckCat();">uncheck</span>)</p>';
+    echo '</div>';
+    echo '<div class="catBoxes">';
+    echo '<div class="left">';
+    echo $this->formElement($form->get('categories'));
+    echo '</div>';
+    echo '<div class="left">';
+    echo $this->formElement($form->get('categories11-20'));
+    echo '</div>';
+    echo '<div class="left">';
+    echo $this->formElement($form->get('categories21-30'));
+    echo '</div>';
+    echo '<div class="left">';
+    echo $this->formElement($form->get('categories31-40'));
+    echo '</div>';
+    echo '</div>';
+} catch (Exception $ex) {
+    
+}
+echo '</div>';
+//END OF CATEGORY BLOCK
+try {
+    
+} catch (Exception $ex) {
+    
+}
+
+echo '<div class="blockInputSearch bottom">';
+echo $this->formButton($form->get('searchButton'));
+echo '</div>';

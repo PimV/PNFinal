@@ -16,10 +16,12 @@ return array(
         'config' => array(
             'class' => 'Zend\Session\Config\SessionConfig',
             'options' => array(
+                'use_cookies' => true,
+                'use_only_cookies' => true,
                 'name' => 'pubnext',
             ),
         ),
-        'storage' => 'Zend\Session\Storage\SessionSarrayStorage',
+        'storage' => 'Zend\Session\Storage\SessionArrayStorage',
         'validators' => array(
             'Zend\Session\Validator\RemoteAddr',
             'Zend\Session\Validator\HttpUserAgent',

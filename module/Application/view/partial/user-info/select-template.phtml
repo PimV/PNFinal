@@ -1,0 +1,13 @@
+<select id="roleBox" onchange="switchRole();" >
+    <?php
+    foreach ($this->roles as $role) {
+        $role2 = $role->getRoleId();
+
+        if ($this->role !== null && $role2 === $this->role->getRoleId()) {
+            echo '<option selected value="' . $role2 . '">' . $role2 . '</option>';
+        } else {
+            echo '<option value="' . $role2 . '">' . $role2 . '</option>';
+        }
+    }
+    ?>
+</select>

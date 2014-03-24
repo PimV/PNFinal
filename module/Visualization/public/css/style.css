@@ -1,0 +1,16 @@
+.menu-page-item {
+    width: 45%;
+    display: inline-table;
+    height: 40px;
+    overflow: hidden;
+    border: 1px solid #000;
+    vertical-align: middle;
+    text-align: center;
+    margin: 10px;
+    border-radius: 10px;
+}
+
+.menu-page {
+    padding: 5px;
+    margin-top: 50px;
+}

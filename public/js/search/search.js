@@ -201,20 +201,22 @@ function processRequestedESData(resp) {
         result.imgUrl = imgUrl;
         results.push(result);
     });
-    $.ajax({
-        url: '/search/results',
-        type: 'POST',
-        data: {
-            results: results
-        },
-        success: function(resp) {
-            $('.result').append(resp);
-        },
-        error: function(resp) {
-            console.log("error");
-            console.log(resp);
-        }
-    });
+    if (results.length > 0) {
+        $.ajax({
+            url: '/search/results',
+            type: 'POST',
+            data: {
+                results: results
+            },
+            success: function(resp) {
+                $('.result').append(resp);
+            },
+            error: function(resp) {
+                console.log("error");
+                console.log(resp);
+            }
+        });
+    }
     //Show message if no results were found
     if (resultCount === 0) {
         $('#resultCount').html("");

@@ -21,36 +21,6 @@ class SearchFormValidator implements InputFilterAwareInterface {
             $factory = new InputFactory();
 
 
-//            $inputFilter->add($factory->createInput([
-//                        'name' => 'text',
-//                        'required' => true,
-//                        'filters' => array(
-//                            array('name' => 'StripTags'),
-//                            array('name' => 'StringTrim'),
-//                        ),
-//                        'validators' => array(
-//                        ),
-//            ]));
-//            $inputFilter->add($factory->createInput([
-//
-//                        'name' => 'categories',
-//                        'filters' => array(
-//                            array('name' => 'StripTags'),
-//                            array('name' => 'StringTrim'),
-//                        ),
-//                        'validators' => array(
-//                        ),
-//            ]));
-//
-//            $inputFilter->add($factory->createInput([
-//                        'name' => 'languages',
-//                        'filters' => array(
-//                            array('name' => 'StripTags'),
-//                            array('name' => 'StringTrim'),
-//                        ),
-//                        'validators' => array(
-//                        ),
-//            ]));
 
             $this->inputFilter = $inputFilter;
         }

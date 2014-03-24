@@ -14,60 +14,34 @@ class SearchForm extends Form {
         $this->removeAttribute('method');
         $this->setAttribute('class', 'searchForm');
         $this->removeAttribute('action');
+    }
 
-        $this->add(array(
-            'name' => 'urlsearch',
-            'type' => 'Zend\Form\Element\Text',
-            'attributes' => array(
-                'placeholder' => 'SEO, PPC, PHP, Java etc...',
-                'class' => 'textSearch',
-                'id' => 'urlSearch'
-            ),
-            'options' => array(
-                'label' => 'URL Search',
-            ),
-        ));
+    public function initDefault() {
+        $this->showURLSearch();
+        $this->showKeywordSearch();
+        $this->showLenientSearchButton();
+        $this->showCategories();
+        $this->showLanguages();
+        $this->showSliderEnableButton();
+    }
 
-        $this->add(array(
-            'name' => 'keywordsearch',
-            'type' => 'Zend\Form\Element\Text',
-            'attributes' => array(
-                'placeholder' => 'SEO, PPC, PHP, Java etc...',
-                'class' => 'textSearch',
-                'id' => 'keywordSearch'
-            ),
-            'options' => array(
-                'label' => 'Keyword Search',
-            ),
-        ));
+    public function initPublisher() {
+        $this->showKeywordSearch();
+        $this->showLenientSearchButton();
+        $this->showLanguages();
+        $this->showSearchButton();
+    }
 
-        $this->add(array(
-            'name' => 'default_operator',
-            'type' => 'Zend\Form\Element\MultiCheckbox',
-            'attributes' => array(
-                'class' => 'searchOptions default_operator',
-            ),
-            'options' => array(
-                'label' => ' ',
-                'value_options' => array(
-                    '1' => 'Lenient Search (results matching one of the filters)',
-                ),
-            ),
-        ));
+    public function initAdvertiser() {
+        $this->showURLSearch();
+        $this->showKeywordSearch();
+        $this->showLenientSearchButton();
+        $this->showCategories();
+        $this->showLanguages();
+        $this->showSearchButton();
+    }
 
-        $this->add(array(
-            'name' => 'enableSlider',
-            'type' => 'Zend\Form\Element\MultiCheckbox',
-            'attributes' => array(
-                'class' => 'searchOptions enableSlider',
-            ),
-            'options' => array(
-                'label' => ' ',
-                'value_options' => array(
-                    '1' => ' ',
-                ),
-            ),
-        ));
+    public function showCategories() {
         $this->add(array(
             'name' => 'categories',
             'type' => 'Zend\Form\Element\MultiCheckbox',
@@ -176,13 +150,42 @@ class SearchForm extends Form {
                 'value_options' => array(
                     '41' => 'Charity',
                     '42' => 'Insurance',
-                //'43' => 'Gambling',
-                //'44' => 'Gambling',
-                //'45' => 'Gambling', //45
                 ),
             ),
         ));
+    }
 
+    public function showKeywordSearch() {
+        $this->add(array(
+            'name' => 'keywordsearch',
+            'type' => 'Zend\Form\Element\Text',
+            'attributes' => array(
+                'placeholder' => 'SEO, PPC, PHP, Java etc...',
+                'class' => 'textSearch',
+                'id' => 'keywordSearch'
+            ),
+            'options' => array(
+                'label' => 'Keyword Search',
+            ),
+        ));
+    }
+
+    public function showURLSearch() {
+        $this->add(array(
+            'name' => 'urlsearch',
+            'type' => 'Zend\Form\Element\Text',
+            'attributes' => array(
+                'placeholder' => 'SEO, PPC, PHP, Java etc...',
+                'class' => 'textSearch',
+                'id' => 'urlSearch'
+            ),
+            'options' => array(
+                'label' => 'URL Search',
+            ),
+        ));
+    }
+
+    public function showLanguages() {
         $this->add(array(
             'name' => 'languages',
             'type' => 'Zend\Form\Element\MultiCheckbox',
@@ -199,24 +202,25 @@ class SearchForm extends Form {
                 ),
             ),
         ));
+    }
 
+    private function showSliderEnableButton() {
         $this->add(array(
-            'name' => 'languages',
+            'name' => 'enableSlider',
             'type' => 'Zend\Form\Element\MultiCheckbox',
             'attributes' => array(
-                'class' => 'searchOptions langs',
-                'value' => '0',
+                'class' => 'searchOptions enableSlider',
             ),
             'options' => array(
-                'label' => 'Language',
+                'label' => ' ',
                 'value_options' => array(
-                    '1' => 'Dutch',
-                    '2' => 'German',
-                    '3' => 'Spanish',
+                    '1' => ' ',
                 ),
             ),
         ));
+    }
 
+    private function showSearchButton() {
         $this->add(array(
             'name' => 'searchButton',
             'type' => 'button',
@@ -227,6 +231,22 @@ class SearchForm extends Form {
             ),
             'options' => array(
                 'label' => 'Search!',
+            ),
+        ));
+    }
+
+    private function showLenientSearchButton() {
+        $this->add(array(
+            'name' => 'default_operator',
+            'type' => 'Zend\Form\Element\MultiCheckbox',
+            'attributes' => array(
+                'class' => 'searchOptions default_operator',
+            ),
+            'options' => array(
+                'label' => ' ',
+                'value_options' => array(
+                    '1' => 'Lenient Search (results matching one of the filters)',
+                ),
             ),
         ));
     }

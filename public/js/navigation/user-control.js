@@ -10,7 +10,7 @@ function switchRole() {
     });
 }
 $(document).ready(function() {
-    $('#menu-logout').on('click', function() {
+    $('.logout').on('click', function() {
         localStorage.clear();
     });
 

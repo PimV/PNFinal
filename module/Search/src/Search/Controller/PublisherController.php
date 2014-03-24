@@ -3,11 +3,14 @@
 namespace Search\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
+use Search\Form\SearchForm;
 
 class PublisherController extends AbstractActionController {
 
     public function indexAction() {
         $form = new SearchForm();
+
+        $form->initPublisher();
         $request = $this->getRequest();
 
         if ($request->isPost()) { {

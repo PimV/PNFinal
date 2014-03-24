@@ -70,6 +70,7 @@ return array(
                 'route' => 'zfcuser/logout',
                 'controller' => 'user',
                 'action' => 'logout',
+                'class' => 'logout',
             ),
         ),
         'main_navigation' => array(
@@ -78,9 +79,14 @@ return array(
                 'route' => 'home',
             ),
         ),
-        'advertiser_navigation' => array(),
-        'publisher_navigation' => array(),
-        'administrator_navigation' => array(),
+        'administrator_navigation' => array(
+            'home' => array(
+                'label' => 'Admin Panel',
+                'route' => 'home',
+            ),
+        ),
+        'sidebar_navigation' => array(
+        ),
     ),
     'service_manager' => array(
         'abstract_factories' => array(
@@ -90,6 +96,10 @@ return array(
         'factories' => array(
             'main_navigation' => 'Application\Navigation\Service\MainNavigationFactory',
             'user_navigation' => 'Application\Navigation\Service\UserNavigationFactory',
+            'advertiser_navigation' => 'Application\Navigation\Service\AdvertiserNavigationFactory',
+            'publisher_navigation' => 'Application\Navigation\Service\PublisherNavigationFactory',
+            'administrator_navigation' => 'Application\Navigation\Service\AdminNavigationFactory',
+            'sidebar_navigation' => 'Application\Navigation\Service\SidebarNavigationFactory',
         ),
         'aliases' => array(
             'translator' => 'MvcTranslator',

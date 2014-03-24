@@ -3,6 +3,7 @@
 namespace Search\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractActionController {
 
@@ -10,6 +11,10 @@ class IndexController extends AbstractActionController {
         return array();
     }
 
-   
+    public function resultsAction() {
+        $result = new ViewModel();
+        $result->setTerminal(true);
+        return $result;
+    }
 
 }

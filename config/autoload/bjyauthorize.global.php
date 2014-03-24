@@ -81,6 +81,18 @@ return array(
                         'administrator',
                     ),
                 ),
+                //Enable static routes
+                array(
+                    'controller' => 'PNUser\Controller\User',
+                    'action' => array(
+                        'role',
+                    ),
+                    'roles' => array(
+                        'publisher',
+                        'advertiser',
+                        'administrator',
+                    ),
+                ),
                 //Enable zfcuser routes
                 array(
                     'controller' => array(
@@ -107,6 +119,80 @@ return array(
                     'roles' => array(
                         'guest',
                     ),
+                ),
+                //Enable search controllers home page (ALL)
+                array(
+                    'controller' => array(
+                        'Search\Controller\Index',
+                    ),
+                    'action' => array(
+                        'index',
+                    ),
+                    'roles' => array(
+                        'publisher',
+                        'advertiser',
+                        'administrator',
+                    )
+                ),
+                //Enable search for advertisers
+                array(
+                    'controller' => array(
+                        'Search\Controller\Advertiser',
+                    ),
+                    'action' => array(
+                        'index', 'search',
+                    ),
+                    'roles' => array(
+                        'advertiser',
+                    )
+                ),
+                //Enable search for publishers
+                array(
+                    'controller' => array(
+                        'Search\Controller\Publisher',
+                    ),
+                    'action' => array(
+                        'index', 'search',
+                    ),
+                    'roles' => array(
+                        'publisher',
+                    )
+                ),
+                //Enable Search Results
+                array(
+                    'controller' => array(
+                        'Search\Controller\Index',
+                    ),
+                    'action' => array(
+                        'index', 'search', 'results',
+                    ),
+                    'roles' => array(
+                        'publisher', 'advertiser', 'administrator'
+                    )
+                ),
+                //Enable visualization for advertisers
+                array(
+                    'controller' => array(
+                        'Visualization\Controller\Advertiser',
+                    ),
+                    'action' => array(
+                        'index', 'search', 'revenue'
+                    ),
+                    'roles' => array(
+                        'advertiser',
+                    )
+                ),
+                //Enable visualization for publishers
+                array(
+                    'controller' => array(
+                        'Visualization\Controller\Publisher',
+                    ),
+                    'action' => array(
+                        'index', 'search',
+                    ),
+                    'roles' => array(
+                        'publisher',
+                    )
                 ),
             ),
         /* If this guard is specified here (i.e. it is enabled), it will block

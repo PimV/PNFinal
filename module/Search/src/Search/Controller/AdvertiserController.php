@@ -9,6 +9,7 @@ class AdvertiserController extends AbstractActionController {
 
     public function indexAction() {
         $form = new SearchForm();
+        $form->initAdvertiser();
         $request = $this->getRequest();
 
         if ($request->isPost()) { {

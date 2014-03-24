@@ -12,6 +12,9 @@ return array(
         'ZfcUserDoctrineORM',
         'BjyAuthorize',
         'PNUser',
+        //The following modules are specific to PubNext
+        'Visualization',
+        'Search',
     ),
     // These are various options for the listeners attached to the ModuleManager
     'module_listener_options' => array(

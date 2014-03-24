@@ -101,7 +101,6 @@ function processData(google_key, containerId, sheetCount, procData, sheetTitle) 
             }
         }
     }
-    console.log("GKEY: " + google_key + ", " + series.length);
     createChartOptions(containerId, configObject, series);
 }
 
@@ -118,13 +117,18 @@ function createChartOptions(containerId, configObject, series) {
             type: configObject.xScale,
             labels: {
                 rotation: -45
-            }
+            },
+            allowDecimals: true
         },
         yAxis: {
-            type: configObject.yScale
+            type: configObject.yScale,
+            allowDecimals: true
         },
         tooltip: {
-            shared: false
+            shared: false,
+//            formatter: function() {
+//                return '<b>' + this.point.name + '</b>: ' + this.point.y.toFixed(2);
+//            }
         },
         plotOptions: {
             series: {
@@ -306,6 +310,7 @@ function createPoint(config, xValue, yValue, serieType) {
     point.y = parseFloat(yValue);
     point.name = xValue;
     if (config.xScale === 'datetime' || serieType.startsWith('pie')) {
+
         point.x = xValue;
     }
     return point;
@@ -315,39 +320,44 @@ function createSerieObject(serieName, data, serieType, config) {
     var serie = new Object();
     serie.name = serieName;
     serie.data = data;
-    if (serieType.endsWith('*')) {
-        serie.type = serieType.split('*')[0];
-    } else {
-        switch (serieType) {
-            case 'pie':
-                serie.type = serieType;
-                serie.size = 150;
-                serie.dataLabels = false;
-                serie.center = [150, 50];
-                break;
-            case "Do not draw":
-                return 'null';
-            default:
-                serie.type = serieType;
-                break;
-        }
+    switch (serieType) {
+        case 'pie':
+            serie.type = serieType;
+            serie.size = 150;
+            serie.dataLabels = false;
+            serie.center = [150, 55];
+            break;
+        case "Do not draw":
+            return 'null';
+        default:
+            serie.type = serieType;
+            break;
     }
+
     return serie;
 }
 
 function createChart(options, config, series) {
     var chart;
+    if (config.xScale !== 'datetime') {
+        options.tooltip.formatter = function() {
+            return '<b>' + this.point.name + '</b>: ' + this.point.y.toFixed(2);
+        };
+    }
     if (config.highStock === 'no') {
+
         chart = new Highcharts.Chart(options);
     } else {
         chart = new Highcharts.StockChart(options);
     }
+
     config.solo = series.length < 2;
     $.each(series, function(i, serie) {
         if (config.solo === true) {
-            serie.size = "75%";
+            serie.size = "60%";
             serie.dataLabels = {enabled: true, align: 'left', crop: false};
             serie.center = [null, null];
+            serie.showInLegend = true;
         }
         chart.addSeries(serie);
     });

@@ -1,0 +1,40 @@
+.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px; /* half width of the spinner gif */
+    margin-top: -50px; /* half height of the spinner gif */
+    text-align:center;
+    z-index:1234;
+    overflow: auto;
+    width: 100px; /* width of the spinner gif */
+    height: 102px; /*hight of the spinner gif +2px to fix IE8 issue */
+}
+
+#results {
+    display: none;
+    padding: 15px;
+    border: 1px solid #000;
+    border-radius: 15px;
+}
+
+#results.visible {
+    display: block;
+}
+
+.searchResult {
+    border: 1px solid #000;
+    padding: 15px;
+    margin: 15px;
+    overflow: hidden;
+}
+
+.searchLeft {
+    float: left;
+    margin: 30px;
+}
+
+.searchRight {
+    float: right;
+    margin: 30px;
+}

@@ -1,0 +1,16 @@
+<div id="userInfoContainer">
+    <div id="userInfo">
+        <label id="forLabel" for="username">Username: </label><span id="username"><?php echo $this->username; ?></span>
+        <br/>
+        <label id="forLabel" for="role">Role: </label>
+        <span id="role">
+            <?php
+            if (count($this->roles) < 2) {
+                echo $this->role->getRoleId();
+            } else {
+                echo $this->partial('partial/user-info/select-template.phtml');
+            }
+            ?>
+        </span>
+    </div>
+</div>

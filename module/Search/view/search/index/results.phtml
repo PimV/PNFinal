@@ -1,0 +1,40 @@
+<?php foreach ($_POST['results'] as $result) { ?>
+    <div class="searchResult">
+        <div class="searchLeft">
+            <div class="siteImg" style="height: 100px; width: 150px; background-image: url(<?php echo $result['imgUrl']; ?>);"></div> 
+        </div>
+        <div class="searchLeft">
+            <div class="siteName">
+                <label class="searchLabel">Name:</label>
+                <span><?php echo $result['siteName']; ?></span>
+            </div>
+            <div class="siteUrl">
+                <label class="searchLabel">Site URL:</label>
+                <span><a href="<?php echo $result['siteUrl']; ?>"></a><?php echo $result['siteUrl']; ?></span>
+            </div>
+            <div class="siteTags">
+                <label class="searchLabel">Tags:</label>
+                <span><?php echo $result['siteTags']; ?></span>
+            </div>
+            <div class="siteCreated">
+                <label class="searchLabel">Site Created On:</label>
+                <span><?php echo $result['siteCreated']; ?></span>
+            </div>
+        </div>
+        <div class="searchRight">
+            <div class="siteModified">
+                <label class="searchLabel">Site Modified On:</label>
+                <span><?php echo $result['siteModified']; ?></span>
+            </div>
+            <div class="siteIsOnline">
+                <label class="searchLabel">Site Currently Online?:</label>
+                <span><?php echo $result['isOnline']; ?></span>
+            </div>
+            <div class="siteLastCheckOnline">
+                <label class="searchLabel">Site Last Online Check:</label>
+                <span><?php echo $result['lastOnlineCheck']; ?></span>
+            </div>
+        </div>
+    </div>
+<?php } ?>
+

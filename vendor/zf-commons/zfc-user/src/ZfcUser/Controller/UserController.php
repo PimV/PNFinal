@@ -9,7 +9,6 @@ use Zend\Stdlib\Parameters;
 use Zend\View\Model\ViewModel;
 use ZfcUser\Service\User as UserService;
 use ZfcUser\Options\UserControllerOptionsInterface;
-use Zend\Session\Container;
 
 class UserController extends AbstractActionController {
 
@@ -59,7 +58,7 @@ class UserController extends AbstractActionController {
      * User page
      */
     public function indexAction() {
-     
+
         if (!$this->zfcUserAuthentication()->hasIdentity()) {
             return $this->redirect()->toRoute(static::ROUTE_LOGIN);
         }
@@ -70,7 +69,7 @@ class UserController extends AbstractActionController {
      * Login form
      */
     public function loginAction() {
-          
+
         $request = $this->getRequest();
         $form = $this->getLoginForm();
 
