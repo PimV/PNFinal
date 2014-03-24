@@ -1,7 +1,8 @@
-var containerExistCount = 0;
-var currentSheet = -1;
-var maxSheets = 0;
-var blankSheets = 0;
+var global_process_id = 0;
+var currentSheet = [];
+var maxSheets = [];
+var blankSheets = [];
+var sheetIds = [];
 
 if (typeof String.prototype.startsWith != 'function') {
     String.prototype.startsWith = function(str) {
@@ -35,12 +36,14 @@ function setStaticCells() {
 
 function start(google_key, containerId) {
     $('#spinner').show();
-    getWorksheetInfo(google_key, containerId);
-    currentSheet = -1;
+    global_process_id++;
+
+    getWorksheetInfo(google_key, containerId, global_process_id);
 
 }
 
-function getWorksheetInfo(google_key, containerId) {
+function getWorksheetInfo(google_key, containerId, processId) {
+    console.log("Process ID: " + processId);
     var url = 'https://spreadsheets.google.com/feeds/worksheets/' + google_key + '/public/basic?alt=json';
     $.ajax({
         url: url,
@@ -48,14 +51,18 @@ function getWorksheetInfo(google_key, containerId) {
         dataType: 'jsonp',
         success: function(resp) {
             sheetCount = resp['feed']['openSearch$totalResults']['$t'];
-            maxSheets = 0;
-            blankSheets = 0;
+            currentSheet[processId] = -1;
+            maxSheets[processId] = 0;
+            blankSheets[processId] = 0;
+            sheetIds[processId] = [];
             for (var i = 1; i <= sheetCount; i++) {
                 if (!resp['feed']['entry'][i - 1]['title']['$t'].startsWith("_")) {
-                    maxSheets++;
-                    getCellsPerSheet(google_key, containerId, i);
+
+                    maxSheets[processId] = maxSheets[processId] + 1;
+                    sheetIds[processId].push(i);
+                    getCellsPerSheet(google_key, containerId, i, processId);
                 } else {
-                    blankSheets++;
+                    blankSheets[processId] = blankSheets[processId] + 1;
                 }
             }
         },
@@ -65,14 +72,15 @@ function getWorksheetInfo(google_key, containerId) {
     });
 }
 
-function getCellsPerSheet(google_key, containerId, sheetCount) {
+function getCellsPerSheet(google_key, containerId, sheetCount, processId) {
+
     var url = 'https://spreadsheets.google.com/feeds/cells/' + google_key + '/' + sheetCount + '/public/values?alt=json';
     $.ajax({
         url: url,
         type: 'GET',
         dataType: 'jsonp',
         success: function(resp) {
-            convertRawData(google_key, containerId, sheetCount, resp);
+            convertRawData(google_key, containerId, sheetCount, resp, processId);
         },
         error: function(resp) {
             console.log("Error in spreadSheetInfo: " + resp);
@@ -80,7 +88,8 @@ function getCellsPerSheet(google_key, containerId, sheetCount) {
     });
 }
 
-function convertRawData(google_key, containerId, sheetCount, json) {
+function convertRawData(google_key, containerId, sheetCount, json, processId) {
+
     rawData = json['feed']['entry'];
     procData = [];
     $.each(rawData, function(i, entry) {
@@ -90,11 +99,11 @@ function convertRawData(google_key, containerId, sheetCount, json) {
         procData[[row, column]] = value;
     });
     var sheetTitle = json['feed']['title']['$t'];
-    processData(google_key, containerId, sheetCount, procData, sheetTitle);
+    processData(google_key, containerId, sheetCount, procData, sheetTitle, processId);
 }
 
-function processData(google_key, containerId, sheetCount, procData, sheetTitle) {
-    var configObject = generateConfigObject(procData, sheetTitle);
+function processData(google_key, containerId, sheetCount, procData, sheetTitle, processId) {
+    var configObject = generateConfigObject(procData, sheetTitle, sheetCount);
 
     var series = new Array();
     for (var column = 2; column <= 7; column++) {
@@ -108,12 +117,12 @@ function processData(google_key, containerId, sheetCount, procData, sheetTitle) 
             }
         }
     }
-    createChartOptions(containerId, configObject, series, sheetCount);
+    createChartOptions(containerId, configObject, series, sheetCount, processId);
 }
 
-function createChartOptions(containerId, configObject, series, sheetCount) {
+function createChartOptions(containerId, configObject, series, sheetCount, processId) {
 
-    containerId = checkContainer(containerId, configObject, sheetCount);
+    containerId = checkContainer(containerId, configObject, sheetCount, processId);
 
     setContainerSize(containerId, config.size);
 
@@ -260,10 +269,11 @@ function createConfig() {
     return config;
 }
 
-function generateConfigObject(procData, sheetTitle) {
+function generateConfigObject(procData, sheetTitle, sheetCount) {
     var configCells = fillConfigCells();
     var config = createConfig();
     var configKeys = Object.keys(configCells);
+    config.sheet = sheetCount;
     $.each(configKeys, function(i, key) {
         switch (i) {
             case 0:
@@ -455,7 +465,7 @@ function createChart(options, config, series) {
     //$('#spinner').hide();
 }
 
-function checkContainer(renderContainer, config, sheetCount) {
+function checkContainer(renderContainer, config, sheetCount, processId) {
     var mainContainer = renderContainer;
 
     if ($("#" + renderContainer).length !== 0) {
@@ -465,27 +475,55 @@ function checkContainer(renderContainer, config, sheetCount) {
     }
     renderContainer = "sub_" + renderContainer;
 
-    appendDiv(mainContainer, renderContainer, sheetCount);
+    appendDiv(mainContainer, renderContainer, sheetCount, config, processId);
 
     return renderContainer;
 
 
 }
 
-function appendDiv(mainContainer, subContainer, sheetCount) {
-    positionClass = "left chartMargin";
-    if (currentSheet > sheetCount) {
+function appendDiv(mainContainer, subContainer, sheetCount, config, processId) {
 
-        $("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
-    } else {
-        $("#" + mainContainer).append('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
-    }
-    currentSheet = sheetCount;
-    console.log("Curr: " + currentSheet);
-    console.log("Max: " + maxSheets);
-    if ((currentSheet - blankSheets) == maxSheets) {
+    positionClass = "left chartMargin";
+
+    console.log(sheetIds[processId]);
+    $.each(sheetIds[processId], function(i, id) {
+        if (sheetCount === id) {
+            if ($('#sub_' + mainContainer + '_' + sheetIds[processId][i - 1]).length > 0) {
+                console.log("Insert After: " + sheetIds[processId][i - 1]);
+                $('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>').insertAfter($('#sub_' + mainContainer + '_' + sheetIds[processId][i - 1]));
+            } else {
+                console.log("Insert as first");
+                $("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
+            }
+            return;
+        }
+    });
+
+
+//    if (currentSheet[processId] > sheetCount) {
+//        console.log("Prepending container (prev: " + currentSheet[processId] + ", curr: " + sheetCount + "): " + subContainer);
+//        //$("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
+//        if ($('#sub_' + mainContainer + '_' + currentSheet[processId]).length > 0) {
+//            console.log("Found");
+//            $('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>').insertBefore($('#sub_' + mainContainer + '_' + currentSheet[processId]));
+//        } else {
+//            $("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
+//        }
+//    } else {
+//        console.log("Appending container (prev: " + currentSheet[processId] + ", curr: " + sheetCount + "): " + subContainer);
+//        if ($('#sub_' + mainContainer + '_' + currentSheet[processId]).length > 0) {
+//            $('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>').insertAfter($('#sub_' + mainContainer + '_' + currentSheet[processId]));
+//        } else {
+//            $("#" + mainContainer).append('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
+//        }
+//    }
+
+    currentSheet[processId] = sheetCount;
+    if ((currentSheet[processId] - blankSheets[processId]) == maxSheets[processId]) {
         $('#spinner').hide();
     }
+
 
 }
 
@@ -530,3 +568,4 @@ function addHighestFlags(flagSerie, chart) {
     }
     return flagSerie;
 }
+

@@ -40,6 +40,7 @@
 
     </head>
     <body>
+
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -83,7 +84,11 @@
                 </div><!--/.nav-collapse -->
             </div>
         </nav>
+
         <div class="container wrapper">
+            <div id="spinner" class="spinner" style="display:none">Loading your data, give me a sec!
+                <img id="img-spinner" src="/img/ajax-loader.gif" alt="Loading"/>
+            </div>
             <?php
             if ($this->role !== null) {
                 echo $this->partial('partial/sidebar/sidebar.phtml');
@@ -91,9 +96,7 @@
 
             echo $this->content;
             ?>
-            <div id="spinner" class="spinner" style="display:block;">Loading your data, give me a sec!
-                <img id="img-spinner" src="/img/ajax-loader.gif" alt="Loading"/>
-            </div>
+
             <hr>
             <footer>
                 <p>&copy; 2012 - <?php echo date('Y') ?> by SourceRepublic. <?php echo $this->translate('All rights reserved.') ?></p>
