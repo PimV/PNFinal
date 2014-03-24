@@ -176,7 +176,7 @@ return array(
                         'Visualization\Controller\Advertiser',
                     ),
                     'action' => array(
-                        'index', 'search', 'revenue'
+                        'index', 'search', 'revenue', 'general',
                     ),
                     'roles' => array(
                         'advertiser',

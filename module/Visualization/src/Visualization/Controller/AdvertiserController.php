@@ -8,16 +8,38 @@ use Zend\Mvc\View\ViewModel;
 class AdvertiserController extends AbstractActionController {
 
     public function indexAction() {
+        //Initialize Sidebar
         $sm = $this->getServiceLocator();
         $sidebar = $sm->get('sidebar_navigation');
         $sidebar->addPages($this->generateNavPages('index'));
+        //End Initialization
         return array();
     }
 
     public function revenueAction() {
+        //Initialize Sidebar
         $sm = $this->getServiceLocator();
         $sidebar = $sm->get('sidebar_navigation');
         $sidebar->addPages($this->generateNavPages('index'));
+        //End Initialization
+
+        $id = $this->params()->fromRoute('id', 0);
+        if (!$id) {
+            return $this->redirect()->toRoute('visualization/advertiser');
+        }
+
+
+
+        return array();
+    }
+
+    public function generalAction() {
+        //Initialize Sidebar
+        $sm = $this->getServiceLocator();
+        $sidebar = $sm->get('sidebar_navigation');
+        $sidebar->addPages($this->generateNavPages('index'));
+        //End Initialization
+
         return array();
     }
 
@@ -32,11 +54,11 @@ class AdvertiserController extends AbstractActionController {
                     ),
                     array(
                         'label' => 'Revenue',
-                        'uri' => 'advertiser/revenue',
+                        'uri' => '/visualization/advertiser/revenue',
                     ),
                     array(
-                        'label' => 'Content Value',
-                        'uri' => 'http://www.lmgtfy.com/?q=content+value',
+                        'label' => 'General Information',
+                        'uri' => '/visualization/advertiser/general',
                     ),
                 );
                 break;

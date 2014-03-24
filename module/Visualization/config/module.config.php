@@ -17,9 +17,10 @@ return array(
                     'advertiser' => array(
                         'type' => 'Segment',
                         'options' => array(
-                            'route' => '/advertiser[/:action]',
+                            'route' => '/advertiser[/:action[/:id]]',
                             'constraints' => array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'id' => '[0-9]+',
                             ),
                             'defaults' => array(
                                 'controller' => 'Visualization\Controller\Advertiser',
@@ -30,9 +31,10 @@ return array(
                     'publisher' => array(
                         'type' => 'Segment',
                         'options' => array(
-                            'route' => '/publisher[/:action]',
+                            'route' => '/publisher[/:action[/:id]]',
                             'constraints' => array(
                                 'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'id' => '[0-9]+',
                             ),
                             'defaults' => array(
                                 'controller' => 'Visualization\Controller\Publisher',

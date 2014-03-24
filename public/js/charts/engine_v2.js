@@ -474,23 +474,12 @@ function checkContainer(renderContainer, config, sheetCount, processId) {
         }
     }
     renderContainer = "sub_" + renderContainer;
-
     appendDiv(mainContainer, renderContainer, sheetCount, config, processId);
-
     return renderContainer;
-
-
 }
 
 function appendDiv(mainContainer, subContainer, sheetCount, config, processId) {
-
     positionClass = "left chartMargin";
-
-    //Check if previous element exists
-    //If not, check the element before that (till no elements)
-    //If no elements found, prepend
-
-
     $.each(sheetIds[processId], function(i, id) {
         if (sheetCount === id) {
             while (id > 0) {
@@ -507,44 +496,13 @@ function appendDiv(mainContainer, subContainer, sheetCount, config, processId) {
                     }
                 }
             }
-//            if (i <= 0) {
-//                // if ($('#sub_' + mainContainer + '_' + sheetIds[processId][i - 1]).length > 0) {
-//                //
-//                //      console.log("(" + processId + ", " + sheetCount + ") Insert After: #sub_" + mainContainer + '_' + sheetIds[processId][i - 1]);
-//                //      $('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>').insertAfter($('#sub_' + mainContainer + '_' + sheetIds[processId][i - 1]));
-//                //  } else {
-//                //console.log(" -- (" + processId + ", " + sheetCount + ") Insert as first");
-//                $("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
-//            }
             return;
         }
     });
-
-
-//    if (currentSheet[processId] > sheetCount) {
-//        console.log("Prepending container (prev: " + currentSheet[processId] + ", curr: " + sheetCount + "): " + subContainer);
-//        //$("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
-//        if ($('#sub_' + mainContainer + '_' + currentSheet[processId]).length > 0) {
-//            console.log("Found");
-//            $('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>').insertBefore($('#sub_' + mainContainer + '_' + currentSheet[processId]));
-//        } else {
-//            $("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
-//        }
-//    } else {
-//        console.log("Appending container (prev: " + currentSheet[processId] + ", curr: " + sheetCount + "): " + subContainer);
-//        if ($('#sub_' + mainContainer + '_' + currentSheet[processId]).length > 0) {
-//            $('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>').insertAfter($('#sub_' + mainContainer + '_' + currentSheet[processId]));
-//        } else {
-//            $("#" + mainContainer).append('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
-//        }
-//    }
-
     currentSheet[processId] = sheetCount;
     if ((currentSheet[processId] - blankSheets[processId]) == maxSheets[processId]) {
         $('#spinner').hide();
     }
-
-
 }
 
 function setContainerSize(containerId, size) {
