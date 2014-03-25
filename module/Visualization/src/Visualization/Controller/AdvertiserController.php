@@ -17,6 +17,10 @@ class AdvertiserController extends AbstractActionController {
         return array();
     }
 
+    public function revenueHomeAction() {
+        
+    }
+
     public function revenueAction() {
         //Initialize Sidebar
         $sm = $this->getServiceLocator();
@@ -26,7 +30,7 @@ class AdvertiserController extends AbstractActionController {
 
         $id = $this->params()->fromRoute('id', 0);
         if (!$id) {
-            //return $this->redirect()->toRoute('visualization/advertiser');
+            return $this->redirect()->toUrl('/visualization/advertiser/revenue-home');
         }
 
         $report = new Report($sm->get('db'), $id);
