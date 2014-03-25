@@ -1,3 +1,28 @@
+<h1>Select a site</h1>
+
+<table class="table">
+    <tr>
+        <th>Title</th>
+        <th>Url</th>
+        <th>Description</th>
+        <th>Short Link</th>
+    </tr>
+    <?php foreach ($sites as $site) : ?>
+        <tr>
+            <td><?php echo $this->escapeHtml($site->title); ?></td>
+            <td>
+                <a href="<?php echo $this->escapeHtml($site->url); ?>"><?php echo $this->escapeHtml($site->url); ?></a></td>
+            <td><?php echo $this->escapeHtml($site->description); ?></td>
+            <td><?php echo $this->escapeHtml($site->short_link); ?></td>
+            <td>
+                <a href="<?php echo $this->url('visualization/advertiser', array('action' => 'revenue', 'id' => $site->id)); ?>">View</a>
+            </td>
+        </tr>   
+    <?php endforeach; ?>
+
+
+</table>
+
 
 
 <br/>

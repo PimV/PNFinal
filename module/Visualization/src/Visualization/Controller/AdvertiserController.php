@@ -3,10 +3,12 @@
 namespace Visualization\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Mvc\View\ViewModel;
+use Zend\View\Model\ViewModel;
 use Visualization\Model\Report;
 
 class AdvertiserController extends AbstractActionController {
+
+    protected $siteTable;
 
     public function indexAction() {
         //Initialize Sidebar
@@ -18,7 +20,7 @@ class AdvertiserController extends AbstractActionController {
     }
 
     public function revenueHomeAction() {
-        
+        return new ViewModel(array('sites' => $this->getSiteTable()->fetchAll()));
     }
 
     public function revenueAction() {
@@ -49,6 +51,14 @@ class AdvertiserController extends AbstractActionController {
         //End Initialization
 
         return array();
+    }
+
+    public function getSiteTable() {
+        if (!$this->siteTable) {
+            $sm = $this->getServiceLocator();
+            $this->siteTable = $sm->get('Visualization\Model\SiteTable');
+        }
+        return $this->siteTable;
     }
 
     private function generateNavPages($action) {

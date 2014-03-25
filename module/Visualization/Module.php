@@ -4,6 +4,10 @@ namespace Visualization;
 
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\ModuleRouteListener;
+use Visualization\Model\Site;
+use Visualization\Model\SiteTable;
+use Zend\Db\ResultSet\ResultSet;
+use Zend\Db\TableGateway\TableGateway;
 
 class Module {
 
@@ -24,6 +28,19 @@ class Module {
         return array(
             'invokables' => array(
                 'SidebarNavigationFactory' => 'Visualization\Navigation\Service\SidebarNavigationFactory',
+            ),
+            'factories' => array(
+                'Visualization\Model\SiteTable' => function($sm) {
+            $tableGateway = $sm->get('SiteTableGateway');
+            $table = new SiteTable($tableGateway);
+            return $table;
+        },
+                'SiteTableGateway' => function($sm) {
+            $dbAdapter = $sm->get('db');
+            $resultSetPrototype = new ResultSet();
+            $resultSetPrototype->setArrayObjectPrototype(new Site());
+            return new TableGateway('site', $dbAdapter, null, $resultSetPrototype);
+        }
             ),
         );
     }

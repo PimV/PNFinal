@@ -62,3 +62,7 @@ div.container a.brand {
     float: right ;
 }
 
+.bold {
+    font-weight: bold;
+}
+

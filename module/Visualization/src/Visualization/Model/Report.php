@@ -20,6 +20,8 @@ class Report {
         }
         $this->site_id = $id;
 
+        $this->setSiteTitle($id);
+
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from('site_reporting');

@@ -126,11 +126,21 @@ function createChartOptions(containerId, configObject, series, sheetCount, proce
 
     setContainerSize(containerId, config.size);
 
+    var rotation = 0;
+    if (configObject.angledLabels === 'yes') {
+        rotation = -45;
+    }
+
+    var shared = false;
+    if (configObject.sharedLegend === 'yes') {
+        shared = true;
+    }
 
     var options = {
         chart: {
             renderTo: containerId,
             zoomType: 'xy'
+
         },
         title: {
             text: '<div>' + configObject.title + '</div>'
@@ -138,7 +148,7 @@ function createChartOptions(containerId, configObject, series, sheetCount, proce
         xAxis: {
             type: configObject.xScale,
             labels: {
-                rotation: -45
+                rotation: rotation
             },
             allowDecimals: true
         },
@@ -147,7 +157,7 @@ function createChartOptions(containerId, configObject, series, sheetCount, proce
             allowDecimals: true
         },
         tooltip: {
-            shared: false
+            shared: shared
         },
         plotOptions: {
             series: {
@@ -243,6 +253,9 @@ function fillConfigCells() {
     CONFIG_CELLS[[15, 9]] = null;
     CONFIG_CELLS[[16, 9]] = null;
     CONFIG_CELLS[[17, 9]] = null;
+    CONFIG_CELLS[[18, 9]] = 'no';
+    CONFIG_CELLS[[19, 9]] = 'no';
+    CONFIG_CELLS[[20, 9]] = 'no';
     return CONFIG_CELLS;
 }
 
@@ -265,6 +278,9 @@ function createConfig() {
     config.color3 = null;
     config.color4 = null;
     config.color5 = null;
+    config.stacking = 'no';
+    config.angledLabels = 'no';
+    config.sharedLegend = 'no';
     return config;
 }
 
@@ -360,6 +376,21 @@ function generateConfigObject(procData, sheetTitle, sheetCount) {
                     config.color5 = procData[key];
                 }
                 break;
+            case 16:
+                if (procData[key]) {
+                    config.stacking = procData[key];
+                }
+                break;
+            case 17:
+                if (procData[key]) {
+                    config.angledLabels = procData[key];
+                }
+                break;
+            case 18:
+                if (procData[key]) {
+                    config.sharedLegend = procData[key];
+                }
+                break;
         }
     });
     return config;
@@ -446,6 +477,11 @@ function createChart(options, config, series) {
         chart = new Highcharts.StockChart(options);
     }
 
+    if (config.stacking === 'yes') {
+        console.log("Enabling stacks");
+        chart = enableStacking(chart);
+    }
+
     config.solo = series.length < 2;
     $.each(series, function(i, serie) {
         if (serie.type === 'flags') {
@@ -466,11 +502,6 @@ function createChart(options, config, series) {
 function checkContainer(renderContainer, config, sheetCount, processId) {
     var mainContainer = renderContainer;
     renderContainer = renderContainer + "_" + sheetCount;
-//    if ($("#" + renderContainer).length !== 0) {
-//        if ($("#" + renderContainer).text().length > 0) {
-//            renderContainer = renderContainer + "_" + sheetCount;
-//        }
-//    }
     renderContainer = "sub_" + renderContainer;
     appendDiv(mainContainer, renderContainer, sheetCount, config, processId);
     return renderContainer;
@@ -483,14 +514,12 @@ function appendDiv(mainContainer, subContainer, sheetCount, config, processId) {
             while (id > 0) {
                 id = id - 1;
                 if (id === 0) {
-                    console.log("Prepend: " + subContainer + ", before ID: " + id);
                     $("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
                     return;
                 } else {
                     var div = $('#sub_' + mainContainer + '_' + id);
                     var exists = div.length > 0;
                     if (exists) {
-                        console.log("Insert After: " + subContainer + ", after ID: " + id);
                         $('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>').insertAfter(div);
                         return;
                     }
@@ -520,13 +549,15 @@ function setContainerSize(containerId, size) {
 }
 
 function setTooltip(options) {
-    options.tooltip.formatter = function() {
-        if (this.point.text) {
-            return '<b>' + this.point.title + '</b>: ' + this.point.text;
-        } else if (!isNaN(this.point.y)) {
-            return '<b>' + this.point.name + '</b>: ' + this.point.y.toFixed(2);
-        }
-    };
+    if (options.tooltip.shared === false) {
+        options.tooltip.formatter = function() {
+            if (this.point.text) {
+                return '<b>' + this.point.title + '</b>: ' + this.point.text;
+            } else if (!isNaN(this.point.y)) {
+                return '<b>' + this.point.name + '</b>: ' + this.point.y.toFixed(2);
+            }
+        };
+    }
     return options;
 }
 
@@ -545,5 +576,22 @@ function addHighestFlags(flagSerie, chart) {
 
     }
     return flagSerie;
+}
+
+function enableStacking(chart) {
+    var options = chart.options; // Copy Chart Options
+    var plotOptions = options.plotOptions; //Copy Plot Options
+    var columnOptions = plotOptions.column; //Copy Column Options
+    var barOptions = plotOptions.bar;
+
+    barOptions.stacking = 'normal';
+    columnOptions.stacking = 'normal'; //Add stacking to Column Options
+
+    plotOptions.bar = barOptions;
+    plotOptions.column = columnOptions; // Set Back Column Options
+    options.plotOptions = plotOptions; //Set  back Plot Options
+    chart.options = options; // Set back Chart Options
+
+    return chart;
 }
 
