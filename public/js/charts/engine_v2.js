@@ -221,7 +221,6 @@ function createSerie(procData, column, rows) {
 
         }
 
-        //points.push(point);
     }
     return createSerieObject(serieName, points, serieType, serieColor, config);
 }
@@ -462,17 +461,16 @@ function createChart(options, config, series) {
         }
         chart.addSeries(serie);
     });
-    //$('#spinner').hide();
 }
 
 function checkContainer(renderContainer, config, sheetCount, processId) {
     var mainContainer = renderContainer;
-
-    if ($("#" + renderContainer).length !== 0) {
-        if ($("#" + renderContainer).text().length > 0) {
-            renderContainer = renderContainer + "_" + sheetCount;
-        }
-    }
+    renderContainer = renderContainer + "_" + sheetCount;
+//    if ($("#" + renderContainer).length !== 0) {
+//        if ($("#" + renderContainer).text().length > 0) {
+//            renderContainer = renderContainer + "_" + sheetCount;
+//        }
+//    }
     renderContainer = "sub_" + renderContainer;
     appendDiv(mainContainer, renderContainer, sheetCount, config, processId);
     return renderContainer;
@@ -485,12 +483,14 @@ function appendDiv(mainContainer, subContainer, sheetCount, config, processId) {
             while (id > 0) {
                 id = id - 1;
                 if (id === 0) {
+                    console.log("Prepend: " + subContainer + ", before ID: " + id);
                     $("#" + mainContainer).prepend('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>');
                     return;
                 } else {
                     var div = $('#sub_' + mainContainer + '_' + id);
                     var exists = div.length > 0;
                     if (exists) {
+                        console.log("Insert After: " + subContainer + ", after ID: " + id);
                         $('<div style="width: 510px; height: 400px;" id="' + subContainer + '" class="chartContainer ' + positionClass + '"></div>').insertAfter(div);
                         return;
                     }

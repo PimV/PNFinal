@@ -4,8 +4,13 @@ $this->headLink()
         ->appendStylesheet($this->basePath() . '/css/visualization/performance/chartLayout.css')
 ;
 ?>
+
 <script type="text/javascript">
-    start('0AmytZLexZYpgdGpDRWVobE5XMVVtM3FTcERrbmpwWlE', 'visuals_1');
+<?php
+foreach ($this->report->getReportingKeys() as $key) {
+    echo "start('" . $key . "', 'visuals1')";
+}
+?>
 </script>
 
 <h1>Revenue</h1>
@@ -19,8 +24,15 @@ $this->headLink()
 
 <div id="visuals">
     <h2>Visuals</h2>
-    <div class="graphicContainer" id="visuals_1"></div>
+    <?php if (count($this->report->getReportingKeys()) > 0) { ?>
+        <div class="graphicContainer" id="visuals1"></div>
+        <?php
+    } else {
+        echo 'No visual information ready. If this is incorrect according to you, please contact us.';
+    }
+    ?> 
 </div>
+<br/>
 
 <strong>Module:</strong>        Visualization Module &raquo;
 <strong>Controller:</strong>    Advertiser &raquo;

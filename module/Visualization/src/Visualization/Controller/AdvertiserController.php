@@ -4,6 +4,7 @@ namespace Visualization\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Mvc\View\ViewModel;
+use Visualization\Model\Report;
 
 class AdvertiserController extends AbstractActionController {
 
@@ -25,12 +26,15 @@ class AdvertiserController extends AbstractActionController {
 
         $id = $this->params()->fromRoute('id', 0);
         if (!$id) {
-            return $this->redirect()->toRoute('visualization/advertiser');
+            //return $this->redirect()->toRoute('visualization/advertiser');
         }
 
+        $report = new Report($sm->get('db'), $id);
 
 
-        return array();
+
+
+        return array('report' => $report);
     }
 
     public function generalAction() {
