@@ -6,6 +6,8 @@ use Zend\Mvc\MvcEvent;
 use Zend\Mvc\ModuleRouteListener;
 use Visualization\Model\Site;
 use Visualization\Model\SiteTable;
+use Visualization\Model\SiteUser;
+use Visualization\Model\SiteUserTable;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -40,6 +42,17 @@ class Module {
             $resultSetPrototype = new ResultSet();
             $resultSetPrototype->setArrayObjectPrototype(new Site());
             return new TableGateway('site', $dbAdapter, null, $resultSetPrototype);
+        },
+                'Visualization\Model\SiteUserTable' => function($sm) {
+            $tableGateway = $sm->get('SiteUserTableGateway');
+            $table = new SiteUserTable($tableGateway);
+            return $table;
+        },
+                'SiteUserTableGateway' => function($sm) {
+            $dbAdapter = $sm->get('db');
+            $resultSetPrototype = new ResultSet();
+            $resultSetPrototype->setArrayObjectPrototype(new SiteUser());
+            return new TableGateway('site_user', $dbAdapter, null, $resultSetPrototype);
         }
             ),
         );

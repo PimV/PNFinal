@@ -71,7 +71,7 @@ return array(
     ),
     'view_manager' => array(
         'template_path_stack' => array(
-            'visualization' => __DIR__ . '/../view'
+            'visualization' => __DIR__ . '/../view',
         ),
     ),
     'service_manager' => array(

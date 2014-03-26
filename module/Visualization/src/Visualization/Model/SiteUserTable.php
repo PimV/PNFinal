@@ -2,11 +2,9 @@
 
 namespace Visualization\Model;
 
-use Zend\Db\Sql\Sql;
-use Zend\Db\Sql\Where;
 use Zend\Db\TableGateway\TableGateway;
 
-class SiteTable {
+class SiteUserTable {
 
     protected $tableGateway;
 
@@ -19,7 +17,7 @@ class SiteTable {
         return $resultSet;
     }
 
-    public function getSite($id) {
+    public function getSiteUser($id) {
         $id = (int) $id;
         $rowset = $this->tableGateway->select(array('id' => $id));
 
@@ -31,32 +29,25 @@ class SiteTable {
         return $row;
     }
 
-    public function getSites($id_array) {
-        if (count($id_array) > 0) {
-            $where = new Where();
-            foreach ($id_array as $id) {
-                $where->equalTo('id', $id)->OR;
-            }
-            $rowset = $this->tableGateway->select($where);
-            return $rowset;
-        } else {
-            return array();
-        }
+    public function get_sites_by_user($user_id) {
+        $user_id = (int) $user_id;
+        $rowset = $this->tableGateway->select(array('user_id' => $user_id));
+
+
+        return $rowset;
     }
 
-    public function saveSite(Site $site) {
+    public function saveSiteUser(SiteUser $site_user) {
         $data = array(
-            'title' => $site->title,
-            'url' => $site->url,
-            'description' => $site->description,
-            'short_link' => $site->short_link,
+            'user_id' => $site_user->title,
+            'site_id' => $site_user->url,
         );
 
-        $id = (int) $site->id;
+        $id = (int) $site_user->id;
         if ($id === 0) {
             $this->tableGateway->insert($data);
         } else {
-            if ($this->getSite($id)) {
+            if ($this->getSiteUser($id)) {
                 $this->tableGateway->update($data, array('id' => $id));
             } else {
                 throw new Exception("Form id does not exist");
