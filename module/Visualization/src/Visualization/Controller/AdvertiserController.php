@@ -14,16 +14,18 @@ class AdvertiserController extends AbstractActionController {
     public function indexAction() {
         //Initialize Sidebar
         $sm = $this->getServiceLocator();
-        $sidebar = $sm->get('sidebar_navigation');
-        $sidebar->addPages($this->generateNavPages('index'));
+        $this->initializeSidebar($sm);
         //End Initialization
+
+
         return array();
     }
 
     public function revenueHomeAction() {
+        //Initialize Sidebar
         $sm = $this->getServiceLocator();
-        $sidebar = $sm->get('sidebar_navigation');
-        $sidebar->addPages($this->generateNavPages('index'));
+        $this->initializeSidebar($sm);
+        //End Initialization
 
         $auth = $sm->get('zfcuser_auth_service');
         $user_id = $auth->getIdentity()->getId();
@@ -46,8 +48,7 @@ class AdvertiserController extends AbstractActionController {
     public function revenueAction() {
         //Initialize Sidebar
         $sm = $this->getServiceLocator();
-        $sidebar = $sm->get('sidebar_navigation');
-        $sidebar->addPages($this->generateNavPages('index'));
+        $this->initializeSidebar($sm);
         //End Initialization
 
         $id = $this->params()->fromRoute('id', 0);
@@ -67,8 +68,7 @@ class AdvertiserController extends AbstractActionController {
     public function generalAction() {
         //Initialize Sidebar
         $sm = $this->getServiceLocator();
-        $sidebar = $sm->get('sidebar_navigation');
-        $sidebar->addPages($this->generateNavPages('index'));
+        $this->initializeSidebar($sm);
         //End Initialization
 
         return array();
@@ -90,13 +90,21 @@ class AdvertiserController extends AbstractActionController {
         return $this->site_user_table;
     }
 
+    private function initializeSidebar($sm) {
+        //Initialize Sidebar
+
+        $sidebar = $sm->get('sidebar_navigation');
+        $sidebar->addPages($this->generateNavPages('index'));
+        //End Initialization
+    }
+
     private function generateNavPages($action) {
         $pages = array();
         switch ($action) {
             case 'index':
                 $pages = array(
                     array(
-                        'label' => 'LMGTFY',
+                        'label' => 'Pixels',
                         'uri' => 'http://www.lmgtfy.com/',
                     ),
                     array(
