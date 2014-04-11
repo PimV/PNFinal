@@ -30,6 +30,7 @@ class Module {
         return array(
             'invokables' => array(
                 'SidebarNavigationFactory' => 'Visualization\Navigation\Service\SidebarNavigationFactory',
+                'FlxOneApi' => 'Application\Wrapper\ApiHelper',
             ),
             'factories' => array(
                 'Visualization\Model\SiteTable' => function($sm) {

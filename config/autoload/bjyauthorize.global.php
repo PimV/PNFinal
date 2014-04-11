@@ -81,6 +81,15 @@ return array(
                         'administrator',
                     ),
                 ),
+                array(
+                    'controller' => 'Application\Controller\Api',
+                    'roles' => array(
+                        'guest',
+                        'advertiser',
+                        'publisher',
+                        'administrator',
+                    ),
+                ),
                 //Enable static routes
                 array(
                     'controller' => 'PNUser\Controller\User',
@@ -175,9 +184,9 @@ return array(
                     'controller' => array(
                         'Visualization\Controller\Advertiser',
                     ),
-                    'action' => array(
-                        'index', 'search', 'revenue', 'revenue-home', 'general',
-                    ),
+//                    'action' => array(
+//                        'index', 'search', 'revenue', 'revenue-home', 'general',
+//                    ),
                     'roles' => array(
                         'advertiser',
                     )

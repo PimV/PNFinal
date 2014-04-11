@@ -4,6 +4,8 @@ namespace Visualization\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use Application\Wrapper\ApiHelper;
+use Application\Curl\cURL;
 use Visualization\Model\Report;
 
 class AdvertiserController extends AbstractActionController {
@@ -12,20 +14,20 @@ class AdvertiserController extends AbstractActionController {
     protected $site_user_table;
 
     public function indexAction() {
-        //Initialize Sidebar
+//Initialize Sidebar
         $sm = $this->getServiceLocator();
         $this->initializeSidebar($sm);
-        //End Initialization
+//End Initialization
 
 
         return array();
     }
 
     public function revenueHomeAction() {
-        //Initialize Sidebar
+//Initialize Sidebar
         $sm = $this->getServiceLocator();
         $this->initializeSidebar($sm);
-        //End Initialization
+//End Initialization
 
         $auth = $sm->get('zfcuser_auth_service');
         $user_id = $auth->getIdentity()->getId();
@@ -46,10 +48,10 @@ class AdvertiserController extends AbstractActionController {
     }
 
     public function revenueAction() {
-        //Initialize Sidebar
+//Initialize Sidebar
         $sm = $this->getServiceLocator();
         $this->initializeSidebar($sm);
-        //End Initialization
+//End Initialization
 
         $id = $this->params()->fromRoute('id', 0);
 
@@ -59,17 +61,28 @@ class AdvertiserController extends AbstractActionController {
 
         $report = new Report($sm->get('db'), $id);
 
+        //$helper = new \Application\Wrapper\ApiHelper();
+        //$response = $helper->vizData('flx_browser_language', 'flx_pixels_sum');
+        //echo $response;
+        //die;
 
 
+        return array('report' => $report, 'pixels' => "0");
+    }
 
-        return array('report' => $report);
+    public function vizDataAction() {
+        $helper = new \Application\Wrapper\ApiHelper();
+
+        $response = $helper->vizData($_POST['dimension'], $_POST['measure']);
+        echo $response;
+        die;
     }
 
     public function generalAction() {
-        //Initialize Sidebar
+//Initialize Sidebar
         $sm = $this->getServiceLocator();
         $this->initializeSidebar($sm);
-        //End Initialization
+//End Initialization
 
         return array();
     }
@@ -91,11 +104,11 @@ class AdvertiserController extends AbstractActionController {
     }
 
     private function initializeSidebar($sm) {
-        //Initialize Sidebar
+//Initialize Sidebar
 
         $sidebar = $sm->get('sidebar_navigation');
         $sidebar->addPages($this->generateNavPages('index'));
-        //End Initialization
+//End Initialization
     }
 
     private function generateNavPages($action) {

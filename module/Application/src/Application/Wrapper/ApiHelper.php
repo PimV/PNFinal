@@ -5,110 +5,98 @@ namespace Application\Wrapper;
 define('ENDPOINT', 'https://platform.flxone.com/api');
 define('APPLICATION_PATH', getcwd());
 
+use Application\Curl\cURL;
+
 class ApiHelper {
 
-    private static $_cookie;
+    private $cURL;
+    private $authorizedUser = null;
 
     public function __construct() {
-        self::$_cookie = tempnam(APPLICATION_PATH . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'resource' . DIRECTORY_SEPARATOR . 'cookies', 'CURLCOOKIE');
+        $this->cURL = new cURL();
     }
 
-    public static function post($api_function, $token = null, $parameters = null) {
-        $curl = self::initialize_curl($api_function);
-
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($parameters));
-
-        $enc_result = curl_exec($curl);
-
-        if ($enc_result === FALSE) {
-            echo 'Error: ' . curl_error($curl) . ' (code: ' . curl_errno($curl) . ')';
-        }
-
-
-        curl_close($curl);
-
-        return $enc_result;
+    public function getCurl() {
+        return $this->cURL;
     }
 
-    public static function get($api_function, $parameters = null) {
-        $curl = self::initialize_curl($api_function);
+    public function login() {
+        $username = 'pim@sourcerepublic.com';
+        $password = 'c04E419379006f2203f1Ba51829cA87e';
+        $userInfo = array(
+            'username' => $username,
+            'password' => $password
+        );
 
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
-
-        $enc_result = curl_exec($curl);
-
-        if ($enc_result === FALSE) {
-            echo 'Error: ' . curl_error($curl) . ' (code: ' . curl_errno($curl) . ')';
-        }
-        curl_close($curl);
-        return $enc_result;
-    }
-
-    public static function put($api_function, $parameters = null) {
-        $curl = self::initialize_curl($api_function);
-
-        curl_setopt($curl, CURLOPT_PUT, 1);
-        curl_close($curl);
-    }
-
-    public static function del($api_function, $parameters = null) {
-        $curl = self::initialize_curl($api_function);
-
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-        curl_close($curl);
-    }
-
-    public static function decode_result($encoded_result) {
-        return json_decode($encoded_result, true);
-    }
-
-    public static function response_isValid($response) {
-        $success = false;
-        $error = '-';
-
-        if ($response['response']['status'] === 'OK') {
-            $success = true;
+        $response = $this->cURL->post(ENDPOINT, '/auth', $userInfo);
+        if ($response->statusText === "200 OK") {
+            $this->authorizedUser = new User($this->cURL->get(ENDPOINT, '/user/current'));
         } else {
-            $error = $response['response']['error'];
+            $this->authorizedUser = null;
         }
-
-        return array('success' => $success, 'error' => $error);
+        return $response;
     }
 
-    public static function generate_cookie_path() {
-        //self::$_cookie = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'mycookie';
-        self::$_cookie = APPLICATION_PATH . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'resource' . DIRECTORY_SEPARATOR . 'cookies' . DIRECTORY_SEPARATOR . 'cookie.tmp';
-        //APPLICATION_PATH . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'resource' . DIRECTORY_SEPARATOR . 'cookies'
+    public function setUserInfo() {
+        $this->authorizedUser = \Zend\Json\Json::decode($this->cURL->get('/user/current'));
     }
 
-    private static function initialize_curl($api_function = null) {
-        $curl = curl_init();
-
-
-        if (!isset(self::$_cookie) && self::$_cookie === null) {
-            self::generate_cookie_path();
-        }
-
-        if ($api_function === '/auth') {
-            curl_setopt($curl, CURLOPT_COOKIEJAR, self::$_cookie);
-        } else {
-            curl_setopt($curl, CURLOPT_COOKIEFILE, self::$_cookie);
-        }
-        $url = self::append_url($api_function);
-
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36');
-
-        return $curl;
+    public function test() {
+        $params = array('q' => 'London,uk');
+        $response = $this->cURL->newRequest('get', 'http://api.openweathermap.org/data/2.5/weather?q=Gemert,nl', '/2.5/weather', $params)->send();
+        return $response;
     }
 
-    private static function append_url($appendix) {
-        return ENDPOINT . $appendix . '/';
+    public function vizData($dimension, $measure) {
+        if ($this->authorizedUser === null) {
+            $this->login();
+        }
+        $dataParams = array(array(
+                "dimensions" => array($dimension),
+                "measures" => array($measure),
+                "filters" => array(array(
+                        "dimension" => "date",
+                        "date_start" => "2014-04-01",
+                        "date_end" => "2014-04-01",
+                        "date_dynamic" => null
+                    )),
+                "order" => array(array(
+                        "key" => $measure,
+                        "order" => "desc"
+                    ))
+        ));
+
+
+        $x = \Zend\Json\Json::encode($dataParams);
+        $x_signature = md5(\Zend\Json\Json::encode($dataParams) . '~' . $this->authorizedUser->getId());
+        // var_dump($x);
+        // var_dump($x_signature);
+        // die;
+
+        $params = array(
+            'x' => $x,
+            'x_signature' => $x_signature
+        );
+
+        $paramString = http_build_query($params);
+        // $response = $this->cURL->post(ENDPOINT, '/viz/data', $params);
+        $request = $this->cURL->newRequest('post', ENDPOINT . '/viz/data', '/viz/data', $params)
+                ->setHeader('Content-type', 'application/json; charset=utf-8')
+                //->setHeader('Content-length', strlen($paramString))
+                //->setHeader('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')
+                //->setHeader('Accept', '*/*')
+                //->setHeader('Accept-Encoding', 'gzip,deflate,sdch')
+                ->setHeader('Accept-Language', 'en-US,en;q=0.8,nl;q=0.6');
+
+        $response = $this->cURL->sendRequest($request);
+        $response = $this->addParamsToResponse($response, $dataParams);
+        return $response;
+    }
+
+    private function addParamsToResponse($response, $params) {
+        $decoded_result = json_decode($response, true);
+        $decoded_result['params'] = $params;
+        return json_encode($decoded_result);
     }
 
 }

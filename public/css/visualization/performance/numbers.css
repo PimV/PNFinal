@@ -1,0 +1,32 @@
+#numbers {
+    overflow:hidden;
+}
+
+.numberType {
+    text-align: center;
+}
+
+.numberTitleBlock {
+    line-height: 50%;
+}
+
+.numberTitle {
+    font-weight: bold;
+    font-size: 15px;    
+}
+
+.blockId {
+    border: 2px solid #000;
+    border-radius: 10px;
+    float: left;
+    margin: 50px;
+    width: 400px;
+}
+
+.actualNumber {
+    font-size: 48px;
+}
+
+.centerText {
+    text-align: center;
+}

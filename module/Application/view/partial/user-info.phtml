@@ -1,0 +1,26 @@
+<div id="userInfoContainer">
+    <div id="userInfo">
+        <label id="forLabel" for="username">Username: </label><span id="username"><?php echo $this->username; ?></span>
+        <br/>
+        <label id="forLabel" for="role">Role: </label>
+        <span id="role">
+            <?php if (count($this->roles) < 2) {
+                echo $this->role->getRoleId();
+            } else { ?>
+                <select id="roleBox" onchange="switchRole();" >
+                    <?php
+                    foreach ($this->roles as $role) {
+                        $role2 = $role->getRoleId();
+
+                        if ($this->role !== null && $role2 === $this->role->getRoleId()) {
+                            echo '<option selected value="' . $role2 . '">' . $role2 . '</option>';
+                        } else {
+                            echo '<option value="' . $role2 . '">' . $role2 . '</option>';
+                        }
+                    }
+                }
+                ?>
+            </select>
+        </span>
+    </div>
+</div>
