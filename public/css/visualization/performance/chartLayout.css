@@ -15,7 +15,7 @@
     overflow: hidden;
 }
 
-#graph_status {
+.graph_status {
     width: inherit;
     text-align: center;
     margin-top: 250px;

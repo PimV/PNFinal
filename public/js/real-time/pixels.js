@@ -8,10 +8,6 @@ var timer_interval = 50;
 var processing_time;
 var isRunning = false;
 
-$(document).ready(function() {
-    console.log("HOI");
-});
-
 var timerVal = setInterval(timer, timer_interval);
 
 function getAvg() {

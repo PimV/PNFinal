@@ -1,0 +1,7 @@
+<select id="publisher_select" name="publisher_select" multiple="multiple">
+    <?php
+    foreach ($publisherEntities as $publisherEntity) {
+        echo '<option value="' . $publisherEntity['id'] . '">' . $publisherEntity['name'] . '</option>';
+    }
+    ?>
+</select>

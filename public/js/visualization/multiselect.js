@@ -1,0 +1,3 @@
+$(function() {
+    $("#beacon").multiselect().multiselectfilter();
+});

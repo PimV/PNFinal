@@ -115,7 +115,7 @@ class Request {
     public function encodeData() {
         switch ($this->encoding) {
             case Request::ENCODING_QUERY:
-                return urlencode(http_build_query($this->data, 'flags_'));
+                return http_build_query($this->data);
             case Request::ENCODING_JSON:
                 return json_encode($this->data);
             case Request::ENCODING_RAW:
@@ -136,7 +136,7 @@ class Request {
         }
 
         if ($encoding === Request::ENCODING_JSON && !$this->getHeader('Content-Type')) {
-            $this->setHeader('Content-Type', 'application/json; charset=UTF-8');
+            $this->setHeader('Content-Type', 'application/json');
         }
 
         $this->encoding = $encoding;

@@ -1,16 +1,37 @@
-var new_value;
-var previous_value;
-var dynamic_value = 0;
+new_value['impressions'];
+new_value['revenue'];
+new_value['clicks'];
+new_value['pixels'];
+previous_value['impressions'];
+previous_value['revenue'];
+previous_value['clicks'];
+previous_value['pixels'];
+dynamic_value['impressions'] = 0;
+dynamic_value['revenue'] = 0;
+dynamic_value['clicks'] = 0;
+dynamic_value['pixels'] = 0;
+values['impressions'] = [];
+values['revenue'] = [];
+values['clicks'] = [];
+values['pixels'] = [];
+
+//var values = [];
 var increment_step;
-var values = [];
 var set_interval = 5;
 var timer_interval = 50;
 var processing_time;
 var isRunning = false;
 
-$(document).ready(function() {
-    console.log("HOI");
-});
+//
+//var new_value;
+//var previous_value;
+//var dynamic_value = 0;
+//var increment_step;
+//var values = [];
+//var set_interval = 5;
+//var timer_interval = 50;
+//var processing_time;
+//var isRunning = false;
 
 var timerVal = setInterval(timer, timer_interval);
 
@@ -23,12 +44,12 @@ function getAvg() {
     return avg;
 }
 
-function addToAvgArray(value) {
-    if (values.length > 10) {
-        values.pop();
-        values.unshift(value);
+function addToAvgArray(type, value) {
+    if (values[type].length > 10) {
+        values[type].pop();
+        values[type].unshift(value);
     } else {
-        values.push(value);
+        values[type].push(value);
     }
 }
 
@@ -83,7 +104,7 @@ function refresh1() {
         isRunning = true;
         var start = new Date().getTime();
         $.ajax({
-            url: '/application/api/pixel',
+            url: '/application/api/real-time',
             method: 'GET',
             success: function(resp) {
 

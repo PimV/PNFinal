@@ -19,6 +19,9 @@
                 ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
                 ->prependStylesheet($this->basePath() . '/css/navigation/sidebar.css')
                 ->prependStylesheet($this->basePath() . '/css/loadingAnimation/loading.css')
+                ->prependStylesheet($this->basePath() . '/css/jquery.multiselect.filter.css')
+                ->prependStylesheet($this->basePath() . '/css/jquery.multiselect.css')
+                ->prependStylesheet($this->basePath() . '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css')
         ?>
 
         <!-- Scripts -->
@@ -33,8 +36,10 @@
                 ->appendFile($this->basePath() . '/js/navigation/sidebar.js')
                 ->appendFile($this->basePath() . '//code.highcharts.com/stock/highstock.src.js')
                 ->appendFile($this->basePath() . 'http://code.highcharts.com/modules/exporting.js')
-                //->appendFile($this->basePath() . '/js/charts/engine.js')
                 ->appendFile($this->basePath() . '/js/charts/engine_v2.js')
+                ->appendFile($this->basePath() . '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js')
+                ->appendFile($this->basePath() . '/js/jquery.multiselect.min.js')
+                ->appendFile($this->basePath() . '/js/jquery.multiselect.filter.js')
         ;
         ?>
 

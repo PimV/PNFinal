@@ -1,0 +1,7 @@
+<select id="pixel_select" name="pixel_select" multiple="multiple">
+    <?php
+    foreach ($pixelEntities as $pixelEntity) {
+        echo '<option value="' . $pixelEntity['id'] . '">' . $pixelEntity['name'] . '</option>';
+    }
+    ?>
+</select>

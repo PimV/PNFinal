@@ -30,10 +30,11 @@ class cURL {
     }
 
     public function generate_cookie_path() {
-        $this->cookie = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'cookie';
+        $this->cookie = APPLICATION_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'cookie.txt';
     }
 
     public function writeCookie() {
+
         curl_setopt($this->ch, CURLOPT_COOKIEJAR, $this->cookie);
     }
 
@@ -51,7 +52,7 @@ class cURL {
     }
 
     public function newRequest($method, $url, $functionCall, $data = array(), $encoding = Request::ENCODING_QUERY) {
-       
+
         $class = $this->requestClass;
         $request = new $class($this);
 
@@ -60,6 +61,7 @@ class cURL {
         $request->setFunctionCall($functionCall);
         $request->setData($data);
         $request->setEncoding($encoding);
+
 
         return $request;
     }
@@ -73,7 +75,7 @@ class cURL {
     }
 
     public function prepareRequest(Request $request) {
-        set_time_limit(0);
+        set_time_limit(900);
         $this->ch = curl_init();
 
 
@@ -91,10 +93,10 @@ class cURL {
         curl_setopt($this->ch, CURLOPT_HEADER, 1);
         curl_setopt($this->ch, CURLOPT_URL, $request->getUrl());
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, 0); //Custom
-        curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0); //Custom
+        //curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0); //Custom
         curl_setopt($this->ch, CURLOPT_VERBOSE, true);
         curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 0);
-        curl_setopt($this->ch, CURLOPT_TIMEOUT, 90);
+        curl_setopt($this->ch, CURLOPT_TIMEOUT, 900);
 
         $options = $request->getOptions();
         if (!empty($options)) {
@@ -117,6 +119,7 @@ class cURL {
 
     public function sendRequest(Request $request) {
         $this->prepareRequest($request);
+
         $result = curl_exec($this->ch);
 
         if ($result === FALSE) {
@@ -128,7 +131,6 @@ class cURL {
 
 
         curl_close($this->ch);
-
         return $response;
     }
 
@@ -209,7 +211,6 @@ class cURL {
         } else {
             $data = array();
         }
-
         $request = $this->newRequest($method, $url, $functionCall, $data, $encoding);
 
         return $this->sendRequest($request);

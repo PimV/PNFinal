@@ -48,26 +48,49 @@ class AdvertiserController extends AbstractActionController {
     }
 
     public function revenueAction() {
-//Initialize Sidebar
+        //Init sidebar
         $sm = $this->getServiceLocator();
         $this->initializeSidebar($sm);
-//End Initialization
 
+        //Check valid ID
         $id = $this->params()->fromRoute('id', 0);
-
         if (!$id) {
             return $this->redirect()->toUrl('/visualization/advertiser/revenue-home');
         }
 
+        //Init APIHelper
+        $helper = new \Application\Wrapper\ApiHelper();
+
+        //Retrieve Beacons
+        $beacons = $helper->trackingBeacon(true);
+
+        //Retrieve Dynamic Reports
         $report = new Report($sm->get('db'), $id);
 
-        //$helper = new \Application\Wrapper\ApiHelper();
-        //$response = $helper->vizData('flx_browser_language', 'flx_pixels_sum');
-        //echo $response;
-        //die;
 
+        return array('report' => $report, 'pixels' => "0", 'beacons' => $beacons);
+    }
 
-        return array('report' => $report, 'pixels' => "0");
+    public function testAction() {
+        return array();
+    }
+
+    public function testDataAction() {
+        $helper = new \Application\Wrapper\ApiHelper();
+
+        $dimension = $_POST['dimension'];
+        $measure = $_POST['measure'];
+        $response = $helper->test($dimension, $measure);
+        echo $response;
+        die;
+    }
+
+    public function viewsOverTimeAction() {
+        $helper = new \Application\Wrapper\ApiHelper();
+        $date_start = $_POST['date_start'];
+        $date_end = $_POST['date_end'];
+        echo $helper->getViewsOverTime($date_start, $date_end);
+        die;
     }
 
     public function vizDataAction() {

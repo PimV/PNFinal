@@ -7,6 +7,7 @@ $this->headLink()
 
 $this->headScript()->appendFile($this->basePath() . '/js/real-time/pixels.js');
 $this->headScript()->appendFile($this->basePath() . '/js/charts/api_charts.js');
+$this->headScript()->appendFile($this->basePath() . '/js/visualization/multiselect.js');
 ?>
 
 <script type="text/javascript">
@@ -21,17 +22,40 @@ if (count($this->report->getReportingKeys()) > 0) {
 
 <h1>Revenue for <span class="bold"><?php echo $this->report->getSiteTitle(); ?></span></h1>
 
+<select multiple="multiple" id="beacon">
+    <?php
+    foreach ($this->beacons as $beacon) {
+
+        echo '<option value="' . $beacon->getId() . '">' . $beacon->getName() . '</option>';
+    }
+    ?>
+</select>
+
 <div id="numbers">
-    <h2>Numbers</h2>
+    <h2>Real-time data</h2>
     <div><?php
-echo $this->partial('partial/numbers.phtml');
-?>
+        echo $this->partial('partial/numbers.phtml');
+        ?>
     </div>
 </div>
 
 <div id="visuals">
     <h2>Visuals</h2>
-    <h3>Select your visual</h3>
+    <h3>Views Over Time</h3>
+    <div class="chartMargin">
+        <label for="date_start">Start date:</label><input type="date" id="date_start" name="date_start" value="<?php echo date('Y-m-d', strtotime(date('Y-m-d') . '-1 year')); ?>" style="margin-right: 50px">
+        <label for="date_end">Final date:</label><input type="date" id="date_end" name="date_end" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>" style="margin-right: 50px">
+
+        <div class="chartContainer" style="width: 1090px; height: 510px;">
+            <span class="graph_status" id="view_over_time_status">Loading Views over Time chart...</span>
+            <div id="views_over_time" style="width: 1080px; height: 500px;">
+
+            </div>
+        </div>
+    </div>
+
+    <h2>Visuals</h2>
+    <h3>Select your measure and dimension to create a unique chart.</h3>
     <div class="chartMargin">
         <label for="measure">Measure: </label>
         <select id="measure" name="measure" style="margin-right: 50px">
@@ -112,7 +136,7 @@ echo $this->partial('partial/numbers.phtml');
             <option value="flx_geo_dma_code">flx_geo_dma_code</option>
             <option value="flx_uuid">flx_uuid</option>
             <option value="flx_time">flx_time</option>
-            <option value="flx_date">flx_date</option>
+            <option value="date">flx_date</option>
             <option value="flx_timestamp">flx_timestamp</option>
             <option value="flx_fingerprint">flx_fingerprint</option>
             <option value="flx_browser_version">flx_browser_version</option>
@@ -131,9 +155,12 @@ echo $this->partial('partial/numbers.phtml');
         <input type="button" id="draw_graphic" name="submit" value="Draw Graphic">
 
         <div class="chartContainer" style="width: 1090px; height: 500px;">
-            <span id="graph_status">Select dimension/measure and click Draw Graph to show your custom graph here!</span>
+            <span class="graph_status" id="dynamic_status">Select dimension/measure and click Draw Graph to show your custom graph here!</span>
             <div id="selectableGraphicContainer" style="width: 1080px; height: 500px;">
 
+            </div>
+            <div>
+                <input style="display:none" type="button" id="output_button" name="output_button" value="Show Raw Output">
             </div>
 
 
