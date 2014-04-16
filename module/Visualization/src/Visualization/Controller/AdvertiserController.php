@@ -64,11 +64,14 @@ class AdvertiserController extends AbstractActionController {
         //Retrieve Beacons
         $beacons = $helper->trackingBeacon(true);
 
+        //Retrive UU Count
+        $unique_users = number_format($helper->getUniqueUserCount(null, null), 0, ',', '.');
+
         //Retrieve Dynamic Reports
         $report = new Report($sm->get('db'), $id);
 
 
-        return array('report' => $report, 'pixels' => "0", 'beacons' => $beacons);
+        return array('report' => $report, 'pixels' => "0", 'beacons' => $beacons, 'unique_users' => $unique_users);
     }
 
     public function testAction() {
@@ -80,16 +83,18 @@ class AdvertiserController extends AbstractActionController {
 
         $dimension = $_POST['dimension'];
         $measure = $_POST['measure'];
-        $response = $helper->test($dimension, $measure);
+        //$beaconIds = $_POST['beaconIds'];
+        $response = $helper->test($dimension, $measure);//, $beaconIds);
         echo $response;
         die;
     }
 
     public function viewsOverTimeAction() {
         $helper = new \Application\Wrapper\ApiHelper();
+        //$beacons = $_POST['beacon_id'];
         $date_start = $_POST['date_start'];
         $date_end = $_POST['date_end'];
-        echo $helper->getViewsOverTime($date_start, $date_end);
+        echo $helper->getViewsOverTime($date_start, $date_end);//, $beacons);
         die;
     }
 

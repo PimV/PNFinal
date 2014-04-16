@@ -30,8 +30,6 @@ class ApiController extends AbstractActionController {
     }
 
     public function pixelAction() {
-        // phpinfo();
-        // die;
         $helper = new \Application\Wrapper\ApiHelper();
         $array = json_decode($helper->getCurl()->get(ENDPOINT . '/quick-stats/network?rollup=hourly&pretty=1', '/quick-stats/network?rollup=hourly&pretty=1'), true);
 

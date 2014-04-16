@@ -41,24 +41,48 @@ class ApiHelper {
         return $response;
     }
 
-    public function test($dimension, $measure) {
+    public function getUniqueUserCount($date_start, $date_end) {
+        if (!isset($date_start)) {
+            //$date_start = date('Y-m-d');
+        }
+
+        if (!isset($date_end)) {
+            //$date_end = date('Y-m-d');
+        }
+
+        $date_start = "2014-04-01";
+        $date_end = "2014-04-01";
+
+        $response = $this->vizData("flx_uuid", "flx_pixels_sum", false, "asc", $date_start, $date_end);
+        $uu_count = -1;
+        $response = json_decode($response, true);
+        //$uu_count = count($response['response']['data'][0]['data']);
+        return count($response['response']['data'][0]['data']);
+    }
+
+    public function test($dimension, $measure, $beaconIds) {
         if ($this->authorizedUser === null) {
             $this->login();
         }
+
         $dataParams = array(
             array(
-                "dimensions" => array("flx_pixels_sum"),
-                "measures" => array("flx_uuid"),
+                "dimensions" => array("flx_geo_city"),
+                "measures" => array("flx_pixels_sum"),
                 "filters" => array(
                     array(
                         "dimension" => "date",
-                        "date_start" => "2014-04-01",
+                        "date_start" => "2013-04-01",
                         "date_end" => "2014-04-01",
                         "date_dynamic" => null
+                    ),
+                    array(
+                        "dimension" => array("flx_pixel_id"),
+                        "include" => $beaconIds
                     )
                 ),
                 "order" => array(array(
-                        "key" => "flx_uuid",
+                        "key" => "flx_pixels_sum",
                         "order" => "desc"
                     ))
             ),
@@ -76,21 +100,19 @@ class ApiHelper {
         $paramString = http_build_query($params);
         $retries = 0;
         while (empty($response) && $retries <= 3) {
-            $request = $this->cURL->newRequest('post', ENDPOINT . '/viz/data', '/viz/data', $params)
-                    ->setHeader('Content-type', 'application/json; charset=utf-8')
-                    ->setHeader('Accept-Language', 'en-US,en;q=0.8,nl;q=0.6');
+            $request = $this->cURL->newRequest('post', ENDPOINT . '/viz/data', '/viz/data', $params);
 
             $response = $this->cURL->sendRequest($request);
 
             $retries++;
         }
 
-        $response = $this->addParamsToResponse($response, $dataParams);
+        //$response = $this->addParamsToResponse($response, $dataParams);
         return $response;
     }
 
-    public function getViewsOverTime($date_start, $date_end) {
-        return $this->vizData("date", "flx_pixels_sum", true, "asc", $date_start, $date_end);
+    public function getViewsOverTime($date_start, $date_end) {//, $beaconIds) {
+        return $this->vizData("date", "flx_pixels_sum", true, "asc", $date_start, $date_end);//, $beaconIds);
     }
 
     public function trackingBeacon($beacon_array = false, $id = array()) {
@@ -146,6 +168,7 @@ class ApiHelper {
         }
 
 
+
         $dataParams = array(
             array(
                 "dimensions" => array($dimension),
@@ -155,11 +178,7 @@ class ApiHelper {
                         "date_start" => $date_start,
                         "date_end" => $date_end,
                         "date_dynamic" => null
-                    ),
-//                    array(
-//                        "dimension" => array("flx_pixel_id"),
-//                        "include" => "276"
-//                    )
+                    )
                 ),
                 "order" => array(array(
                         "key" => $orderBy,

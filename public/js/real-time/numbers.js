@@ -8,6 +8,7 @@ var timer_interval = 50;
 var processing_time;
 var isRunning = false;
 
+//Initiate update timer
 var timerVal = setInterval(timer, timer_interval);
 
 function getAvg() {
@@ -59,14 +60,14 @@ function timer() {
         if (dynamic_value == 0) {
             $('#pixel_count').text("Loading data...");
         } else {
-            $('#pixel_count').text((commaSeparateNumber(parseFloat(Math.round(dynamic_value * 1000) / 1000).toFixed(3) + '').replace('.', ',')));
+            $('#pixel_count').text((commaSeparateNumber(parseFloat(Math.round(dynamic_value * 100) / 100).toFixed(2).replace('.', ',') + '')).replace(',', '.'));//.replace(',', '.')));
         }
 
     }
 }
 function commaSeparateNumber(val) {
     while (/(\d+)(\d{3})/.test(val.toString())) {
-        val = val.toString().replace(/(\d+)(\d{3})/, '$1' + '.' + '$2');
+        val = val.toString().replace(/(\d+)(\d{3})/, '$1' + ',' + '$2');
     }
     return val;
 }
@@ -90,7 +91,6 @@ function refresh1() {
                         dynamic_value = new_value;
                     }
                     addToAvgArray(new_value);
-                    //processing_time = (new Date().getTime() - start) / 1000;
 
                     previous_value = new_value;
                 } else {

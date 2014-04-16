@@ -7,7 +7,8 @@ $(document).ready(function() {
     $('#submit').on('click', function() {
         var dimension = $('#dimensions').val();
         var measure = $('#measures').val();
-        sendData(dimension, measure);
+        var beaconIds = $('#beaconIds').val().split(',');
+        sendData(dimension, measure, beaconIds);
     });
 });
 
@@ -24,12 +25,12 @@ function setStatus(status, color) {
 function setLoadingMessage() {
 }
 
-function sendData(dimension, measure) {
+function sendData(dimension, measure, beaconIds) {
     console.log("Sending data...");
     $.ajax({
         url: '/visualization/advertiser/test-data',
         method: 'POST',
-        data: {dimension: dimension, measure: measure},
+        data: {dimension: dimension, measure: measure, beaconIds: beaconIds},
         dataType: 'json',
         success: function(resp) {
             $('#output').text(JSON.stringify(resp, undefined, 2));

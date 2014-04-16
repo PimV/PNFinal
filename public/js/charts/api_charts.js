@@ -77,7 +77,7 @@ function loadCache() {
 
 }
 
-function showViewsOverTime() {
+function showViewsOverTime(beaconId) {
     $('#view_over_time_status').text("Loading Views over Time chart...");
     var date_start = $('#date_start').val();
     var date_end = $('#date_end').val();
@@ -89,7 +89,9 @@ function showViewsOverTime() {
 
     if (vot_cache) {
         if (new Date(date_start).getTime() < vot_cache['date_start'] || new Date(date_end).getTime() > vot_cache['date_end']) {
-            delete vot_cache;
+            console.log(vot_cache);
+            console.log(new Date(date_start).getTime());
+            vot_cache = null;
             showViewsOverTime();
         } else {
             var dimension = "date";
@@ -99,12 +101,11 @@ function showViewsOverTime() {
                     series.push({y: parseFloat(data[measure]), name: data[dimension]});
                     categories.push(data[dimension]);
                 }
-
             });
 
             drawVoTChart(series, categories);
+            console.log("Loading views over time completed.");
         }
-
     } else {
         vot_ajax = $.ajax({
             url: '/visualization/advertiser/views-over-time',
@@ -112,34 +113,23 @@ function showViewsOverTime() {
             data: {date_start: date_start, date_end: date_end},
             dataType: 'json',
             success: function(resp) {
-                output = resp;
+                console.log(resp);
                 if (resp['response'] && resp['response']['data'] && resp['response']['data'][0] && resp['response']['data'][0]['data']) {
-//                    if (resp['response']['data']) {
-//                        if (resp['response']['data'][0]) {
-//                            if (resp['response']['data'][0]['data']) {
-//                                if (resp['response']['data'][0]['data']) {
                     vot_cache = [];
                     vot_cache['data'] = resp['response']['data'][0]['data'];
                     vot_cache['date_start'] = new Date(date_start).getTime();
                     vot_cache['date_end'] = new Date(date_end).getTime();
+                    vot_cache['beacon_id'] = beaconId;
                     var dimension = "date";
                     var measure = "flx_pixels_sum";
                     $.each(resp['response']['data'][0]['data'], function(i, data) {
-
                         series.push({y: parseFloat(data[measure]), name: data[dimension]});
                         categories.push(data[dimension]);
-
                     });
 
                     drawVoTChart(series, categories);
                     return;
                 }
-//                            }
-//                        }
-//                    }
-//                }
-
-
             },
             error: function(resp) {
                 console.log(resp);
@@ -201,12 +191,12 @@ function drawVoTChart(series, categories) {
 
         vot_chart = new Highcharts.Chart(vot_chart_options);
 
-
+        $('#view_over_time_status').css('z-index', '0');
+        $('#views_over_time').fadeTo(1000, '1');
     } else {
         $('#view_over_time_status').text("No data found. Please specify a different date range.");
     }
-    $('#view_over_time_status').css('z-index', '0');
-    $('#views_over_time').fadeTo(1000, '1');
+
 }
 
 
@@ -231,7 +221,7 @@ function refresh(dimension, measure, container) {
                                 var categories = [];
                                 var dimension = resp['params'][0]['dimensions'][0];
                                 var measure = resp['params'][0]['measures'][0];
-                                  console.log(resp['response']['data'][0]['data'].length);
+                                console.log(resp['response']['data'][0]['data'].length);
                                 $.each(resp['response']['data'][0]['data'], function(i, data) {
                                     if (i > 50) {
                                         return;
@@ -243,7 +233,7 @@ function refresh(dimension, measure, container) {
                                 });
 
                                 if (series.length > 0) {
-                                  
+
                                     var options = {
                                         chart: {
                                             renderTo: container,
