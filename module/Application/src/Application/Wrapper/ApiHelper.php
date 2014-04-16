@@ -2,7 +2,8 @@
 
 namespace Application\Wrapper;
 
-define('ENDPOINT', 'https://platform.flxone.com/api');
+define('ENDPOINT', 'https://beta.flxone.com/api');
+//define('ENDPOINT', 'https://platform.flxone.com/api');
 define('APPLICATION_PATH', getcwd());
 
 use Application\Curl\cURL;
@@ -212,7 +213,7 @@ class ApiHelper {
             $retries++;
         }
 
-        //$response = $this->addParamsToResponse($response, $dataParams);
+        $response = $this->addParamsToResponse($response, $dataParams);
         return $response;
     }
 
