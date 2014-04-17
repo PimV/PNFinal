@@ -68,7 +68,7 @@ class ApiHelper {
 
         $dataParams = array(
             array(
-                "dimensions" => array("flx_geo_city"),
+                "dimensions" => array("date"),
                 "measures" => array("flx_pixels_sum"),
                 "filters" => array(
                     array(
@@ -78,7 +78,7 @@ class ApiHelper {
                         "date_dynamic" => null
                     ),
                     array(
-                        "dimension" => array("flx_pixel_id"),
+                        "dimension" => "flx_pixel_id",
                         "include" => $beaconIds
                     )
                 ),
@@ -108,7 +108,7 @@ class ApiHelper {
             $retries++;
         }
 
-        //$response = $this->addParamsToResponse($response, $dataParams);
+        $response = $this->addParamsToResponse($response, $dataParams);
         return $response;
     }
 

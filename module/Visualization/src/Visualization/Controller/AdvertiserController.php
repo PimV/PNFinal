@@ -83,8 +83,8 @@ class AdvertiserController extends AbstractActionController {
 
         $dimension = $_POST['dimension'];
         $measure = $_POST['measure'];
-        //$beaconIds = $_POST['beaconIds'];
-        $response = $helper->test($dimension, $measure);//, $beaconIds);
+        $beaconIds = $_POST['beaconIds'];
+        $response = $helper->test($dimension, $measure, $beaconIds);
         echo $response;
         die;
     }

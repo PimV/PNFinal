@@ -146,50 +146,70 @@ function showViewsOverTime(beaconId) {
 
 function drawVoTChart(series, categories) {
     if (series.length > 0) {
+//        if (vot_chart) {
+//            vot_chart.destroy();
+//        }
+
         if (vot_chart) {
-            vot_chart.destroy();
-        }
-        vot_chart_options = {
-            chart: {
-                renderTo: "views_over_time",
-                zoomType: 'xy',
-                type: 'line'
+            console.log("redrawing");
+            // vot_chart_options.series[0] = null;
+            console.log(vot_chart.get("serie_0"));
+            vot_chart.series[0].setData(series, false, true, true);
+            // vot_chart.options.xAxis[0].categories = categories;
+            vot_chart.xAxis[0].setCategories(categories, false);
+            //  vot_chart.series[0] = series;
+            //vot_chart.options.xAxis.categories = categories;
+            vot_chart.redraw();
 
-            },
-            title: {
-                text: '<div>Views over Time</div>'
-            },
-            xAxis: {
-                type: 'category',
-                labels: {
-                    rotation: -45
+
+            // vot_chart.redraw();
+        } else {
+
+            vot_chart_options = {
+                chart: {
+                    renderTo: "views_over_time",
+                    zoomType: 'xy',
+                    type: 'line'
+
                 },
-                allowDecimals: true,
-                categories: categories,
-            },
-            yAxis: {
-                type: 'linear',
-                allowDecimals: true
-            },
-            tooltip: {
-                shared: false,
-            },
-            plotOptions: {
-                series: {
-                    allowPointSelect: true//,
-                            //connectNulls: true
-                }
-            },
-            series: [{
-                    name: "Views",
-                    data: series
-                }]
+                title: {
+                    text: '<div>Views over Time</div>'
+                },
+                xAxis: {
+                    type: 'category',
+                    labels: {
+                        rotation: -45
+                    },
+                    allowDecimals: true,
+                    categories: categories,
+                },
+                yAxis: {
+                    type: 'linear',
+                    allowDecimals: true
+                },
+                tooltip: {
+                    shared: false,
+                },
+                plotOptions: {
+                    series: {
+                        allowPointSelect: true//,
+                                //connectNulls: true
+                    }
+                },
+                series: [{
+                        id: "serie_0",
+                        name: "Views",
+                        data: series
+                    }]
 
 
 
-        };
+            };
 
-        vot_chart = new Highcharts.Chart(vot_chart_options);
+
+
+            vot_chart = new Highcharts.Chart(vot_chart_options);
+        }
 
         $('#view_over_time_status').css('z-index', '0');
         $('#views_over_time').fadeTo(1000, '1');
