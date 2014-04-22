@@ -8,6 +8,9 @@ $(document).ready(function() {
         var dimension = $('#dimensions').val();
         var measure = $('#measures').val();
         var beaconIds = $('#beaconIds').val().split(',');
+        if ($('#beaconIds').val().length < 1) {
+            beaconIds = null;
+        }
         sendData(dimension, measure, beaconIds);
     });
 });
@@ -27,6 +30,7 @@ function setLoadingMessage() {
 
 function sendData(dimension, measure, beaconIds) {
     console.log("Sending data...");
+    console.log(beaconIds);
     $.ajax({
         url: '/visualization/advertiser/test-data',
         method: 'POST',

@@ -4,8 +4,9 @@ $(function() {
             beaconIds = $('#beacon').val();
             console.log(beaconIds);
             showViewsOverTime(beaconIds);
+            updateCumulativeValues(beaconIds);
         }
     }).multiselectfilter();
 
-
+    updateCumulativeValues($('#beacon').val());
 });

@@ -30,3 +30,7 @@
 .centerText {
     text-align: center;
 }
+
+.hide-overflow {
+    overflow: hidden !important;
+}

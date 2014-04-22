@@ -20,9 +20,9 @@ class User {
         $this->setLastName($responseArray['response']['user']['last_name']);
         $this->setEmail($responseArray['response']['user']['email']);
         $this->setStatus($responseArray['response']['user']['status']);
-        //$this->setId( $responseArray['response']['user']['id']);
+        //$this->setId($responseArray['response']['user']['id']);
 //        $this->setId((int) $responseArray['audit']['user_id']);
-//        $this->setUsername($responseArray['audit']['user']);
+        //$this->setUsername($responseArray['audit']['user']);
     }
 
     public function setId($id) {

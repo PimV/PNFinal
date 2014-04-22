@@ -1,70 +1,94 @@
-<div class="blockId">
-    <div id="impressions">
-        <div class="actualNumber">
-            <div class="numberType">
-                <div class="numberTitleBlock">
-                    <span class="numberTitle centerText">Total Views</span>
-                </div>
-                <div>
-                    <span id="pixel_count" class="number centerText">
-                        <?php
-                        echo $pixels;
-                        ?>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="blockId">
-    <div id="pixels">
-        <div class="actualNumber">
-            <div class="numberType">
-                <div class="numberTitleBlock">
-                    <span class="numberTitle centerText">Unique Users</span>
-                </div>
-                <div>
-                    <span id="unique_user_count" class="number centerText">
-                        <?php
-                        echo $this->unique_users;
-                        ?>
-                    </span>
+<div id="real-time" class="hide-overflow">
+    <h2>Real-Time Data</h2>
+    <div class="blockId">
+        <div id="impressions">
+            <div class="actualNumber">
+                <div class="numberType">
+                    <div class="numberTitleBlock">
+                        <span class="numberTitle centerText">Pixel Views</span>
+                    </div>
+                    <div>
+                        <span id="pixel_count" class="number centerText">
+                            <?php
+                            echo $pixels;
+                            ?>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="blockId">
-    <div id="impressions_bid">
-        <div class="actualNumber">
-            <div class="numberType">
-                <div class="numberTitleBlock">
-                    <span class="numberTitle centerText">Average Time on Site</span>
-                </div>
-                <div>
-                    <span id="imp_bid_count" class="number centerText">
-                        <?php
-                        echo $pixels;
-                        ?>
-                    </span>
+<div id="cumulative-values" class="hide-overflow">
+    <h2>Cumulative Values</h2>
+    <div class="blockId">
+        <div id="impressions">
+            <div class="actualNumber">
+                <div class="numberType">
+                    <div class="numberTitleBlock">
+                        <span class="numberTitle centerText">Total Views</span>
+                    </div>
+                    <div>
+                        <span id="total_view_count" class="number centerText">
+                            <?php
+                            echo 0; //$this->total_views;
+                            ?>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="blockId">
-    <div id="click">
-        <div class="actualNumber">
-            <div class="numberType">
-                <div class="numberTitleBlock">
-                    <span class="numberTitle centerText">Bounce Rate (%)</span>
+    <div class="blockId">
+        <div id="pixels">
+            <div class="actualNumber">
+                <div class="numberType">
+                    <div class="numberTitleBlock">
+                        <span class="numberTitle centerText">Unique Users</span>
+                    </div>
+                    <div>
+                        <span id="unique_user_count" class="number centerText">
+                            <?php
+                            echo $this->unique_users;
+                            ?>
+                        </span>
+                    </div>
                 </div>
-                <div>
-                    <span id="click_count" class="number centerText">
-                        <?php
-                        echo $pixels;
-                        ?>
-                    </span>
+            </div>
+        </div>
+    </div>
+    <div class="blockId">
+        <div id="impressions_bid">
+            <div class="actualNumber">
+                <div class="numberType">
+                    <div class="numberTitleBlock">
+                        <span class="numberTitle centerText">Average Time on Site</span>
+                    </div>
+                    <div>
+                        <span id="avg_time_on_site" class="number centerText">
+                            <?php
+                            echo $pixels;
+                            ?>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="blockId">
+        <div id="click">
+            <div class="actualNumber">
+                <div class="numberType">
+                    <div class="numberTitleBlock">
+                        <span class="numberTitle centerText">Bounce Rate (%)</span>
+                    </div>
+                    <div>
+                        <span id="click_count" class="number centerText">
+                            <?php
+                            echo "Not Implemented";
+                            ?>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

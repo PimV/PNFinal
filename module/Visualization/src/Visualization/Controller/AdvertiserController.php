@@ -12,6 +12,7 @@ class AdvertiserController extends AbstractActionController {
 
     protected $siteTable;
     protected $site_user_table;
+    private $helper;
 
     public function indexAction() {
 //Initialize Sidebar
@@ -79,29 +80,34 @@ class AdvertiserController extends AbstractActionController {
     }
 
     public function testDataAction() {
-        $helper = new \Application\Wrapper\ApiHelper();
+        if (!isset($this->helper)) {
+            $this->helper = new \Application\Wrapper\ApiHelper();
+        }
+
 
         $dimension = $_POST['dimension'];
         $measure = $_POST['measure'];
         $beaconIds = $_POST['beaconIds'];
-        $response = $helper->test($dimension, $measure, $beaconIds);
+        $response = $this->helper->test($dimension, $measure, $beaconIds);
         echo $response;
         die;
     }
 
     public function viewsOverTimeAction() {
         $helper = new \Application\Wrapper\ApiHelper();
-        //$beacons = $_POST['beacon_id'];
+        $beacons = $_POST['beaconIds'];
         $date_start = $_POST['date_start'];
         $date_end = $_POST['date_end'];
-        echo $helper->getViewsOverTime($date_start, $date_end);//, $beacons);
+        echo $helper->getViewsOverTime($date_start, $date_end, $beacons);
         die;
     }
 
     public function vizDataAction() {
         $helper = new \Application\Wrapper\ApiHelper();
-
-        $response = $helper->vizData($_POST['dimension'], $_POST['measure']);
+        $dimension = $_POST['dimension'];
+        $measure = $_POST['measure'];
+        $beaconIds = $_POST['beaconIds'];
+        $response = $helper->vizData($dimension, $measure, $beaconIds);
         echo $response;
         die;
     }

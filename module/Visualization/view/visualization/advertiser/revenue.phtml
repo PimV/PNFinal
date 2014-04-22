@@ -5,7 +5,8 @@ $this->headLink()
         ->appendStylesheet($this->basePath() . '/css/visualization/performance/chartLayout.css')
 ;
 
-$this->headScript()->appendFile($this->basePath() . '/js/real-time/numbers.js');
+$this->headScript()->appendFile($this->basePath() . '/js/visualization/numbers/real-time.js');
+$this->headScript()->appendFile($this->basePath() . '/js/visualization/numbers/cumulative-values.js');
 $this->headScript()->appendFile($this->basePath() . '/js/charts/api_charts.js');
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/multiselect.js');
 ?>
@@ -26,13 +27,13 @@ if (count($this->report->getReportingKeys()) > 0) {
     <?php
     foreach ($this->beacons as $beacon) {
 
-        echo '<option value="' . $beacon->getId() . '">' . $beacon->getName() . '</option>';
+        echo '<option selected="selected" value="' . $beacon->getId() . '">' . $beacon->getName() . '</option>';
     }
     ?>
 </select>
 
 <div id="numbers">
-    <h2>Real-time data</h2>
+    <!--    <h2>Real-time data</h2>-->
     <div><?php
         echo $this->partial('partial/numbers.phtml');
         ?>
@@ -43,7 +44,7 @@ if (count($this->report->getReportingKeys()) > 0) {
     <h2>Visuals</h2>
     <h3>Views Over Time</h3>
     <div class="chartMargin">
-        <label for="date_start">Start date:</label><input type="date" id="date_start" name="date_start" value="<?php echo date('Y-m-d', strtotime(date('Y-m-d') . '-1 year')); ?>" style="margin-right: 50px">
+        <label for="date_start">Start2 date:</label><input type="date" id="date_start" name="date_start" value="<?php echo date('Y-m-d', strtotime(date('Y-m-d') . '-1 year')); ?>" style="margin-right: 50px">
         <label for="date_end">Final date:</label><input type="date" id="date_end" name="date_end" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>" style="margin-right: 50px">
 
         <div class="chartContainer" style="width: 1090px; height: 510px;">

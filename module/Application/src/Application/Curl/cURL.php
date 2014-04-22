@@ -34,7 +34,6 @@ class cURL {
     }
 
     public function writeCookie() {
-
         curl_setopt($this->ch, CURLOPT_COOKIEJAR, $this->cookie);
     }
 

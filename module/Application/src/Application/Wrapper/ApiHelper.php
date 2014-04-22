@@ -11,17 +11,14 @@ use Application\Curl\cURL;
 class ApiHelper {
 
     private $cURL;
-    private $authorizedUser = null;
+    private $authorizedUser;
+    public $loginCount = 0;
 
     public function __construct() {
         $this->cURL = new cURL();
     }
 
     public function getCurl() {
-        if ($this->authorizedUser === null) {
-            $this->login();
-        }
-
         return $this->cURL;
     }
 
@@ -35,10 +32,12 @@ class ApiHelper {
 
         $response = $this->cURL->post(ENDPOINT, '/auth', $userInfo);
         if ($response->statusText === "200 OK") {
-            $this->authorizedUser = new User($this->cURL->get(ENDPOINT, '/user/current'));
+            //$this->authorizedUser = new User($this->cURL->get(ENDPOINT, '/user/current'));
+            $this->getCurrentUser();
         } else {
             $this->authorizedUser = null;
         }
+        $this->loginCount++;
         return $response;
     }
 
@@ -57,19 +56,24 @@ class ApiHelper {
         $response = $this->vizData("flx_uuid", "flx_pixels_sum", false, "asc", $date_start, $date_end);
         $uu_count = -1;
         $response = json_decode($response, true);
-        //$uu_count = count($response['response']['data'][0]['data']);
         return count($response['response']['data'][0]['data']);
     }
 
-    public function test($dimension, $measure, $beaconIds) {
-        if ($this->authorizedUser === null) {
-            $this->login();
+    public function test($dimension, $measure, $beaconIds = null) {
+
+        $this->getCurrentUser();
+        $beaconFilter = null;
+        if (isset($beaconIds) && !empty($beaconIds)) {
+            $beaconFilter = array(
+                "dimension" => "flx_pixel_id",
+                "include" => $beaconIds
+            );
         }
 
         $dataParams = array(
             array(
-                "dimensions" => array("date"),
-                "measures" => array("flx_pixels_sum"),
+                "dimensions" => array($dimension),
+                "measures" => array($measure),
                 "filters" => array(
                     array(
                         "dimension" => "date",
@@ -77,28 +81,26 @@ class ApiHelper {
                         "date_end" => "2014-04-01",
                         "date_dynamic" => null
                     ),
-                    array(
-                        "dimension" => "flx_pixel_id",
-                        "include" => $beaconIds
-                    )
+                    $beaconFilter
                 ),
                 "order" => array(array(
-                        "key" => "flx_pixels_sum",
+                        "key" => $measure,
                         "order" => "desc"
                     ))
             ),
         );
 
+        if (isset($this->authorizedUser)) {
 
-        $x = \Zend\Json\Json::encode($dataParams);
-        $x_signature = md5(\Zend\Json\Json::encode($dataParams) . '~' . $this->authorizedUser->getId());
+            $x = \Zend\Json\Json::encode($dataParams);
+            $x_signature = md5(\Zend\Json\Json::encode($dataParams) . '~' . $this->authorizedUser->getId());
+        }
 
         $params = array(
             'x' => $x,
             'x_signature' => $x_signature
         );
 
-        $paramString = http_build_query($params);
         $retries = 0;
         while (empty($response) && $retries <= 3) {
             $request = $this->cURL->newRequest('post', ENDPOINT . '/viz/data', '/viz/data', $params);
@@ -108,12 +110,50 @@ class ApiHelper {
             $retries++;
         }
 
+        if ($this->isAuthorized($response) === false) {
+
+            $this->login();
+            $this->test($dimension, $measure, $beaconIds);
+        }
+
+
+
         $response = $this->addParamsToResponse($response, $dataParams);
         return $response;
     }
 
-    public function getViewsOverTime($date_start, $date_end) {//, $beaconIds) {
-        return $this->vizData("date", "flx_pixels_sum", true, "asc", $date_start, $date_end);//, $beaconIds);
+    public function getCurrentUser() {
+        $response = $this->cURL->get(ENDPOINT, '/user/current');
+        if ($this->isAuthorized($response) === false) {
+            $this->login();
+            $this->getCurrentUser();
+        }
+        $this->authorizedUser = new User($response);
+    }
+
+    public function isAuthorized($response) {
+        if (empty($response)) {
+            return false;
+        }
+        $response = json_decode($response, true);
+        if ($response === null) {
+            return false;
+        }
+        if ($response['response']['status'] === "ERROR") {
+            if ($response['response']['error'] === "Not authenticated") {
+                return false;
+            }
+            if ($response['response']['error'] === "Signature invalid") {
+                return false;
+            }
+            /* COMMENTED THIS OUT TO VIEW THE ERROR MESSAGE */
+            //return false; 
+        }
+        return true;
+    }
+
+    public function getViewsOverTime($date_start, $date_end, $beaconIds) {
+        return $this->vizData("date", "flx_pixels_sum", $beaconIds, true, "asc", $date_start, $date_end);
     }
 
     public function trackingBeacon($beacon_array = false, $id = array()) {
@@ -132,6 +172,11 @@ class ApiHelper {
             $response = $this->cURL->get(ENDPOINT . $functionCall, $functionCall);
 
             $retries++;
+        }
+
+        if ($this->isAuthorized($response) === false) {
+            $this->login();
+            $this->trackingBeacon($beacon_array, $id);
         }
 
         if ($beacon_array === true) {
@@ -159,42 +204,52 @@ class ApiHelper {
         return $response;
     }
 
-    public function vizData($dimension, $measure, $orderByDimension = false, $orderType = "asc", $date_start = "2013-04-01", $date_end = "2014-04-05", $limit = "10000") {
+    public function vizData($dimension, $measure, $beaconIds = null, $orderByDimension = false, $orderType = "asc", $date_start = "2013-04-01", $date_end = "2014-04-05", $limit = "10000") {
         if ($this->authorizedUser === null) {
             $this->login();
         }
+        
+        if ($date_end === "2014-04-05") {
+            $date_end = date('Y-m-d');
+        }
+        
         $orderBy = $measure;
         if ($orderByDimension === true) {
             $orderBy = $dimension;
         }
 
+        $beaconFilter = null;
+        if (isset($beaconIds) && !empty($beaconIds)) {
+            $beaconFilter = array(
+                "dimension" => "flx_pixel_id",
+                "include" => $beaconIds
+            );
+        }
 
 
         $dataParams = array(
             array(
                 "dimensions" => array($dimension),
                 "measures" => array($measure),
-                "filters" => array(array(
+                "filters" => array(
+                    array(
                         "dimension" => "date",
                         "date_start" => $date_start,
                         "date_end" => $date_end,
                         "date_dynamic" => null
-                    )
+                    ),
+                    $beaconFilter
                 ),
                 "order" => array(array(
                         "key" => $orderBy,
                         "order" => $orderType
                     ))
-            //"limit" => $limit
             ),
         );
 
 
         $x = \Zend\Json\Json::encode($dataParams);
         $x_signature = md5(\Zend\Json\Json::encode($dataParams) . '~' . $this->authorizedUser->getId());
-        // var_dump($x);
-        // var_dump($x_signature);
-        // die;
 
         $params = array(
             'x' => $x,
@@ -205,12 +260,14 @@ class ApiHelper {
         $retries = 0;
         while (empty($response) && $retries <= 3) {
             $request = $this->cURL->newRequest('post', ENDPOINT . '/viz/data', '/viz/data', $params);
-            //->setHeader('Content-type', 'application/json');
-            //->setHeader('Accept-Language', 'en-US,en;q=0.8,nl;q=0.6');
-
             $response = $this->cURL->sendRequest($request);
 
             $retries++;
+        }
+
+        if ($this->isAuthorized($response) === false) {
+            $this->login();
+            $this->vizData($dimension, $measure, $beaconIds, $orderByDimension, $orderType, $date_start, $date_end, $limit);
         }
 
         $response = $this->addParamsToResponse($response, $dataParams);

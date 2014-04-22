@@ -77,7 +77,7 @@ function loadCache() {
 
 }
 
-function showViewsOverTime(beaconId) {
+function showViewsOverTime(beaconIds) {
     $('#view_over_time_status').text("Loading Views over Time chart...");
     var date_start = $('#date_start').val();
     var date_end = $('#date_end').val();
@@ -87,7 +87,7 @@ function showViewsOverTime(beaconId) {
     $('#view_over_time_status').css('z-index', '1');
     $('#views_over_time').fadeTo(1000, '0.5');
 
-    if (vot_cache) {
+    if (vot_cache && !beaconIds) {
         if (new Date(date_start).getTime() < vot_cache['date_start'] || new Date(date_end).getTime() > vot_cache['date_end']) {
             console.log(vot_cache);
             console.log(new Date(date_start).getTime());
@@ -110,7 +110,7 @@ function showViewsOverTime(beaconId) {
         vot_ajax = $.ajax({
             url: '/visualization/advertiser/views-over-time',
             method: 'POST',
-            data: {date_start: date_start, date_end: date_end},
+            data: {date_start: date_start, date_end: date_end, beaconIds: beaconIds},
             dataType: 'json',
             success: function(resp) {
                 console.log(resp);
@@ -119,7 +119,7 @@ function showViewsOverTime(beaconId) {
                     vot_cache['data'] = resp['response']['data'][0]['data'];
                     vot_cache['date_start'] = new Date(date_start).getTime();
                     vot_cache['date_end'] = new Date(date_end).getTime();
-                    vot_cache['beacon_id'] = beaconId;
+                    vot_cache['beacon_ids'] = beaconIds;
                     var dimension = "date";
                     var measure = "flx_pixels_sum";
                     $.each(resp['response']['data'][0]['data'], function(i, data) {
