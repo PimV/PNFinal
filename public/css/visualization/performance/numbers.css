@@ -34,3 +34,12 @@
 .hide-overflow {
     overflow: hidden !important;
 }
+
+#cumulative-values-status-text {
+    opacity: 0;
+    width: 1000px;
+    text-align: center;
+    margin-top: 250px;
+    position: absolute;
+    font-size: 16px;
+}

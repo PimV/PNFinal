@@ -78,7 +78,7 @@ class ApiHelper {
                     array(
                         "dimension" => "date",
                         "date_start" => "2013-04-01",
-                        "date_end" => "2014-04-01",
+                        "date_end" => "2014-04-22",
                         "date_dynamic" => null
                     ),
                     $beaconFilter
@@ -208,11 +208,11 @@ class ApiHelper {
         if ($this->authorizedUser === null) {
             $this->login();
         }
-        
+
         if ($date_end === "2014-04-05") {
             $date_end = date('Y-m-d');
         }
-        
+
         $orderBy = $measure;
         if ($orderByDimension === true) {
             $orderBy = $dimension;
@@ -246,6 +246,85 @@ class ApiHelper {
                     ))
             ),
         );
+
+
+        $x = \Zend\Json\Json::encode($dataParams);
+        $x_signature = md5(\Zend\Json\Json::encode($dataParams) . '~' . $this->authorizedUser->getId());
+
+        $params = array(
+            'x' => $x,
+            'x_signature' => $x_signature
+        );
+
+
+        $retries = 0;
+        while (empty($response) && $retries <= 3) {
+            $request = $this->cURL->newRequest('post', ENDPOINT . '/viz/data', '/viz/data', $params);
+            $response = $this->cURL->sendRequest($request);
+
+            $retries++;
+        }
+
+        if ($this->isAuthorized($response) === false) {
+            $this->login();
+            $this->vizData($dimension, $measure, $beaconIds, $orderByDimension, $orderType, $date_start, $date_end, $limit);
+        }
+
+        $response = $this->addParamsToResponse($response, $dataParams);
+        return $response;
+    }
+
+    public function vizDataMultiple($dimensions, $measures, $beaconIds = null, $orderByDimension = false, $orderType = "asc", $date_start = "2013-04-01", $date_end = "2014-04-05", $limit = "10000") {
+        if ($this->authorizedUser === null) {
+            $this->login();
+        }
+
+        if ($date_end === "2014-04-05") {
+            $date_end = date('Y-m-d');
+        }
+
+
+
+        $beaconFilter = null;
+        if (isset($beaconIds) && !empty($beaconIds)) {
+            $beaconFilter = array(
+                "dimension" => "flx_pixel_id",
+                "include" => $beaconIds
+            );
+        }
+        $queries = array();
+        for ($i = 0; $i < count($dimensions); $i++) {
+            $dimension = $dimensions[$i];
+            $measure = $measures[$i];
+
+            $orderBy = $measure;
+            if ($orderByDimension === true) {
+                $orderBy = $dimension;
+            }
+
+            $query = array(
+                "dimensions" => array($dimension),
+                "measures" => array($measure),
+                "filters" => array(
+                    array(
+                        "dimension" => "date",
+                        "date_start" => $date_start,
+                        "date_end" => $date_end,
+                        "date_dynamic" => null
+                    ),
+                    $beaconFilter
+                ),
+                "order" => array(array(
+                        "key" => $orderBy,
+                        "order" => $orderType
+                    ))
+            );
+
+            $queries[] = $query;
+        }
+
+
+        $dataParams = $queries;
 
 
         $x = \Zend\Json\Json::encode($dataParams);

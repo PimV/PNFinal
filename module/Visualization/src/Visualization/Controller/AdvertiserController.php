@@ -112,6 +112,16 @@ class AdvertiserController extends AbstractActionController {
         die;
     }
 
+    public function vizDataMultipleAction() {
+        $helper = new \Application\Wrapper\ApiHelper();
+        $dimension = $_POST['dimension'];
+        $measure = $_POST['measure'];
+        $beaconIds = $_POST['beaconIds'];
+        $response = $helper->vizDataMultiple($dimension, $measure, $beaconIds);
+        echo $response;
+        die;
+    }
+
     public function generalAction() {
 //Initialize Sidebar
         $sm = $this->getServiceLocator();

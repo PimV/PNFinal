@@ -78,6 +78,7 @@ function loadCache() {
 }
 
 function showViewsOverTime(beaconIds) {
+    
     $('#view_over_time_status').text("Loading Views over Time chart...");
     var date_start = $('#date_start').val();
     var date_end = $('#date_end').val();
@@ -107,6 +108,9 @@ function showViewsOverTime(beaconIds) {
             console.log("Loading views over time completed.");
         }
     } else {
+        if (vot_ajax) {
+            vot_ajax.abort();
+        }
         vot_ajax = $.ajax({
             url: '/visualization/advertiser/views-over-time',
             method: 'POST',
