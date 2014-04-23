@@ -90,9 +90,8 @@ function getUniqueUsers(beaconIds) {
 function getAllCumulativeValues(beaconIds) {
     var dimensions = ["flx_pixel_id", "flx_pixel_id", "flx_pixel_id"];
     var measures = ["flx_pixels_sum", "flx_uuid_distinct", "flx_time_on_site_avg"];
-    console.log("Getting cumulative values...");
     $('#cumulative-values').fadeTo(1000, '0.5');
-    $('#cumulative-values-status-text').fadeTo(1000, '1.0');
+    $('#cumulative-values-spinner').fadeTo(1000, '1.0');
     cumulativeValuesAjax = $.ajax({
         url: '/visualization/advertiser/viz-data-multiple',
         method: 'POST',
@@ -100,6 +99,11 @@ function getAllCumulativeValues(beaconIds) {
         dataType: 'json',
         success: function(resp) {
             console.log(resp);
+
+            //Check valid response
+            if ('undefined' === typeof resp['response']['data']) {
+                return;
+            }
 
             //Total Views
             totalViews = 0;
@@ -143,7 +147,7 @@ function getAllCumulativeValues(beaconIds) {
         },
         complete: function() {
             $('#cumulative-values').fadeTo(1000, '1.0');
-            $('#cumulative-values-status-text').fadeTo(1000, '0');
+            $('#cumulative-values-spinner').fadeTo(1000, '0');
             console.log("Updating Cumulative Values: Done!");
         }
     });
@@ -154,7 +158,7 @@ function updateCumulativeValues(beaconIds) {
         cumulativeValuesAjax.abort();
     }
 
-    console.log("Updating Cumulative Values: Started!");
+    console.log("Getting Cumulative Values: Started!");
     getAllCumulativeValues(beaconIds);
 }
 

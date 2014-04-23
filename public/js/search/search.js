@@ -144,6 +144,7 @@ function searchDatabaseNow(page) {
             $("#spinner").hide();
         },
         error: function(resp) {
+            console.log(url);
             bootbox.alert("Could not find any results due to an error. Are you sure you disabled AdBlock or other advertising-software? If you did, the cause might be on our side...");
             $("#spinner").hide();
         }

@@ -1,0 +1,8 @@
+<select multiple="multiple" id="beacon">
+    <?php
+    foreach ($this->beacons as $beacon) {
+
+        echo '<option selected="selected" value="' . $beacon->getId() . '">' . $beacon->getName() . '</option>';
+    }
+    ?>
+</select>

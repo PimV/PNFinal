@@ -7,24 +7,25 @@
 }
 
 .numberTitleBlock {
-    line-height: 50%;
+    line-height: 20px;
 }
 
 .numberTitle {
-    font-weight: bold;
+    //font-weight: bold;
     font-size: 15px;    
 }
 
 .blockId {
     border: 2px solid #000;
-    border-radius: 10px;
-    float: left;
-    margin: 50px;
-    width: 400px;
+    //border-radius: 10px;
+    //float: left;
+    //margin: 50px;
+    width: 300px;
+    display: inline-block;
 }
 
 .actualNumber {
-    font-size: 48px;
+    font-size: 24px;
 }
 
 .centerText {
@@ -35,11 +36,6 @@
     overflow: hidden !important;
 }
 
-#cumulative-values-status-text {
+.number-spinner {
     opacity: 0;
-    width: 1000px;
-    text-align: center;
-    margin-top: 250px;
-    position: absolute;
-    font-size: 16px;
 }

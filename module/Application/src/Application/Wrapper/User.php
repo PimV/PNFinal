@@ -20,9 +20,6 @@ class User {
         $this->setLastName($responseArray['response']['user']['last_name']);
         $this->setEmail($responseArray['response']['user']['email']);
         $this->setStatus($responseArray['response']['user']['status']);
-        //$this->setId($responseArray['response']['user']['id']);
-//        $this->setId((int) $responseArray['audit']['user_id']);
-        //$this->setUsername($responseArray['audit']['user']);
     }
 
     public function setId($id) {
@@ -45,10 +42,6 @@ class User {
         $this->status = $status;
     }
 
-//    public function setUsername($username) {
-//        $this->username = $username;
-//    }
-
     public function getId() {
         return $this->id;
     }
@@ -68,11 +61,4 @@ class User {
     public function getStatus() {
         return $this->status;
     }
-
-//    public function getUsername() {
-//        if (!empty($this->username)) {
-//            return $this->username;
-//        }
-//        return null;
-//    }
 }

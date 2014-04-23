@@ -26,14 +26,6 @@ $(document).ready(function() {
         var modal = bootbox.alert('<textarea style="width: 1100px; height: 700px; " id="output">' + JSON.stringify(output, undefined, 2) + '</textarea>');
         modal.find('.modal-content').css({'width': '1200px', 'margin-left': '-300px'});
     });
-
-//    $('#date_start').on('input', function() {
-//        showViewsOverTime();
-//    });
-//    $('#date_end').on('input', function() {
-//        showViewsOverTime();
-//    });
-
     $('#date_end').blur(function() {
         vot_ajax.abort();
         showViewsOverTime();
@@ -59,7 +51,6 @@ function setStatus(status, color) {
 }
 
 function setLoadingMessage() {
-
     if (loadingSpanValue.length === (+initialLoadingSpanValue.length + 3)) {
         loadingSpanValue = initialLoadingSpanValue; //24
     }
@@ -73,25 +64,19 @@ function setLoadingMessage() {
     setStatus(loadingSpanValue);
 }
 
-function loadCache() {
-
-}
-
 function showViewsOverTime(beaconIds) {
-    
+
     $('#view_over_time_status').text("Loading Views over Time chart...");
     var date_start = $('#date_start').val();
     var date_end = $('#date_end').val();
     var series = [];
     var categories = [];
-    console.log("Generating views over time");
     $('#view_over_time_status').css('z-index', '1');
-    $('#views_over_time').fadeTo(1000, '0.5');
+    $('#views-over-time-graphic').fadeTo(1000, '0.5');
+    $('#views-over-time-spinner').fadeTo(1000, '1');
 
     if (vot_cache && !beaconIds) {
         if (new Date(date_start).getTime() < vot_cache['date_start'] || new Date(date_end).getTime() > vot_cache['date_end']) {
-            console.log(vot_cache);
-            console.log(new Date(date_start).getTime());
             vot_cache = null;
             showViewsOverTime();
         } else {
@@ -105,7 +90,6 @@ function showViewsOverTime(beaconIds) {
             });
 
             drawVoTChart(series, categories);
-            console.log("Loading views over time completed.");
         }
     } else {
         if (vot_ajax) {
@@ -117,7 +101,7 @@ function showViewsOverTime(beaconIds) {
             data: {date_start: date_start, date_end: date_end, beaconIds: beaconIds},
             dataType: 'json',
             success: function(resp) {
-                console.log(resp);
+
                 if (resp['response'] && resp['response']['data'] && resp['response']['data'][0] && resp['response']['data'][0]['data']) {
                     vot_cache = [];
                     vot_cache['data'] = resp['response']['data'][0]['data'];
@@ -133,15 +117,19 @@ function showViewsOverTime(beaconIds) {
 
                     drawVoTChart(series, categories);
                     return;
+                } else {
+                    return;
                 }
             },
             error: function(resp) {
-                console.log(resp);
+                setTimeout(function() {
+                    showViewsOverTime(beaconIds);
+                }, 15000);
             },
             complete: function() {
                 $('#view_over_time_status').css('z-index', '0');
-                $('#views_over_time').fadeTo(1000, '1');
-                console.log("Loading views over time completed.");
+                $('#views-over-time-graphic').fadeTo(1000, '1');
+
 
             }
         });
@@ -150,28 +138,15 @@ function showViewsOverTime(beaconIds) {
 
 function drawVoTChart(series, categories) {
     if (series.length > 0) {
-//        if (vot_chart) {
-//            vot_chart.destroy();
-//        }
-
         if (vot_chart) {
-            console.log("redrawing");
-            // vot_chart_options.series[0] = null;
-            console.log(vot_chart.get("serie_0"));
             vot_chart.series[0].setData(series, false, true, true);
-            // vot_chart.options.xAxis[0].categories = categories;
             vot_chart.xAxis[0].setCategories(categories, false);
-            //  vot_chart.series[0] = series;
-            //vot_chart.options.xAxis.categories = categories;
             vot_chart.redraw();
-
-
-            // vot_chart.redraw();
         } else {
 
             vot_chart_options = {
                 chart: {
-                    renderTo: "views_over_time",
+                    renderTo: "views-over-time-graphic",
                     zoomType: 'xy',
                     type: 'line'
 
@@ -182,10 +157,11 @@ function drawVoTChart(series, categories) {
                 xAxis: {
                     type: 'category',
                     labels: {
-                        rotation: -45
+                        rotation: -90,
+                        y: 50
                     },
                     allowDecimals: true,
-                    categories: categories,
+                    categories: categories
                 },
                 yAxis: {
                     type: 'linear',
@@ -196,8 +172,7 @@ function drawVoTChart(series, categories) {
                 },
                 plotOptions: {
                     series: {
-                        allowPointSelect: true//,
-                                //connectNulls: true
+                        allowPointSelect: true
                     }
                 },
                 series: [{
@@ -205,29 +180,23 @@ function drawVoTChart(series, categories) {
                         name: "Views",
                         data: series
                     }]
-
-
-
             };
-
-
-
             vot_chart = new Highcharts.Chart(vot_chart_options);
         }
 
         $('#view_over_time_status').css('z-index', '0');
-        $('#views_over_time').fadeTo(1000, '1');
+        $('#views-over-time-graphic').fadeTo(1000, '1');
+        $('#views-over-time-spinner').fadeTo(1000, '0');
     } else {
         $('#view_over_time_status').text("No data found. Please specify a different date range.");
     }
-
 }
-
 
 function refresh(dimension, measure, container) {
     if (!container) {
         container = "selectableGraphicContainer";
     }
+    $('#dynamic-chart-spinner').fadeTo(1000, '1');
     var interval = setInterval(setLoadingMessage, 500);
     $.ajax({
         url: '/visualization/advertiser/viz-data',
@@ -315,10 +284,14 @@ function refresh(dimension, measure, container) {
             console.log("ERROR:");
             console.log(resp);
             setStatus("An error occurred. Please try again. If this wasn't the first error with this combination, please contact us.", 'red');
+            setTimeout(function() {
+                refresh(dimension, measure, container);
+            }, 30000);
         },
         complete: function() {
             removeInterval(interval);
             $('#output_button').show();
+            $('#dynamic-chart-spinner').fadeTo(1000, '0');
 
         }
     });
@@ -328,37 +301,3 @@ function refresh(dimension, measure, container) {
         $('#loading').hide();
     }
 }
-
-var options = {chart: {
-        renderTo: "container",
-        zoomType: 'xy'
-
-    },
-    title: {
-        text: '<div>' + "configObject.title" + '</div>'
-    },
-    xAxis: {
-        type: 'category',
-        labels: {
-            rotation: -45
-        },
-        allowDecimals: true
-    },
-    yAxis: {
-        type: 'linear',
-        allowDecimals: true
-    }, tooltip: {
-        shared: true,
-    },
-    plotOptions: {
-        series: {
-            allowPointSelect: true//,
-                    //connectNulls: true
-        }
-    },
-    series: [{
-        }
-    ]
-
-}
-;

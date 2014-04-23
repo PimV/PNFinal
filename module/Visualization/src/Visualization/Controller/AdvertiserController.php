@@ -65,14 +65,11 @@ class AdvertiserController extends AbstractActionController {
         //Retrieve Beacons
         $beacons = $helper->trackingBeacon(true);
 
-        //Retrive UU Count
-        $unique_users = number_format($helper->getUniqueUserCount(null, null), 0, ',', '.');
-
         //Retrieve Dynamic Reports
         $report = new Report($sm->get('db'), $id);
 
 
-        return array('report' => $report, 'pixels' => "0", 'beacons' => $beacons, 'unique_users' => $unique_users);
+        return array('report' => $report, 'pixels' => "0", 'beacons' => $beacons, 'unique_users' => 0);
     }
 
     public function testAction() {
@@ -118,6 +115,7 @@ class AdvertiserController extends AbstractActionController {
         $measure = $_POST['measure'];
         $beaconIds = $_POST['beaconIds'];
         $response = $helper->vizDataMultiple($dimension, $measure, $beaconIds);
+        
         echo $response;
         die;
     }

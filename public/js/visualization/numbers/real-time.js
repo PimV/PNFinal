@@ -58,8 +58,9 @@ function timer() {
 
     if (!isNaN(dynamic_value.toFixed(3))) {
         if (dynamic_value == 0) {
-            $('#pixel_count').text("Loading data...");
+
         } else {
+            $('#real-time-pixel-spinner').fadeTo(1000, '0');
             $('#pixel_count').text((commaSeparateNumber(parseFloat(Math.round(dynamic_value * 100) / 100).toFixed(2).replace('.', ',') + '')).replace(',', '.'));//.replace(',', '.')));
         }
 
@@ -76,10 +77,16 @@ function commaSeparateNumber(val) {
 setTimeout(refresh1, 0);
 
 function refresh1() {
+    if ($('#pixel_count').text() === "0") {
+        $('#real-time-pixel-spinner').fadeTo(1000, '1.0');
+    }
     if (isRunning == false) {
         isRunning = true;
         var start = new Date().getTime();
         $.ajax({
+            beforeSend: function() {
+                $('#real-time-pixel-spinner').fadeTo(1000, '1.0');
+            },
             url: '/application/api/pixel',
             method: 'GET',
             success: function(resp) {
@@ -108,6 +115,7 @@ function refresh1() {
                 isRunning = false;
                 processing_time = (new Date().getTime() - start) / 1000;
                 setTimeout(refresh1, ((+processing_time - +set_interval) * 1000) / 2);
+                $('#real-time-pixel-spinner').fadeTo(1000, '0');
             }
         });
     }

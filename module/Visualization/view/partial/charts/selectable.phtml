@@ -1,0 +1,110 @@
+<h3>Select your measure and dimension to create a unique chart <img height="25" width="25" class="number-spinner" id="dynamic-chart-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></h3>
+<div class="chartMargin">
+    <label for="measure">Measure: </label>
+    <select id="measure" name="measure" style="margin-right: 50px">
+        <option value="flx_pixels_sum">flx_pixels_sum</option>
+        <option value="flx_impressions_sum">flx_impressions_sum</option>
+        <option value="flx_floor_type_sum">flx_floor_type_sum</option>
+        <option value="flx_floor_price_avg">flx_floor_price_avg</option>
+        <option value="flx_estimated_clear_price_avg">flx_estimated_clear_price_avg</option>
+        <option value="flx_site_type_sum">flx_site_type_sum</option>
+        <option value="flx_platform_sum">flx_platform_sum</option>
+        <option value="flx_page_height_sum">flx_page_height_sum</option>
+        <option value="flx_platform_exchange_sum">flx_platform_exchange_sum</option>
+        <option value="flx_bid_price_avg">flx_bid_price_avg</option>
+        <option value="flx_bid_spend_avg">flx_bid_spend_avg</option>
+        <option value="flx_secondary_user_id_confidence_avg">flx_secondary_user_id_confidence_avg</option>
+        <option value="flx_artificial_traffic_sum">flx_artificial_traffic_sum</option>
+        <option value="flx_data_fees_avg">flx_data_fees_avg</option>
+        <option value="flx_auction_fees_avg">flx_auction_fees_avg</option>
+        <option value="flx_flxone_fees_avg">flx_flxone_fees_avg</option>
+        <option value="flx_additional_fees_avg">flx_additional_fees_avg</option>
+        <option value="flx_audit_state_sum">flx_audit_state_sum</option>
+        <option value="flx_auction_result_sum">flx_auction_result_sum</option>
+        <option value="flx_ad_position_offset_sum">flx_ad_position_offset_sum</option>
+        <option value="flx_ad_position_sum">flx_ad_position_sum</option>
+        <option value="flx_geo_long_avg">flx_geo_long_avg</option>
+        <option value="flx_geo_lat_avg">flx_geo_lat_avg</option>
+        <option value="flx_event_type_sum">flx_event_type_sum</option>
+        <option value="flx_pixel_id_sum">flx_pixel_id_sum</option>
+        <option value="flx_interaction_value_avg">flx_interaction_value_avg</option>
+        <option value="flx_interaction_type_sum">flx_interaction_type_sum</option>
+        <option value="flx_browser_sum">flx_browser_sum</option>
+        <option value="flx_connection_type_sum">flx_connection_type_sum</option>
+        <option value="flx_device_type_sum">flx_device_type_sum</option>
+        <option value="flx_event_url_source_sum">flx_event_url_source_sum</option>
+        <option value="flx_operating_system_sum">flx_operating_system_sum</option>
+        <option value="flx_browser_timezone_offset_sum">flx_browser_timezone_offset_sum</option>
+        <option value="flx_browser_resolution_width_sum">flx_browser_resolution_width_sum</option>
+        <option value="flx_screen_resolution_height_sum">flx_screen_resolution_height_sum</option>
+        <option value="flx_screen_resolution_width_sum">flx_screen_resolution_width_sum</option>
+        <option value="flx_browser_resolution_height_sum">flx_browser_resolution_height_sum</option>
+    </select>
+
+
+
+    <label for="dimension">Dimension: </label>
+    <select id="dimension" name="dimension" style="margin-right: 50px">
+        <option value="flx_campaign_id">flx_campaign_id</option>
+        <option value="flx_creative_id">flx_creative_id</option>
+        <option value="flx_placement_id">flx_placement_id</option>
+        <option value="flx_advertiser_id">flx_advertiser_id</option>
+        <option value="flx_lineitem_id">flx_lineitem_id</option>
+        <option value="flx_insertion_order_id">flx_insertion_order_id</option>
+        <option value="flx_site_id">flx_site_id</option>
+        <option value="flx_destination_url">flx_destination_url</option>
+        <option value="flx_site_domain">flx_site_domain</option>
+        <option value="flx_auction_id">flx_auction_id</option>
+        <option value="flx_publisher_id">flx_publisher_id</option>
+        <option value="flx_seller_id">flx_seller_id</option>
+        <option value="flx_buyer_id">flx_buyer_id</option>
+        <option value="flx_device_id_apple_ida">flx_device_id_apple_ida</option>
+        <option value="flx_device_id_google_adid">flx_device_id_google_adid</option>
+        <option value="flx_secondary_user_id">flx_secondary_user_id</option>
+        <option value="flx_device_id_odin">flx_device_id_odin</option>
+        <option value="flx_device_id_openudid">flx_device_id_openudid</option>
+        <option value="flx_device_id_md5">flx_device_id_md5</option>
+        <option value="flx_device_id_sha1">flx_device_id_sha1</option>
+        <option value="flx_external_data">flx_external_data</option>
+        <option value="flx_external_user_id">flx_external_user_id</option>
+        <option value="flx_currency">flx_currency</option>
+        <option value="flx_creative_size">flx_creative_size</option>
+        <option value="flx_geo_state">flx_geo_state</option>
+        <option value="flx_geo_country">flx_geo_country</option>
+        <option value="flx_user_ip_truncated">flx_user_ip_truncated</option>
+        <option value="flx_user_ip">flx_user_ip</option>
+        <option value="flx_geo_city">flx_geo_city</option>
+        <option value="flx_geo_postal_code">flx_geo_postal_code</option>
+        <option value="flx_geo_dma_code">flx_geo_dma_code</option>
+        <option value="flx_uuid">flx_uuid</option>
+        <option value="flx_time">flx_time</option>
+        <option value="date">flx_date</option>
+        <option value="flx_timestamp">flx_timestamp</option>
+        <option value="flx_fingerprint">flx_fingerprint</option>
+        <option value="flx_browser_version">flx_browser_version</option>
+        <option value="flx_device_model">flx_device_model</option>
+        <option value="flx_device_brand">flx_device_brand</option>
+        <option value="flx_connection_carrier">flx_connection_carrier</option>
+        <option value="flx_referer_url">flx_referer_url</option>
+        <option value="flx_event_url">flx_event_url</option>
+        <option value="flx_event_referer_url">flx_event_referer_url</option>
+        <option value="flx_operating_system_version">flx_operating_system_version</option>
+        <option value="flx_browser_datetime">flx_browser_datetime</option>
+        <option value="flx_browser_language_country">flx_browser_language_country</option>
+        <option value="flx_browser_language">flx_browser_language</option>
+    </select>
+
+    <input type="button" id="draw_graphic" name="submit" value="Draw Graphic">
+
+    <div class="chartContainer" style="width: 1090px; height: 500px;">
+        <span class="graph_status" id="dynamic_status">Select dimension/measure and click Draw Graph to show your custom graph here!</span>
+        <div id="selectableGraphicContainer" style="width: 1080px; height: 500px;">
+
+        </div>
+        <div>
+            <input style="display:none" type="button" id="output_button" name="output_button" value="Show Raw Output">
+        </div>
+
+
+    </div>
+</div>
