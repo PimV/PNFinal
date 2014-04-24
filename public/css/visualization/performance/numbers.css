@@ -32,9 +32,6 @@
     text-align: center;
 }
 
-.hide-overflow {
-    overflow: hidden !important;
-}
 
 .number-spinner {
     opacity: 0;

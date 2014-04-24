@@ -425,6 +425,7 @@ function createPoint(config, xValue, yValue, serieType) {
     point.y = parseFloat(yValue);
     point.name = xValue;
     if (config.xScale === 'datetime' || serieType.startsWith('pie')) {
+
         point.x = xValue;
     }
     return point;

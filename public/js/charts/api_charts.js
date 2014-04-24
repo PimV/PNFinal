@@ -12,6 +12,24 @@ var vot_cache;
 
 $(document).ready(function() {
 
+    $('.overlay').on('click', function() {
+        // var selectedChart = $(this).nextUntil("div").find
+        var box1 = bootbox.alert('<div style="width: 1100px; height: 700px;" id="enlargedChartContainer"></div>');
+        box1.find('.modal-content').css({'width': '1200px', 'margin-left': '-300px'});
+        showViewsOverTime($('#beacon').val(), "enlargedChartContainer");
+    });
+    $('.overlay').hover(function() {
+        $('.overlay-status').text("Click to enlarge chart");
+        if (!$('.overlay').is(':animated')) {
+            $('.overlay').css("background", "#FFF");
+            $('.overlay').fadeTo(400, '0.5');
+        }
+    }, function() {
+        $('.overlay-status').text("");
+        $('.overlay').fadeTo(400, '0.0');
+
+    });
+
     loadingSpanValue = "Initializing visual data";
     $('#draw_graphic').on('click', function() {
         var dimension = $('#dimension').val();
@@ -64,7 +82,7 @@ function setLoadingMessage() {
     setStatus(loadingSpanValue);
 }
 
-function showViewsOverTime(beaconIds) {
+function showViewsOverTime(beaconIds, container) {
 
     $('#view_over_time_status').text("Loading Views over Time chart...");
     var date_start = $('#date_start').val();
@@ -84,12 +102,13 @@ function showViewsOverTime(beaconIds) {
             var measure = "flx_pixels_sum";
             $.each(vot_cache['data'], function(i, data) {
                 if (new Date(data[dimension]).getTime() >= new Date(date_start).getTime() && new Date(data[dimension]).getTime() <= new Date(date_end).getTime()) {
-                    series.push({y: parseFloat(data[measure]), name: data[dimension]});
+                    series.push({y: parseFloat(data[measure]), x: parseInt((+new Date(data[dimension]).getTime() + (60 * 60 * 1000))), name: data[dimension]});
+                    //series.push({y: parseFloat(data[measure]), name: data[dimension]});
                     categories.push(data[dimension]);
                 }
             });
 
-            drawVoTChart(series, categories);
+            drawVoTChart(series, categories, container);
         }
     } else {
         if (vot_ajax) {
@@ -102,20 +121,19 @@ function showViewsOverTime(beaconIds) {
             dataType: 'json',
             success: function(resp) {
 
-                if (resp['response'] && resp['response']['data'] && resp['response']['data'][0] && resp['response']['data'][0]['data']) {
+                if (resp && resp[0] && resp[0]['data']) {
                     vot_cache = [];
-                    vot_cache['data'] = resp['response']['data'][0]['data'];
+                    vot_cache['data'] = resp[0]['data'];
                     vot_cache['date_start'] = new Date(date_start).getTime();
                     vot_cache['date_end'] = new Date(date_end).getTime();
                     vot_cache['beacon_ids'] = beaconIds;
                     var dimension = "date";
                     var measure = "flx_pixels_sum";
-                    $.each(resp['response']['data'][0]['data'], function(i, data) {
-                        series.push({y: parseFloat(data[measure]), name: data[dimension]});
+                    $.each(resp[0]['data'], function(i, data) {
+                        series.push({y: parseFloat(data[measure]), x: parseInt((+new Date(data[dimension]).getTime() + (60 * 60 * 1000))), name: data[dimension]});
                         categories.push(data[dimension]);
                     });
-
-                    drawVoTChart(series, categories);
+                    drawVoTChart(series, categories, container);
                     return;
                 } else {
                     return;
@@ -136,17 +154,19 @@ function showViewsOverTime(beaconIds) {
     }
 }
 
-function drawVoTChart(series, categories) {
+function drawVoTChart(series, categories, container) {
     if (series.length > 0) {
-        if (vot_chart) {
+        if (vot_chart && !container) {
             vot_chart.series[0].setData(series, false, true, true);
-            vot_chart.xAxis[0].setCategories(categories, false);
+            //vot_chart.xAxis[0].setCategories(categories, false);
             vot_chart.redraw();
         } else {
-
+            if (!container) {
+                container = "views-over-time-graphic";
+            }
             vot_chart_options = {
                 chart: {
-                    renderTo: "views-over-time-graphic",
+                    renderTo: container,
                     zoomType: 'xy',
                     type: 'line'
 
@@ -155,25 +175,29 @@ function drawVoTChart(series, categories) {
                     text: '<div>Views over Time</div>'
                 },
                 xAxis: {
-                    type: 'category',
+                    type: 'datetime',
                     labels: {
-                        rotation: -90,
-                        y: 50
+                        //rotation: -90,
+                        //y: 50
                     },
-                    allowDecimals: true,
-                    categories: categories
+                    // allowDecimals: true,
+                    // categories: categories
                 },
-                yAxis: {
-                    type: 'linear',
-                    allowDecimals: true
-                },
+//                yAxis: {
+//                    type: 'linear',
+//                    allowDecimals: true
+//                },
                 tooltip: {
                     shared: false,
                 },
                 plotOptions: {
                     series: {
                         allowPointSelect: true
-                    }
+                    },
+//                    line: {
+//                        "pointInterval": 259200000//,
+//                                //"pointStart": 1282408923000
+//                    }
                 },
                 series: [{
                         id: "serie_0",
@@ -181,7 +205,7 @@ function drawVoTChart(series, categories) {
                         data: series
                     }]
             };
-            vot_chart = new Highcharts.Chart(vot_chart_options);
+            vot_chart = new Highcharts.StockChart(vot_chart_options);
         }
 
         $('#view_over_time_status').css('z-index', '0');
@@ -196,85 +220,88 @@ function refresh(dimension, measure, container) {
     if (!container) {
         container = "selectableGraphicContainer";
     }
+    dimensionData = [dimension];
+    measureData = [measure];
     $('#dynamic-chart-spinner').fadeTo(1000, '1');
     var interval = setInterval(setLoadingMessage, 500);
     $.ajax({
-        url: '/visualization/advertiser/viz-data',
+        url: '/visualization/advertiser/viz-data-multiple',
         method: 'POST',
-        data: {dimension: dimension, measure: measure},
+        data: {dimension: dimensionData, measure: measureData},
         dataType: 'json',
         success: function(resp) {
             output = resp;
-            if (resp['response']) {
-                if (resp['response']['data']) {
-                    if (resp['response']['data'][0]) {
-                        if (resp['response']['data'][0]['data']) {
-                            if (resp['response']['data'][0]['data']) {
-                                var series = [];
-                                var categories = [];
-                                var dimension = resp['params'][0]['dimensions'][0];
-                                var measure = resp['params'][0]['measures'][0];
-                                console.log(resp['response']['data'][0]['data'].length);
-                                $.each(resp['response']['data'][0]['data'], function(i, data) {
-                                    if (i > 50) {
-                                        return;
-                                    }
 
-                                    series.push({y: parseFloat(data[measure]), name: data[dimension]});
-                                    categories.push(data[dimension]);
-
-                                });
-
-                                if (series.length > 0) {
-
-                                    var options = {
-                                        chart: {
-                                            renderTo: container,
-                                            zoomType: 'xy',
-                                            type: 'column'
-
-                                        },
-                                        title: {
-                                            text: '<div>Dimension: ' + dimension + ", Measure: " + measure + '</div>'
-                                        },
-                                        xAxis: {
-                                            type: 'category',
-                                            labels: {
-                                                rotation: -45
-                                            },
-                                            allowDecimals: true,
-                                            categories: categories,
-                                        },
-                                        yAxis: {
-                                            type: 'linear',
-                                            allowDecimals: true
-                                        },
-                                        tooltip: {
-                                            shared: false,
-                                        },
-                                        plotOptions: {
-                                            series: {
-                                                allowPointSelect: true//,
-                                                        //connectNulls: true
-                                            }
-                                        },
-                                        series: [{
-                                                name: measure,
-                                                data: series
-                                            }]
-
-
-
-                                    };
-
-                                    var chart = new Highcharts.Chart(options);
-                                } else {
-                                    setStatus("No data was found with this combination [dimension: " + dimension + "] | [measure: " + measure + "] . If you think this is incorrect, please contact us.", 'orange');
+            if (resp) {
+                if (resp[0]) {
+                    if (resp[0]['data']) {
+                        if (resp[0]['data']) {
+                            var series = [];
+                            var categories = [];
+                            // var dimension = dimension;
+                            //var measure = measure[0];
+                            //var measure = resp['params'][0]['measures'][0];
+                            console.log(resp[0]['data'].length);
+                            $.each(resp[0]['data'], function(i, data) {
+                                if (i > 50) {
+                                    return;
                                 }
-                                return;
+
+                                series.push({y: parseFloat(data[measure]), name: data[dimension]});
+                                categories.push(data[dimension]);
+
+                            });
+
+                            if (series.length > 0) {
+
+                                var options = {
+                                    chart: {
+                                        renderTo: container,
+                                        zoomType: 'xy',
+                                        type: 'column'
+
+                                    },
+                                    title: {
+                                        text: '<div>Dimension: ' + dimension + ", Measure: " + measure + '</div>'
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        labels: {
+                                            rotation: -45
+                                        },
+                                        allowDecimals: true,
+                                        categories: categories,
+                                    },
+                                    yAxis: {
+                                        type: 'linear',
+                                        allowDecimals: true
+                                    },
+                                    tooltip: {
+                                        shared: false,
+                                    },
+                                    plotOptions: {
+                                        series: {
+                                            allowPointSelect: true//,
+                                                    //connectNulls: true
+                                        }
+                                    },
+                                    series: [{
+                                            name: measure,
+                                            data: series
+                                        }]
+
+
+
+                                };
+
+                                var chart = new Highcharts.Chart(options);
+                            } else {
+                                setStatus("No data was found with this combination [dimension: " + dimension + "] | [measure: " + measure + "] . If you think this is incorrect, please contact us.", 'orange');
                             }
+                            return;
                         }
                     }
+
                 }
             }
             console.log(resp);
@@ -300,4 +327,8 @@ function refresh(dimension, measure, container) {
         clearInterval(interval);
         $('#loading').hide();
     }
+}
+
+function enlargeChart() {
+
 }

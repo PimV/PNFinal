@@ -9,7 +9,7 @@ $(document).ready(function() {
         if (isLocked === true) {
             return;
         }
-        if (event.pageX < 200) {
+        if (event.pageX < 150) {
             showSidebar();
         } else {
             hideSidebar();
@@ -21,20 +21,25 @@ function showSidebar() {
     if (isVisible === false) {
         isVisible = true;
     }
+    $('.wrapper').css("margin-left", "250px");
     $('#sidebar-wrapper').css("margin-left", "-250px");
     $('#sidebar-wrapper').css("left", "250px");
     $('.bottomSidebar').css("margin-left", "-250px");
     $('.bottomSidebar').css("left", "250px");
+
 }
 
 function hideSidebar() {
     if (isVisible === true) {
         isVisible = false;
     }
+//
+    $('.wrapper').css("margin-left", "60px");
     $('#sidebar-wrapper').css("left", "0");
     $('.bottomSidebar').css("margin-left", "-150px");
     $('#sidebar-wrapper').css("margin-left", "-150px");
     $('.bottomSidebar').css("left", "0");
+
 }
 
 function lockSidebar() {

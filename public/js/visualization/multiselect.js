@@ -7,12 +7,16 @@ $(function() {
             if (selectionChanged(beaconIds) === true) {
                 showViewsOverTime(beaconIds);
                 updateCumulativeValues(beaconIds);
+                updateReferers(beaconIds);
+                updateDomains(beaconIds);
             }
             selectedValues = beaconIds;
         }
     }).multiselectfilter();
 
     updateCumulativeValues($('#beacon').val());
+    updateReferers($('#beacon').val());
+    updateDomains($('#beacon').val());
     selectedValues = $('#beacon').val();
 });
 

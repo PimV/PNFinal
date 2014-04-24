@@ -2,9 +2,18 @@
     border: 2px solid #000;
     border-radius: 10px;
 }
+.chartContainer:hover {
+    //background:red;
+}
+
+.overlay {
+    opacity: 0;
+    background: #FFF;
+    z-index: 10;
+}
 
 .chartMargin {
-    margin: 25px;
+    //margin: 25px;
 }
 #graphics {
     margin: 0 auto;
@@ -18,7 +27,24 @@
 .graph_status {
     width: inherit;
     text-align: center;
-    margin-top: 250px;
+    margin-top: 120px;
     position: absolute;
     font-size: 16px;
+}
+
+#views-over-time-overlay {
+    min-width: 545px;
+    min-height: 310px;
+    position: absolute;
+
+}
+
+.overlay-status {
+    width: 100%;
+    text-align: center;
+    margin-top: 120px;
+    position: absolute;
+    font-size: 16px;
+    z-index: 15;
+    opacity: 1 !important;
 }

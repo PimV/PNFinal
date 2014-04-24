@@ -86,6 +86,7 @@ class AdvertiserController extends AbstractActionController {
         $measure = $_POST['measure'];
         $beaconIds = $_POST['beaconIds'];
         $response = $this->helper->test($dimension, $measure, $beaconIds);
+        //$response = $this->helper->test2($dimension, $measure, $beaconIds);
         echo $response;
         die;
     }
@@ -114,8 +115,10 @@ class AdvertiserController extends AbstractActionController {
         $dimension = $_POST['dimension'];
         $measure = $_POST['measure'];
         $beaconIds = $_POST['beaconIds'];
-        $response = $helper->vizDataMultiple($dimension, $measure, $beaconIds);
-        
+        $limit = $_POST['limit'];
+        $orderType = $_POST['orderType'];
+        $response = $helper->vizDataMultiple($dimension, $measure, $beaconIds, $limit, null, $orderType, null, null);
+
         echo $response;
         die;
     }

@@ -3,8 +3,10 @@
 namespace Application\Wrapper;
 
 define('ENDPOINT', 'https://beta.flxone.com/api');
+
 //define('ENDPOINT', 'https://platform.flxone.com/api');
 define('APPLICATION_PATH', getcwd());
+define('CACHE_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR);
 
 use Application\Curl\cURL;
 
@@ -60,7 +62,6 @@ class ApiHelper {
     }
 
     public function test($dimension, $measure, $beaconIds = null) {
-
         $this->getCurrentUser();
         $beaconFilter = null;
         if (isset($beaconIds) && !empty($beaconIds)) {
@@ -70,6 +71,29 @@ class ApiHelper {
             );
         }
 
+//        $beaconFilter = array(
+//            "dimension" => "flx_pixel_id",
+//            "include" => $beaconIds
+//        );
+//        $dataParams = array(
+//            array(
+//                "dimensions" => array("flx_device_brand", "flx_device_model"),
+//                "measures" => array("flx_pixels_sum"),
+//                "filters" => array(
+//                    array(
+//                        "dimension" => "date",
+//                        "date_start" => "2013-04-15",
+//                        "date_end" => "2014-04-22",
+//                        "date_dynamic" => null
+//                    ),
+//                    $beaconFilter
+//                ),
+//                "order" => array(array(
+//                        "key" => "flx_pixels_sum",
+//                        "order" => "desc"
+//                    ))
+//            ),
+//        );
         $dataParams = array(
             array(
                 "dimensions" => array($dimension),
@@ -77,12 +101,13 @@ class ApiHelper {
                 "filters" => array(
                     array(
                         "dimension" => "date",
-                        "date_start" => "2013-04-01",
+                        "date_start" => "2013-04-15",
                         "date_end" => "2014-04-22",
                         "date_dynamic" => null
                     ),
                     $beaconFilter
                 ),
+                "limit" => $limit,
                 "order" => array(array(
                         "key" => $measure,
                         "order" => "desc"
@@ -153,7 +178,7 @@ class ApiHelper {
     }
 
     public function getViewsOverTime($date_start, $date_end, $beaconIds) {
-        return $this->vizDataMultiple(array("date"), array("flx_pixels_sum"), $beaconIds, true, "asc", $date_start, $date_end);
+        return $this->vizDataMultiple(array("date"), array("flx_pixels_sum"), $beaconIds, null, true, "asc", $date_start, $date_end);
     }
 
     public function trackingBeacon($beacon_array = false, $id = array()) {
@@ -166,19 +191,11 @@ class ApiHelper {
         if (isset($id) && $id !== null) {
             $functionCall .= '?id=' . $id;
         }
+        //get only pixels
+        //$functionCall .= ?type=smart_pixel;
 
         $hash = md5($functionCall);
-        $cachePath = APPLICATION_PATH .
-                DIRECTORY_SEPARATOR .
-                'public' .
-                DIRECTORY_SEPARATOR .
-                'resources' .
-                DIRECTORY_SEPARATOR .
-                'cache' .
-                DIRECTORY_SEPARATOR .
-                'api' .
-                DIRECTORY_SEPARATOR .
-                'tracking_beacon_' . $hash . ".cache";
+        $cachePath = CACHE_PATH . 'tracking_beacon_' . $hash . ".cache";
         if (file_exists($cachePath) && (time() - filemtime($cachePath) < 1 * 3600)) {
             $response = file_get_contents($cachePath);
         } else {
@@ -220,14 +237,12 @@ class ApiHelper {
         return $response;
     }
 
-    public function vizData($dimension, $measure, $beaconIds = null, $orderByDimension = false, $orderType = "asc", $date_start = "2013-04-01", $date_end = "2014-04-05", $limit = "10000") {
+    public function vizData($dimension, $measure, $beaconIds = null, $orderByDimension = false, $orderType = null, $date_start = null, $date_end = null, $limit = null) {
         if ($this->authorizedUser === null) {
             $this->login();
         }
 
-        if ($date_end === "2014-04-05") {
-            $date_end = date('Y-m-d');
-        }
+
 
         $orderBy = $measure;
         if ($orderByDimension === true) {
@@ -290,23 +305,48 @@ class ApiHelper {
         return $response;
     }
 
-    public function vizDataMultiple($dimensions, $measures, $beaconIds = null, $callbackIds = null, $orderByDimension = false, $orderType = "asc", $date_start = "2013-04-01", $date_end = "2014-04-05", $limit = "10000") {
+    public function vizDataMultiple($dimensions, $measures, $beaconIds = null, $limit = null, $orderByDimension = null, $orderType = null, $date_start = null, $date_end = null) {
         if ($this->authorizedUser === null) {
             $this->login();
         }
 
-        if ($date_end === "2014-04-05") {
+        //Default order by dimension
+        if (null === $orderByDimension) {
+            $orderByDimension = false;
+        }
+
+        //Default end date
+        if (null === $date_end) {
             $date_end = date('Y-m-d');
         }
 
-//        $dimensions = array("flx_pixel_id", "flx_geo_city", "flx_pixel_id");
-//        $measures = array("flx_pixels_sum", "flx_uuid_distinct", "flx_time_on_site_avg");
+        //Default start date
+        if (null === $date_start) {
+            $date_start = "2013-12-01";
+        }
+
+        //Default limit
+        if (null === $limit) {
+            $limit = null;
+        }
+
+        //Default order type
+        if (null === $orderType) {
+            $orderType = "asc";
+        }
 
         $beaconFilter = null;
         if (isset($beaconIds) && !empty($beaconIds)) {
             $beaconFilter = array(
                 "dimension" => "flx_pixel_id",
                 "include" => $beaconIds
+            );
+        }
+
+        $limiter = null;
+        if (isset($limit) && !empty($limit)) {
+            $limiter = array(
+                "limit" => $limit
             );
         }
         $queries = array();
@@ -332,23 +372,14 @@ class ApiHelper {
                     ),
                     $beaconFilter
                 ),
+                "limit" => $limit,
                 "order" => array(array(
                         "key" => $orderBy,
                         "order" => $orderType
                     ))
             );
             $queryHash = md5(\Zend\Json\Json::encode($query));
-            $cachePath = APPLICATION_PATH .
-                    DIRECTORY_SEPARATOR .
-                    'public' .
-                    DIRECTORY_SEPARATOR .
-                    'resources' .
-                    DIRECTORY_SEPARATOR .
-                    'cache' .
-                    DIRECTORY_SEPARATOR .
-                    'api' .
-                    DIRECTORY_SEPARATOR .
-                    'viz_data_' . $queryHash . ".cache";
+            $cachePath = CACHE_PATH . 'viz_data_' . $queryHash . ".cache";
             $queryHashes[] = $cachePath;
             $queries[] = $query;
         }
@@ -364,49 +395,43 @@ class ApiHelper {
                 }
             }
         }
+
         if (count($queries) > 0) {
-            
+            $dataParams = $queries;
+            $x = \Zend\Json\Json::encode($dataParams);
+            $x_signature = md5(\Zend\Json\Json::encode($dataParams) . '~' . $this->authorizedUser->getId());
+
+            $params = array(
+                'x' => $x,
+                'x_signature' => $x_signature
+            );
+
+
+            $retries = 0;
+            while (empty($response) && $retries <= 3) {
+                $request = $this->cURL->newRequest('post', ENDPOINT . '/viz/data', '/viz/data', $params);
+                $response = $this->cURL->sendRequest($request);
+
+                $retries++;
+            }
+            if ($this->isAuthorized($response) === false) {
+                $this->login();
+                $this->vizData($dimension, $measure, $beaconIds, $orderByDimension, $orderType, $date_start, $date_end, $limit);
+            }
         } else {
-            
-        }
-        $dataParams = $queries;
-
-
-        $x = \Zend\Json\Json::encode($dataParams);
-        $x_signature = md5(\Zend\Json\Json::encode($dataParams) . '~' . $this->authorizedUser->getId());
-
-        $params = array(
-            'x' => $x,
-            'x_signature' => $x_signature
-        );
-
-
-        $retries = 0;
-        while (empty($response) && $retries <= 3) {
-            $request = $this->cURL->newRequest('post', ENDPOINT . '/viz/data', '/viz/data', $params);
-            $response = $this->cURL->sendRequest($request);
-
-            $retries++;
+            $data = array('response' => array('data'));
         }
 
-
-
-
-
-
-        if ($this->isAuthorized($response) === false) {
-            $this->login();
-            $this->vizData($dimension, $measure, $beaconIds, $orderByDimension, $orderType, $date_start, $date_end, $limit);
+        if (!isset($data)) {
+            $response = \Zend\Json\JSON::decode($response, true);
+            $data = $response['response']['data'];
         }
-        $response = $this->readFromCache($response, $cachedResults);
-        $this->writeToCache($response, $queries, $queryHashes);
 
-//        $response = \Zend\Json\JSON::decode($response, true);
-//        $data = $response['response']['data'];
-//        return \Zend\Json\JSON::encode($data);
+        $data = $this->readFromCache($data, $cachedResults);
+        $this->writeToCache($data, $queries, $queryHashes);
+        return \Zend\Json\JSON::encode($data);
         //$response = $this->addParamsToResponse($response, $dataParams);
-
-        return $response;
+        //return $response;
     }
 
     private function addParamsToResponse($response, $params) {
@@ -416,11 +441,10 @@ class ApiHelper {
     }
 
     private function writeToCache($response, $queries, $queryHashes) {
-        $responseArray = \Zend\Json\JSON::decode($response, true);
         foreach ($queryHashes as $key => $value) {
             if (!file_exists($value) || (time() - filemtime($value) > 1 * 3600)) {
-                if (isset($responseArray['response']['data'][$key]['data']) && !empty($responseArray['response']['data'][$key]['data'])) {
-                    file_put_contents($value, \Zend\Json\JSON::encode($responseArray['response']['data'][$key]));
+                if (isset($response[$key]['data']) && !empty($response[$key]['data'])) {
+                    file_put_contents($value, \Zend\Json\JSON::encode($response[$key]));
                 } else {
                     // echo "Response has no content";
                 }
@@ -431,23 +455,21 @@ class ApiHelper {
     }
 
     private function readFromCache($response, $cachedResults) {
-        $responseArray = \Zend\Json\JSON::decode($response, true);
-
         foreach ($cachedResults as $key => $value) {
             $result = file_get_contents($value);
             $resultArray = \Zend\Json\JSON::decode($result, true);
             $tempKey = $key;
-            $tempData = $responseArray['response']['data'][$tempKey];
-            while (isset($responseArray['response']['data'][$tempKey])) {
+            $tempData = $response[$tempKey];
+            while (isset($response[$tempKey])) {
                 $tempKey++;
             }
-            $responseArray['response']['data'][$tempKey] = $tempData;
-            $responseArray['response']['data'][$key] = $resultArray;
+            $response[$tempKey] = $tempData;
+            $response[$key] = $resultArray;
         }
 
-        $newResponse = \Zend\Json\JSON::encode($responseArray);
+        //$newResponse = \Zend\Json\JSON::encode($responseArray);
 
-        return $newResponse;
+        return $response;
     }
 
 }

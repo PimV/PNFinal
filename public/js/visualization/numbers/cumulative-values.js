@@ -13,7 +13,6 @@ function getTotalViews(beaconIds) {
             $.each(resp['response']['data'][0]['data'], function(i, data) {
                 totalViews = +totalViews + parseFloat(data['flx_pixels_sum']);
             });
-            console.log("Total Views: " + totalViews);
             totalViews = formatNumber(totalViews, 0);
             $('#total_view_count').text(totalViews);
         },
@@ -98,25 +97,24 @@ function getAllCumulativeValues(beaconIds) {
         data: {dimension: dimensions, measure: measures, beaconIds: beaconIds},
         dataType: 'json',
         success: function(resp) {
-            console.log(resp);
-
+       
             //Check valid response
-            if ('undefined' === typeof resp['response']['data']) {
+            if ('undefined' === typeof resp) {
                 return;
             }
 
             //Total Views
             totalViews = 0;
-            $.each(resp['response']['data'][0]['data'], function(i, data) {
+            $.each(resp[0]['data'], function(i, data) {
                 totalViews = +totalViews + parseFloat(data['flx_pixels_sum']);
             });
-            console.log("Total Views: " + totalViews);
+
             totalViews = formatNumber(totalViews, 0);
             $('#total_view_count').text(totalViews);
 
             //Unique Users
             uniqueUsers = 0;
-            $.each(resp['response']['data'][1]['data'], function(i, data) {
+            $.each(resp[1]['data'], function(i, data) {
                 uniqueUsers = +uniqueUsers + parseFloat(data['flx_uuid_distinct']);
             });
             uniqueUsers = formatNumber(uniqueUsers, 0);
@@ -125,13 +123,13 @@ function getAllCumulativeValues(beaconIds) {
             //Average Time on Article
             avgTimeOnSite = 0;
             var numberToAdd = 0;
-            $.each(resp['response']['data'][2]['data'], function(i, data) {
+            $.each(resp[2]['data'], function(i, data) {
                 numberToAdd = parseFloat(data['flx_time_on_site_avg']);
                 if (!isNaN(numberToAdd)) {
                     avgTimeOnSite = +avgTimeOnSite + numberToAdd;
                 }
             });
-            console.log("Average Time On Site: " + avgTimeOnSite);
+
             var division = 1;
             if (beaconIds) {
                 division = beaconIds.length;
