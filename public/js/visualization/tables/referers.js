@@ -1,6 +1,9 @@
-var totalViews;
-var avgTimeOnSite;
-var uniqueUsers;
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
 var referersAjax;
 
 function getReferers(beaconIds) {
@@ -46,7 +49,7 @@ function updateReferers(beaconIds) {
     getReferers(beaconIds);
 }
 
-function resetSearch() {
+function resetRefererSearch() {
     // clear the textbox
     $('#referers-search').val('');
     // show all table rows
@@ -76,12 +79,12 @@ $(document).ready(function() {
         }
         else if ($('#referers-search').val().length == 0) {
             // if the user removed all of the text, reset the search
-            resetSearch();
+            resetRefererSearch();
         }
 
         // if there were no matching rows, tell the user
         if ($('#referers-table tr:visible').length == 1) {
-               $('.norecords').remove();
+            $('.norecords').remove();
             $('#referers-table').append('<tr class="norecords"><td colspan="5" class="Normal">No records were found</td></tr>');
         }
     });

@@ -1,3 +1,19 @@
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
+$(document).ready(function() {
+    /* When clicked on logout, clear the JavaScript local storage */
+    $('.logout').on('click', function() {
+        localStorage.clear();
+    });
+});
+
+/**
+ * Switch roles by sending an AJAX-request.
+ */
 function switchRole() {
     var newRole = $('#roleBox').val();
     $.ajax({
@@ -9,9 +25,3 @@ function switchRole() {
         }
     });
 }
-$(document).ready(function() {
-    $('.logout').on('click', function() {
-        localStorage.clear();
-    });
-
-});

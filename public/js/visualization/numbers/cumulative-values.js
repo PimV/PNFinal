@@ -1,3 +1,9 @@
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
 var totalViews;
 var avgTimeOnSite;
 var uniqueUsers;

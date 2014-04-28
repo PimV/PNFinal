@@ -1,15 +1,31 @@
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
 var isVisible = false;
 var isLocked = false;
 $(document).ready(function() {
+    /* Initialize the sidebar */
     init();
+
+    /* Action listener for the 'lock' link */
     $('#lockSidebar').on('click', function() {
         toggleLock();
     });
+
+    /* Checks if the mouse is near/far away from the sidebar to show/hide it */
+    var sideMargin;
     $(window).on("mousemove", function(event) {
         if (isLocked === true) {
             return;
         }
-        if (event.pageX < 150) {
+        sideMargin = 50;
+        if (isVisible === true) {
+            sideMargin = 250;
+        }
+        if (event.pageX < sideMargin) {
             showSidebar();
         } else {
             hideSidebar();
@@ -17,6 +33,9 @@ $(document).ready(function() {
     });
 });
 
+/**
+ * Show the sidebar
+ */
 function showSidebar() {
     if (isVisible === false) {
         isVisible = true;
@@ -29,12 +48,14 @@ function showSidebar() {
 
 }
 
+/**
+ * Hide the sidebar
+ */
 function hideSidebar() {
     if (isVisible === true) {
         isVisible = false;
     }
-//
-    $('.wrapper').css("margin-left", "60px");
+    $('.wrapper').css("margin-left", "80px");
     $('#sidebar-wrapper').css("left", "0");
     $('.bottomSidebar').css("margin-left", "-150px");
     $('#sidebar-wrapper').css("margin-left", "-150px");
@@ -42,6 +63,9 @@ function hideSidebar() {
 
 }
 
+/**
+ * Lock the sidebar
+ */
 function lockSidebar() {
     isLocked = true;
     $('#lockIcon').attr('class', 'glyphicon glyphicon-ok');
@@ -50,11 +74,17 @@ function lockSidebar() {
     }
 }
 
+/**
+ * Unlock the sidebar
+ */
 function unlockSidebar() {
     isLocked = false;
     $('#lockIcon').attr('class', '');
 }
 
+/**
+ * Toggles the sidebar lock
+ */
 function toggleLock() {
     if (isLocked === false) {
         lockSidebar();
@@ -64,6 +94,9 @@ function toggleLock() {
     localStorage['lock'] = isLocked;
 }
 
+/**
+ * Initialize the sidebar's values/settings
+ */
 function init() {
     if (localStorage['lock']) {
         if (localStorage['lock'] === 'true') {
@@ -77,11 +110,17 @@ function init() {
     setWidgets();
 }
 
+/**
+ * (Re-)Set the variables on the sidebar (visible/locked)
+ */
 function setWidgets() {
     setVisible();
     setLocked();
 }
 
+/**
+ * (Re-)Set the visibility of the sidebar
+ */
 function setVisible() {
     if (isVisible === true) {
         showSidebar();
@@ -90,6 +129,9 @@ function setVisible() {
     }
 }
 
+/**
+ * (Re-)Set the lock of the sidebar
+ */
 function setLocked() {
     if (isLocked === true) {
         lockSidebar();

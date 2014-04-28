@@ -1,3 +1,9 @@
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
 var selectedValues;
 
 $(function() {
@@ -9,6 +15,7 @@ $(function() {
                 updateCumulativeValues(beaconIds);
                 updateReferers(beaconIds);
                 updateDomains(beaconIds);
+                addMarkers(beaconIds);
             }
             selectedValues = beaconIds;
         }
@@ -17,6 +24,7 @@ $(function() {
     updateCumulativeValues($('#beacon').val());
     updateReferers($('#beacon').val());
     updateDomains($('#beacon').val());
+    addMarkers($('#beacon').val());
     selectedValues = $('#beacon').val();
 });
 

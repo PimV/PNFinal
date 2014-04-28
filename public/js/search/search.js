@@ -1,4 +1,10 @@
-//Filter boxes
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
+/* Filter Boxes */
 var catBoxes = $('input:checkbox.cats');
 var langBoxes = $('input:checkbox.langs');
 //Slider

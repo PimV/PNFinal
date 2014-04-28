@@ -9,6 +9,24 @@
 #referers {
 }
 
+#views-per-city-map {
+    height: 450px;
+    width: 450px;
+    display: inline-block !important;
+}
+
+#views-per-city-table-container {
+    margin-left: 100px;
+    display: inline-block !important;
+    width: auto;
+}
+
+#views-per-city-table {
+    overflow-y: scroll;
+    height: 450px;
+    display: block;
+}
+
 .top-margin {
     margin-top: 20px;
 }

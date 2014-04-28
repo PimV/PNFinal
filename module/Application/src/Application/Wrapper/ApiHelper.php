@@ -71,14 +71,34 @@ class ApiHelper {
             );
         }
 
-//        $beaconFilter = array(
-//            "dimension" => "flx_pixel_id",
-//            "include" => $beaconIds
-//        );
+        $dataParams = array(
+            array(
+                "dimensions" => array("flx_geo_city", "flx_geo_long", "flx_geo_lat"),
+                "measures" => array("flx_pixels_sum"),
+                "filters" => array(
+                    array(
+                        "dimension" => "date",
+                        "date_start" => "2013-12-15",
+                        "date_end" => "2014-04-22",
+                        "date_dynamic" => null
+                    ),
+                    $beaconFilter,
+                    array(
+                        "measure" => "flx_pixels_sum",
+                        "min" => "10"
+                    )
+                ),
+                "limit" => $limit,
+                "order" => array(array(
+                        "key" => "flx_pixels_sum",
+                        "order" => "desc"
+                    ))
+            ),
+        );
 //        $dataParams = array(
 //            array(
-//                "dimensions" => array("flx_device_brand", "flx_device_model"),
-//                "measures" => array("flx_pixels_sum"),
+//                "dimensions" => array($dimension),
+//                "measures" => array($measure),
 //                "filters" => array(
 //                    array(
 //                        "dimension" => "date",
@@ -88,35 +108,15 @@ class ApiHelper {
 //                    ),
 //                    $beaconFilter
 //                ),
+//                "limit" => $limit,
 //                "order" => array(array(
-//                        "key" => "flx_pixels_sum",
+//                        "key" => $measure,
 //                        "order" => "desc"
 //                    ))
 //            ),
 //        );
-        $dataParams = array(
-            array(
-                "dimensions" => array($dimension),
-                "measures" => array($measure),
-                "filters" => array(
-                    array(
-                        "dimension" => "date",
-                        "date_start" => "2013-04-15",
-                        "date_end" => "2014-04-22",
-                        "date_dynamic" => null
-                    ),
-                    $beaconFilter
-                ),
-                "limit" => $limit,
-                "order" => array(array(
-                        "key" => $measure,
-                        "order" => "desc"
-                    ))
-            ),
-        );
 
         if (isset($this->authorizedUser)) {
-
             $x = \Zend\Json\Json::encode($dataParams);
             $x_signature = md5(\Zend\Json\Json::encode($dataParams) . '~' . $this->authorizedUser->getId());
         }
@@ -343,6 +343,8 @@ class ApiHelper {
             );
         }
 
+
+
         $limiter = null;
         if (isset($limit) && !empty($limit)) {
             $limiter = array(
@@ -351,6 +353,9 @@ class ApiHelper {
         }
         $queries = array();
         $queryHashes = array();
+        //$dimensions = array(array("flx_geo_city", "flx_geo_long", "flx_geo_lat"));
+        //$measures = array("flx_pixels_sum");
+
         for ($i = 0; $i < count($dimensions); $i++) {
             $dimension = $dimensions[$i];
             $measure = $measures[$i];
@@ -359,9 +364,15 @@ class ApiHelper {
             if ($orderByDimension === true) {
                 $orderBy = $dimension;
             }
+            $dimensionPiece = array($dimension);
+            if (is_array($dimension)) {
+                $dimensionPiece = array_values($dimension);
+            }
+
+
 
             $query = array(
-                "dimensions" => array($dimension),
+                "dimensions" => $dimensionPiece,
                 "measures" => array($measure),
                 "filters" => array(
                     array(
@@ -370,7 +381,11 @@ class ApiHelper {
                         "date_end" => $date_end,
                         "date_dynamic" => null
                     ),
-                    $beaconFilter
+                    $beaconFilter,
+                    array(
+                        "measure" => "flx_pixels_sum",
+                        "min" => "10"
+                    )
                 ),
                 "limit" => $limit,
                 "order" => array(array(
@@ -421,7 +436,8 @@ class ApiHelper {
         } else {
             $data = array('response' => array('data'));
         }
-
+        //$response = $this->addParamsToResponse($response, $dataParams);
+        //echo $response;
         if (!isset($data)) {
             $response = \Zend\Json\JSON::decode($response, true);
             $data = $response['response']['data'];
@@ -429,8 +445,10 @@ class ApiHelper {
 
         $data = $this->readFromCache($data, $cachedResults);
         $this->writeToCache($data, $queries, $queryHashes);
+        // echo \Zend\Json\JSON::encode($data);
+        // die;
         return \Zend\Json\JSON::encode($data);
-        //$response = $this->addParamsToResponse($response, $dataParams);
+
         //return $response;
     }
 

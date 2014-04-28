@@ -4,6 +4,7 @@ $this->headLink()
         ->appendStylesheet($this->basePath() . '/css/visualization/performance/numbers.css')
         ->appendStylesheet($this->basePath() . '/css/visualization/performance/chartLayout.css')
         ->appendStylesheet($this->basePath() . '/css/visualization/performance/style.css')
+        ->appendStylesheet($this->basePath() . '//cdn.leafletjs.com/leaflet-0.7.2/leaflet.css')
 ;
 
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/numbers/real-time.js');
@@ -12,6 +13,8 @@ $this->headScript()->appendFile($this->basePath() . '/js/charts/api_charts.js');
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/tables/referers.js');
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/tables/domains.js');
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/multiselect.js');
+$this->headScript()->appendFile($this->basePath() . '//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js');
+$this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/views-per-city.js');
 ?>
 
 <script type="text/javascript">
@@ -26,9 +29,11 @@ if (count($this->report->getReportingKeys()) > 0) {
 
 <h1>Revenue for <span class="bold"><?php echo $this->report->getSiteTitle(); ?></span></h1>
 
-<?php
-echo $this->partial('partial/selects/pixels_select.phtml');
-?>
+<div class="row">
+    <?php
+    echo $this->partial('partial/selects/pixels_select.phtml');
+    ?>
+</div>
 
 
 
@@ -64,6 +69,11 @@ echo $this->partial('partial/selects/pixels_select.phtml');
     <div class="row">
         <div>
             <?php echo $this->partial('partial/tables/domains.phtml'); ?>
+        </div>
+    </div>
+    <div class="row">
+        <div>
+            <?php echo $this->partial('partial/maps/views-per-city.phtml'); ?>
         </div>
     </div>
     <div id="selectableGraphic">

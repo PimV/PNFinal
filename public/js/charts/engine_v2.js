@@ -1,15 +1,33 @@
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
+/* Counter to keep track of which process is currently being executed.
+ Used to sort out the charts. */
 var global_process_id = 0;
+
+/* Array with key (processID) and value (currentSheet) */
 var currentSheet = [];
+
+/* Array with key (processID) and value (maximum amount of sheets) */
 var maxSheets = [];
+
+/* Array with key (processID) and value (amount of blank sheets) */
 var blankSheets = [];
+
+/* Array with key (processID) and value (IDs sheets to process) */
 var sheetIds = [];
 
+/* Adds the startsWith function to a String */
 if (typeof String.prototype.startsWith != 'function') {
     String.prototype.startsWith = function(str) {
         return this.slice(0, str.length) == str;
     };
 }
 
+/* Adds the endsWith function to a String */
 if (typeof String.prototype.endsWith != 'function') {
     String.prototype.endsWith = function(suffix) {
         return this.indexOf(suffix, this.length - suffix.length) !== -1;
@@ -17,8 +35,11 @@ if (typeof String.prototype.endsWith != 'function') {
 }
 
 
-
-
+/**
+ * Define and return the static cells, which should not be read.
+ * 
+ * @returns {Array} STATIC_CELLS
+ */
 function setStaticCells() {
     var STATIC_CELLS = [
         [1, 7],
@@ -32,32 +53,58 @@ function setStaticCells() {
     return STATIC_CELLS;
 }
 
-
-
+/**
+ * Starts the process to retrieve, create and draw charts from Google
+ * Spreadsheets by giving a unique google_key. 
+ * 
+ * containerId equals to the main container for a single spreadsheet.
+ * 
+ * @param String google_key
+ * @param String containerId
+ */
 function start(google_key, containerId) {
     $('#spinner').show();
-    global_process_id++;
 
+    global_process_id++; //Increment global_process_id to track the request.
+
+    /* Starts the first method (link) in the AJAX-chain. */
     getWorksheetInfo(google_key, containerId, global_process_id);
 
 }
 
+/**
+ * The first link in the AJAX-chain. Retrieves the info from all the worksheets.
+ * Fills the global arrays with a process ID, max sheets, sheets to read and 
+ * blank sheets. 
+ * 
+ * Each sheet that has to be read, will be sent to the second link in the chain:
+ * "getCellsPerSheet()".
+ * 
+ * @param String google_key
+ * @param String containerId
+ * @param Integer processId
+ */
 function getWorksheetInfo(google_key, containerId, processId) {
-    console.log("Process ID: " + processId);
     var url = 'https://spreadsheets.google.com/feeds/worksheets/' + google_key + '/public/basic?alt=json';
     $.ajax({
         url: url,
         type: 'GET',
         dataType: 'jsonp',
         success: function(resp) {
+            /* Retrieve the amount of sheets this spreadsheet has */
             sheetCount = resp['feed']['openSearch$totalResults']['$t'];
+
+            /* Set defaults for the global arrays */
             currentSheet[processId] = -1;
             maxSheets[processId] = 0;
             blankSheets[processId] = 0;
             sheetIds[processId] = [];
-            for (var i = 1; i <= sheetCount; i++) {
-                if (!resp['feed']['entry'][i - 1]['title']['$t'].startsWith("_")) {
 
+            /* Start the forloop to loop through the retrieved data  */
+            for (var i = 1; i <= sheetCount; i++) {
+                /* If sheet does not start with "_", sheet has to be read.
+                 Ignore sheets starting with "_" */
+                if (!resp['feed']['entry'][i - 1]['title']['$t'].startsWith("_")) {
                     maxSheets[processId] = maxSheets[processId] + 1;
                     sheetIds[processId].push(i);
                     getCellsPerSheet(google_key, containerId, i, processId);
@@ -72,8 +119,16 @@ function getWorksheetInfo(google_key, containerId, processId) {
     });
 }
 
+/**
+ * Second link in the Chain (of Command (evil) ). Retrieves the data of each cell
+ * and sends it to the "convertRawData()" method to be parsed.
+ * 
+ * @param String google_key
+ * @param String containerId
+ * @param Integer sheetCount
+ * @param Integer processId
+ */
 function getCellsPerSheet(google_key, containerId, sheetCount, processId) {
-
     var url = 'https://spreadsheets.google.com/feeds/cells/' + google_key + '/' + sheetCount + '/public/values?alt=json';
     $.ajax({
         url: url,
@@ -88,10 +143,19 @@ function getCellsPerSheet(google_key, containerId, sheetCount, processId) {
     });
 }
 
+/**
+ * Maps the Google Spreadsheet to a JavaScript array (procData). If completed,
+ * sends the procData array to be processed in the "processData()" method.
+ * 
+ * @param String google_key
+ * @param String containerId
+ * @param Integer sheetCount
+ * @param JSON-String json
+ * @param Integer processId
+ */
 function convertRawData(google_key, containerId, sheetCount, json, processId) {
-
-    rawData = json['feed']['entry'];
-    procData = [];
+    var rawData = json['feed']['entry'];
+    var procData = [];
     $.each(rawData, function(i, entry) {
         var column = entry['gs$cell']['col'];
         var row = entry['gs$cell']['row'];
@@ -102,9 +166,23 @@ function convertRawData(google_key, containerId, sheetCount, json, processId) {
     processData(google_key, containerId, sheetCount, procData, sheetTitle, processId);
 }
 
+/**
+ * Processes the procData array to be useful in the application. 
+ * Config object will be generated.
+ * Serie object will be generated.
+ * 
+ * Initialize "createChartOptions()" so that the chart can be made.
+ * 
+ * @param String google_key
+ * @param String containerId
+ * @param Integer sheetCount
+ * @param Array procData
+ * @param String sheetTitle
+ * @param Integer processId
+ */
 function processData(google_key, containerId, sheetCount, procData, sheetTitle, processId) {
     var configObject = generateConfigObject(procData, sheetTitle, sheetCount);
-
+    console.log(config);
     var series = new Array();
     for (var column = 2; column <= 7; column++) {
         if (procData[[1, column]]) {
@@ -120,27 +198,39 @@ function processData(google_key, containerId, sheetCount, procData, sheetTitle, 
     createChartOptions(containerId, configObject, series, sheetCount, processId);
 }
 
+/**
+ * Creates the chart options given the parameters below.
+ * 
+ * @param String containerId
+ * @param configObject configObject
+ * @param serieObject series
+ * @param Integer sheetCount
+ * @param Integer processId
+ */
 function createChartOptions(containerId, configObject, series, sheetCount, processId) {
-
+    /* Creates the containerId and checks if it's valid. */
     containerId = checkContainer(containerId, configObject, sheetCount, processId);
 
+    /* Set the container size for the defined container */
     setContainerSize(containerId, config.size);
 
+    /* Set the rotation in the configObject */
     var rotation = 0;
     if (configObject.angledLabels === 'yes') {
         rotation = -45;
     }
 
+    /* Set whether the series should be shared in the configObject */
     var shared = false;
     if (configObject.sharedLegend === 'yes') {
         shared = true;
     }
 
+    /* Create the chart options */
     var options = {
         chart: {
             renderTo: containerId,
             zoomType: 'xy'
-
         },
         title: {
             text: '<div>' + configObject.title + '</div>'
@@ -161,16 +251,23 @@ function createChartOptions(containerId, configObject, series, sheetCount, proce
         },
         plotOptions: {
             series: {
-                allowPointSelect: true//,
-                        //connectNulls: true
+                allowPointSelect: true
             }
         }
     };
+
+    /* Create the chart */
     createChart(options, configObject, series);
-
-
 }
 
+/**
+ * Creates a serie object out of the retrieved data.
+ * 
+ * @param Array procData
+ * @param Integer column
+ * @param Array rows
+ * @returns serieObject
+ */
 function createSerie(procData, column, rows) {
     var serieName = procData[[1, column]];
     var serieType;
@@ -235,6 +332,11 @@ function createSerie(procData, column, rows) {
     return createSerieObject(serieName, points, serieType, serieColor, config);
 }
 
+/**
+ * Returns the pre-defined config cells for mapping purposes.
+ * 
+ * @returns Array CONFIG_CELLS
+ */
 function fillConfigCells() {
     var CONFIG_CELLS = [];
     CONFIG_CELLS[[2, 9]] = 'Google Spreadsheet'; //Worksheet title
@@ -259,6 +361,11 @@ function fillConfigCells() {
     return CONFIG_CELLS;
 }
 
+/**
+ * Creates and returns the configObject with defaults.
+ * 
+ * @returns configObject config
+ */
 function createConfig() {
     config = new Object();
     config.title = 'undefined';
@@ -284,6 +391,15 @@ function createConfig() {
     return config;
 }
 
+/**
+ * Alters the defaults of the configObject created within the "createConfig()"
+ * method.
+ * 
+ * @param Array procData
+ * @param String sheetTitle
+ * @param Integer sheetCount
+ * @returns configObject config
+ */
 function generateConfigObject(procData, sheetTitle, sheetCount) {
     var configCells = fillConfigCells();
     var config = createConfig();
@@ -396,6 +512,12 @@ function generateConfigObject(procData, sheetTitle, sheetCount) {
     return config;
 }
 
+/**
+ * Converts a dateString to a UNIX Timestamp
+ * 
+ * @param String dateString
+ * @returns Integer timeStamp
+ */
 function dateParser(dateString) {
     var split = dateString.split('/');
     var day = split[0];
@@ -405,6 +527,12 @@ function dateParser(dateString) {
     return timestamp;
 }
 
+/**
+ * Parses the xValue if needed (compatibility with datetime and such).
+ * 
+ * @param mixed xValue
+ * @returns mixed xValue (parsed)
+ */
 function parseXValue(xValue) {
     switch (config.xScale) {
         case 'datetime':
@@ -416,10 +544,26 @@ function parseXValue(xValue) {
     return xValue;
 }
 
+/**
+ * Parses the yValue if needed (for later use, perhaps).
+ * 
+ * @param mixed yValue
+ * @returns mixed yValue (parsed)
+ */
 function parseYValue(yValue) {
     return parseFloat(yValue);
 }
 
+/**
+ * Creates a point out of a given xValue and yValue according to the config
+ * optins and serieTypes. Point is later used in the creation of the series.
+ * 
+ * @param configObject config
+ * @param mixed xValue
+ * @param mixed yValue
+ * @param String serieType
+ * @returns pointObject point
+ */
 function createPoint(config, xValue, yValue, serieType) {
     point = new Object();
     point.y = parseFloat(yValue);
@@ -431,6 +575,17 @@ function createPoint(config, xValue, yValue, serieType) {
     return point;
 }
 
+/**
+ * Creates a flag out of a given yValue, i (x-coordinate) and index(flag-content).
+ * 
+ * @param configObject config
+ * @param mixed xValue
+ * @param mixed yValue
+ * @param String serieType
+ * @param Integer i
+ * @param String index
+ * @returns pointObject point
+ */
 function createFlag(config, xValue, yValue, serieType, i, index) {
     point = new Object();
     point.x = i - 2;
@@ -440,6 +595,16 @@ function createFlag(config, xValue, yValue, serieType, i, index) {
     return point;
 }
 
+/**
+ * Creates a serie Object out of the given parameters
+ * 
+ * @param String serieName
+ * @param Array data
+ * @param String serieType
+ * @param String serieColor
+ * @param configObject config
+ * @returns serieObject serie
+ */
 function createSerieObject(serieName, data, serieType, serieColor, config) {
     var serie = new Object();
     serie.name = serieName;
@@ -466,6 +631,14 @@ function createSerieObject(serieName, data, serieType, serieColor, config) {
     return serie;
 }
 
+/**
+ * Creates a Highchart. Once the chart/stockchart is created, 
+ * series and flags will be added.
+ * 
+ * @param chartOptionsObject options
+ * @param configObject config
+ * @param Array(SerieObjects) series
+ */
 function createChart(options, config, series) {
     var chart;
     if (config.xScale !== 'datetime') {
@@ -500,6 +673,15 @@ function createChart(options, config, series) {
     });
 }
 
+/**
+ * Creates a unique containerId
+ * 
+ * @param String renderContainer
+ * @param configObject config
+ * @param Integer sheetCount
+ * @param Integer processId
+ * @returns String containerId
+ */
 function checkContainer(renderContainer, config, sheetCount, processId) {
     var mainContainer = renderContainer;
     renderContainer = renderContainer + "_" + sheetCount;
@@ -508,6 +690,15 @@ function checkContainer(renderContainer, config, sheetCount, processId) {
     return renderContainer;
 }
 
+/**
+ * Uses an algorithm to determine where to add a newly created div.
+ * 
+ * @param String mainContainer
+ * @param String subContainer
+ * @param Integer sheetCount
+ * @param configObject config
+ * @param Integer processId
+ */
 function appendDiv(mainContainer, subContainer, sheetCount, config, processId) {
     positionClass = "left chartMargin";
     $.each(sheetIds[processId], function(i, id) {
@@ -535,6 +726,12 @@ function appendDiv(mainContainer, subContainer, sheetCount, config, processId) {
     }
 }
 
+/**
+ * Sets the container size by 'standards' (normal/large)
+ * 
+ * @param String containerId
+ * @param String size
+ */
 function setContainerSize(containerId, size) {
     var container = $("#" + containerId);
     switch (size) {
@@ -549,6 +746,12 @@ function setContainerSize(containerId, size) {
     }
 }
 
+/**
+ * Set the tooltip formatter.
+ * 
+ * @param chartOptionsObject options
+ * @returns chartOptionsObject options (changed);
+ */
 function setTooltip(options) {
     if (options.tooltip.shared === false) {
         options.tooltip.formatter = function() {
@@ -562,6 +765,13 @@ function setTooltip(options) {
     return options;
 }
 
+/**
+ * Adds the flags to the highest line on the chart.
+ * 
+ * @param serieObject flagSerie
+ * @param chartObject chart
+ * @returns serieObject flagSerie (changed)
+ */
 function addHighestFlags(flagSerie, chart) {
     if (flagSerie !== null) {
         $.each(flagSerie.data, function(i, resp) {
@@ -573,12 +783,16 @@ function addHighestFlags(flagSerie, chart) {
             });
             flagSerie.data[i].y = maxPoint;
         });
-
-
     }
     return flagSerie;
 }
 
+/**
+ * Enables stacking of columns on a chart.
+ * 
+ * @param chartObject chart
+ * @returns chartObject chart (changed)
+ */
 function enableStacking(chart) {
     var options = chart.options; // Copy Chart Options
     var plotOptions = options.plotOptions; //Copy Plot Options

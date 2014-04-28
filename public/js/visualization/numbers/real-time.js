@@ -1,3 +1,9 @@
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
 var new_value;
 var previous_value;
 var dynamic_value = 0;
@@ -10,7 +16,9 @@ var isRunning = false;
 
 //Initiate update timer
 var timerVal = setInterval(timer, timer_interval);
-
+window.onbeforeunload = function() {
+    clearInterval(timerVal);
+};
 function getAvg() {
     var sum = 0;
     for (var i = 0; i < values.length; i++) {

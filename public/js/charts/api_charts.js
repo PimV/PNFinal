@@ -1,23 +1,25 @@
-//Dynamic Charts
+/*!
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
+/* Dynamic Charts */
 var initialLoadingSpanValue;
 var loadingSpanValue;
 var loadingSpan;
 var output;
 
-//ViewsOverTime
-var vot_chart; //ViewOverTime chart
-var vot_chart_options; //ViewOverTime Chart Options
-var vot_ajax;
-var vot_cache;
+/* ViewsOverTime */
+var viewsOverTimeChart;
+var viewsOverTimeChartOptions;
+var viewsOverTimeAjax;
+var viewsOverTimeCache;
 
 $(document).ready(function() {
 
-    $('.overlay').on('click', function() {
-        // var selectedChart = $(this).nextUntil("div").find
-        var box1 = bootbox.alert('<div style="width: 1100px; height: 700px;" id="enlargedChartContainer"></div>');
-        box1.find('.modal-content').css({'width': '1200px', 'margin-left': '-300px'});
-        showViewsOverTime($('#beacon').val(), "enlargedChartContainer");
-    });
+    /* Action listener for any overlay. Fades in the overlay on hover, and if the
+     user stops hovering, fades the overlay out again. */
     $('.overlay').hover(function() {
         $('.overlay-status').text("Click to enlarge chart");
         if (!$('.overlay').is(':animated')) {
@@ -30,6 +32,7 @@ $(document).ready(function() {
 
     });
 
+    /* Action listener for creating the "dynamic-content-chart" */
     loadingSpanValue = "Initializing visual data";
     $('#draw_graphic').on('click', function() {
         var dimension = $('#dimension').val();
@@ -40,25 +43,47 @@ $(document).ready(function() {
         refresh(dimension, measure);
     });
 
+    /* Opens a popup with the JSON response (DEBUG) */
     $('#output_button').on('click', function() {
         var modal = bootbox.alert('<textarea style="width: 1100px; height: 700px; " id="output">' + JSON.stringify(output, undefined, 2) + '</textarea>');
         modal.find('.modal-content').css({'width': '1200px', 'margin-left': '-300px'});
     });
+
+    /* Update the views over time chart if date_end changed */
     $('#date_end').blur(function() {
-        vot_ajax.abort();
+        viewsOverTimeAjax.abort();
         showViewsOverTime();
     });
 
+    /* Update the views over time chart if date_start changed */
     $('#date_start').blur(function() {
-        vot_ajax.abort();
+        viewsOverTimeAjax.abort();
         showViewsOverTime();
     });
 
-
+    /* Show and draw views over time on document load */
     showViewsOverTime();
+
+    /* Actionlistener for the overlay. If clicked, opens the popup with an 
+     enlarged chart */
+    $('.overlay').on('click', function() {
+        var box1 = bootbox.alert('<div style="width: 1100px; height: 700px;" id="enlargedChartContainer"></div>');
+        box1.find('.modal-content').css({'width': '1200px', 'margin-left': '-300px'});
+        enlargeChart($(this).data("chart"), $(this).data("stockChart"));
+
+    });
 });
 
 
+/**
+ * Sets the status text for the "dynamic-content-chart".
+ * 
+ * Status equals to the status message to be shown.
+ * Color equals to the color the message needs to have. Defaults to black. 
+ * 
+ * @param String status
+ * @param String color
+ */
 function setStatus(status, color) {
     $('#dynamic_status').css('color', 'black');
     if (color) {
@@ -68,6 +93,12 @@ function setStatus(status, color) {
     $('#dynamic_status').text(status);
 }
 
+/**
+ * --DEPRECATED--
+ * 
+ * Updates the loading message by adding dots towards the loading-String. Used
+ * to give feedback for the 'dynamic-content' chart.
+ */
 function setLoadingMessage() {
     if (loadingSpanValue.length === (+initialLoadingSpanValue.length + 3)) {
         loadingSpanValue = initialLoadingSpanValue; //24
@@ -82,6 +113,19 @@ function setLoadingMessage() {
     setStatus(loadingSpanValue);
 }
 
+
+/**
+ * Starts the process to show the Views over Time chart. Sends an AJAX request
+ * to the desired controller containing the parameters to request the needed 
+ * data, or, if available, reads the data from the local cache. 
+ * 
+ * Container is set default to "views-over-time-graphic" in the 
+ * drawVoTChart() method. Can be changed to set it to the popup chart or any
+ * other chart.
+ * 
+ * @param array beaconIds
+ * @param String container
+ */
 function showViewsOverTime(beaconIds, container) {
 
     $('#view_over_time_status').text("Loading Views over Time chart...");
@@ -93,17 +137,16 @@ function showViewsOverTime(beaconIds, container) {
     $('#views-over-time-graphic').fadeTo(1000, '0.5');
     $('#views-over-time-spinner').fadeTo(1000, '1');
 
-    if (vot_cache && !beaconIds) {
-        if (new Date(date_start).getTime() < vot_cache['date_start'] || new Date(date_end).getTime() > vot_cache['date_end']) {
-            vot_cache = null;
+    if (viewsOverTimeCache && !beaconIds) {
+        if (new Date(date_start).getTime() < viewsOverTimeCache['date_start'] || new Date(date_end).getTime() > viewsOverTimeCache['date_end']) {
+            viewsOverTimeCache = null;
             showViewsOverTime();
         } else {
             var dimension = "date";
             var measure = "flx_pixels_sum";
-            $.each(vot_cache['data'], function(i, data) {
+            $.each(viewsOverTimeCache['data'], function(i, data) {
                 if (new Date(data[dimension]).getTime() >= new Date(date_start).getTime() && new Date(data[dimension]).getTime() <= new Date(date_end).getTime()) {
                     series.push({y: parseFloat(data[measure]), x: parseInt((+new Date(data[dimension]).getTime() + (60 * 60 * 1000))), name: data[dimension]});
-                    //series.push({y: parseFloat(data[measure]), name: data[dimension]});
                     categories.push(data[dimension]);
                 }
             });
@@ -111,10 +154,10 @@ function showViewsOverTime(beaconIds, container) {
             drawVoTChart(series, categories, container);
         }
     } else {
-        if (vot_ajax) {
-            vot_ajax.abort();
+        if (viewsOverTimeAjax) {
+            viewsOverTimeAjax.abort();
         }
-        vot_ajax = $.ajax({
+        viewsOverTimeAjax = $.ajax({
             url: '/visualization/advertiser/views-over-time',
             method: 'POST',
             data: {date_start: date_start, date_end: date_end, beaconIds: beaconIds},
@@ -122,17 +165,25 @@ function showViewsOverTime(beaconIds, container) {
             success: function(resp) {
 
                 if (resp && resp[0] && resp[0]['data']) {
-                    vot_cache = [];
-                    vot_cache['data'] = resp[0]['data'];
-                    vot_cache['date_start'] = new Date(date_start).getTime();
-                    vot_cache['date_end'] = new Date(date_end).getTime();
-                    vot_cache['beacon_ids'] = beaconIds;
+                    /* Store data into the local object cache */
+                    viewsOverTimeCache = [];
+                    viewsOverTimeCache['data'] = resp[0]['data'];
+                    viewsOverTimeCache['date_start'] = new Date(date_start).getTime();
+                    viewsOverTimeCache['date_end'] = new Date(date_end).getTime();
+                    viewsOverTimeCache['beacon_ids'] = beaconIds;
+
+                    /* Sets the dimension and date for the views over time chart */
                     var dimension = "date";
                     var measure = "flx_pixels_sum";
+
+                    /* Loop through the received data and create a serie out of
+                     this data, to use in Highcharts later on */
                     $.each(resp[0]['data'], function(i, data) {
                         series.push({y: parseFloat(data[measure]), x: parseInt((+new Date(data[dimension]).getTime() + (60 * 60 * 1000))), name: data[dimension]});
                         categories.push(data[dimension]);
                     });
+
+                    /* Calls the method to actually draw the chart */
                     drawVoTChart(series, categories, container);
                     return;
                 } else {
@@ -140,6 +191,7 @@ function showViewsOverTime(beaconIds, container) {
                 }
             },
             error: function(resp) {
+                /* Retry to draw the views over time on error within 15 seconds */
                 setTimeout(function() {
                     showViewsOverTime(beaconIds);
                 }, 15000);
@@ -147,65 +199,64 @@ function showViewsOverTime(beaconIds, container) {
             complete: function() {
                 $('#view_over_time_status').css('z-index', '0');
                 $('#views-over-time-graphic').fadeTo(1000, '1');
-
-
             }
         });
     }
 }
 
-function drawVoTChart(series, categories, container) {
-    if (series.length > 0) {
-        if (vot_chart && !container) {
-            vot_chart.series[0].setData(series, false, true, true);
-            //vot_chart.xAxis[0].setCategories(categories, false);
-            vot_chart.redraw();
+/**
+ * Draws the Views over Time chart given the serieData, categories and the
+ * specific container to draw in.
+ * 
+ * Container is necessary for the popup chart. 
+ * 
+ * Loads data from the internal cache if that cache has been set previously.
+ * 
+ * @param serieObject serieData
+ * @param array categories
+ * @param String container
+ */
+function drawVoTChart(serieData, categories, container) {
+    if (serieData.length > 0) {
+        if (viewsOverTimeChart && !container) {
+            /* If the chart is drawn already and the container is not changed, 
+             redraw the chart in the same container by changing the serieData. */
+            viewsOverTimeChart.series[0].setData(serieData, false, true, true);
+            viewsOverTimeChart.redraw();
         } else {
             if (!container) {
                 container = "views-over-time-graphic";
             }
-            vot_chart_options = {
+            /* Create the chart options object */
+            viewsOverTimeChartOptions = {
                 chart: {
                     renderTo: container,
                     zoomType: 'xy',
                     type: 'line'
-
                 },
                 title: {
                     text: '<div>Views over Time</div>'
                 },
                 xAxis: {
-                    type: 'datetime',
-                    labels: {
-                        //rotation: -90,
-                        //y: 50
-                    },
-                    // allowDecimals: true,
-                    // categories: categories
+                    type: 'datetime'
                 },
-//                yAxis: {
-//                    type: 'linear',
-//                    allowDecimals: true
-//                },
                 tooltip: {
-                    shared: false,
+                    shared: false
                 },
                 plotOptions: {
                     series: {
                         allowPointSelect: true
-                    },
-//                    line: {
-//                        "pointInterval": 259200000//,
-//                                //"pointStart": 1282408923000
-//                    }
+                    }
                 },
                 series: [{
                         id: "serie_0",
                         name: "Views",
-                        data: series
+                        data: serieData
                     }]
             };
-            vot_chart = new Highcharts.StockChart(vot_chart_options);
+
+            /* Create the actual chart */
+            viewsOverTimeChart = new Highcharts.StockChart(viewsOverTimeChartOptions);
         }
 
         $('#view_over_time_status').css('z-index', '0');
@@ -329,6 +380,29 @@ function refresh(dimension, measure, container) {
     }
 }
 
-function enlargeChart() {
+/**
+ * Creates the chart in the popup from the given chartName. Duplicates the 
+ * options object from the given chartName and changes the 'renderTo' entry
+ * to the popup container.
+ * 
+ * The stockChart boolean is there to define whether the chart-to-draw is a
+ * Highcharts Stockchart or not.
+ * 
+ * @param String chartName
+ * @param boolean stockChart
+ */
+function enlargeChart(chartName, stockChart) {
+    /* Retrieve the chartOptions from the given chartName */
+    var actualChartOptions = window[chartName].options;
 
+    /* Change the 'renderTo' entry from the chartOptions */
+    actualChartOptions.chart.renderTo = 'enlargedChartContainer';
+
+    /* Initialize the chart */
+    var popupChart;
+    if (stockChart === true) {
+        popupChart = new Highcharts.StockChart(actualChartOptions);
+    } else {
+        popupChart = new Highcharts.Chart(actualChartOptions);
+    }
 }
