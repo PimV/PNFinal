@@ -4,11 +4,8 @@
  * Author: Pim Verlangen
  */
 
-var initialLoadingSpanValue;
-var loadingSpanValue;
-var loadingSpan;
 $(document).ready(function() {
-    loadingSpanValue = "Initializing visual data";
+    /* Action listener for the 'submit'-button */
     $('#submit').on('click', function() {
         var dimension = $('#dimensions').val();
         var measure = $('#measures').val();
@@ -20,20 +17,16 @@ $(document).ready(function() {
     });
 });
 
-
-function setStatus(status, color) {
-    $('#graph_status').css('color', 'black');
-    if (color) {
-        $('#graph_status').css('color', color);
-    }
-    $('#selectableGraphicContainer').text("");
-    $('#graph_status').text(status);
-}
-
-
+/**
+ * Send/retrieve data from the API using a simple call to a test-function 
+ * in /visualization/advertiser/test-data.
+ * 
+ * @param String dimension
+ * @param String measure
+ * @param Array beaconIds
+ */
 function sendData(dimension, measure, beaconIds) {
     console.log("Sending data...");
-    console.log(beaconIds);
     $.ajax({
         url: '/visualization/advertiser/test-data',
         method: 'POST',

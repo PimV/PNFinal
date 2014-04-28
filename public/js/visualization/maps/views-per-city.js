@@ -4,53 +4,96 @@
  * Author: Pim Verlangen
  */
 
-var map;
-var markers;
-$(document).ready(function() {
+var map; //Global map
+var markers; //Global marker array
 
+$(document).ready(function() {
+    /* Instantiate the Leaflet map and focus on the Netherlands */
     map = L.map('views-per-city-map').setView([52.5, 5.75], 6);
+
+    /* Add tile layer to the map */
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
         maxZoom: 18
     }).addTo(map);
+
+    /* Action listener for "views-per-city-search" textbox */
+    $('#views-per-city-search').keyup(function() {
+        /* Only search if there are more than 3 characters entered */
+        if ($('#views-per-city-search').val().length > 2) {
+            /* Hide all rows */
+            $('#views-per-city-table tr').hide();
+
+            /* Show the header row */
+            $('#views-per-city-table tr:first').show();
+
+            /* Show results using the "Contains" Expression */
+            $('#views-per-city-table tr td:contains(\'' + $('#views-per-city-search').val() + '\')').parent().show();
+        }
+        else if ($('#views-per-city-search').val().length == 0) {
+            /* If there is no text, reset the search */
+            resetCitySearch();
+        }
+
+        /* Give feedback if no results were found */
+        if ($('#views-per-city-table tr:visible').length == 1) {
+            $('.norecords').remove();
+            $('#views-per-city-table').append('<tr class="norecords"><td colspan="5" class="Normal">No records were found</td></tr>');
+        }
+    });
 });
 
+/**
+ * 
+ * @param {type} beaconIds
+ * @returns {undefined}
+ */
 function addMarkers(beaconIds) {
-
+    /* Remove any markers, if there were any */
     removeMarkers();
+
+    /* Create a new LayerGroup */
     markers = new L.LayerGroup();
+
+    /* Set dimensions/measures for the "views-per-city" block */
     var dimensions = [["flx_geo_city", "flx_geo_long", "flx_geo_lat"]];
-    $("#views-per-city-table").find("tr:gt(0)").remove();
     var measures = ["flx_pixels_sum"];
+
+    /* Set loading visuals */
+    $("#views-per-city-table").find("tr:gt(0)").remove();
     $('#views-per-city').fadeTo(1000, '0.5');
     $('#views-per-city-spinner').fadeTo(1000, '1.0');
+
+    /* The AJAX Request */
     domainsAjax = $.ajax({
         url: '/visualization/advertiser/viz-data-multiple',
         method: 'POST',
         data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, orderType: "desc"},
         dataType: 'json',
         success: function(resp) {
-            //Check valid response
+            /* Check if response is valid */
             if ('undefined' === typeof resp) {
                 return;
             }
-            //Domains
+
+            /* Loop through response to get useful data for the views-per-city-map */
             var largestViews;
             $.each(resp[0]['data'], function(i, data) {
-                //Retrieve and parse data
+                /* Retrieve values */
                 var long = parseFloat(data['flx_geo_lat']);
                 var lat = parseFloat(data['flx_geo_long']);
                 var city = data['flx_geo_city'];
                 var pixel_views = data['flx_pixels_sum'];
+
+                /* Check if city string equals to "0". If it is "0", don't use
+                 the data */
                 if (city !== '0') {
                     if (!largestViews) {
                         largestViews = pixel_views;
                     }
 
-
-
+                    /* Create circle marker */
                     var circleRadius = calculateCircleRadius(largestViews, pixel_views);
-                    //Create Marker
                     var circle = L.circle([long, lat], circleRadius, {
                         color: 'red',
                         fillColor: '#f03',
@@ -59,25 +102,28 @@ function addMarkers(beaconIds) {
                     circle.bindPopup(city + '<br/>' + pixel_views);
                     markers.addLayer(circle);
 
-                    //Create Table
-
+                    /* Add retrieved data to table */
                     $('#views-per-city-table tr:last').after('<tr><td>' + city + '</td><td>' + formatNumber(parseFloat(pixel_views, 0)) + '</td></tr>');
                 }
             });
+            /* Add all the retrieved markers to the map */
             map.addLayer(markers);
-
         },
         error: function(resp) {
             console.log(resp);
         },
         complete: function() {
+            /* Reset visuals */
             $('#views-per-city').fadeTo(1000, '1.0');
             $('#views-per-city-spinner').fadeTo(1000, '0');
-            console.log("Updating Domains: Done!");
+            console.log("Updating Views per City: Done!");
         }
     });
 }
 
+/**
+ * Remove all the markers from the map by removing the marker layer.
+ */
 function removeMarkers() {
     if (markers && map) {
         console.log("Markers removed");
@@ -85,61 +131,51 @@ function removeMarkers() {
     }
 }
 
+/**
+ * Calculates a circle radius by a given current value over a max value.
+ * 
+ * Max radius = 100px;
+ * Min radius = 10px; (Default by Leaflet)
+ * 
+ * @param Integer maxValue
+ * @param Integer currentValue
+ * @returns Integer circleRadius
+ */
 function calculateCircleRadius(maxValue, currentValue) {
     return Math.round(100 * 100 * (currentValue / maxValue));
 }
 
+/**
+ * Calculates a circle radius by a given current value over a max value.
+ * 
+ * Max opacity = 0.8
+ * Min opacity = 0.2
+ * 
+ * @param {type} maxValue
+ * @param {type} currentValue
+ * @returns Integer returnValue
+ */
 function calculateCircleOpacity(maxValue, currentValue) {
-    var returnValue;
-    
-    returnValue = currentValue / maxValue;
-    
+    var returnValue = currentValue / maxValue;
     if (returnValue > 0.8) {
         returnValue = 0.8;
     } else if (returnValue < 0.2) {
         returnValue = 0.2;
     }
-    
     return returnValue;
 }
 
+/**
+ * Reset the search for "views-per-city"
+ */
 function resetCitySearch() {
-    // clear the textbox
+    /* Clear the search box */
     $('#views-per-city-search').val('');
-    // show all table rows
+
+    /* Show all table rows (and remove the .norecord row) */
     $('.norecords').remove();
     $('#views-per-city-table tr').show();
-    // make sure we re-focus on the textbox for usability
+
+    /* (Re-)Focus the search box */
     $('#views-per-city-search').focus();
 }
-
-// execute the search
-$(document).ready(function() {
-    jQuery.expr[':'].Contains = function(a, i, m) {
-        return jQuery(a).text().toUpperCase()
-                .indexOf(m[3].toUpperCase()) >= 0;
-    };
-
-
-    $('#views-per-city-search').keyup(function() {
-        // only search when there are 3 or more characters in the textbox
-        if ($('#views-per-city-search').val().length > 2) {
-            // hide all rows
-            $('#views-per-city-table tr').hide();
-            // show the header row
-            $('#views-per-city-table tr:first').show();
-            // show the matching rows (using the containsNoCase from Rick Strahl)
-            $('#views-per-city-table tr td:contains(\'' + $('#views-per-city-search').val() + '\')').parent().show();
-        }
-        else if ($('#views-per-city-search').val().length == 0) {
-            // if the user removed all of the text, reset the search
-            resetCitySearch();
-        }
-
-        // if there were no matching rows, tell the user
-        if ($('#views-per-city-table tr:visible').length == 1) {
-            $('.norecords').remove();
-            $('#views-per-city-table').append('<tr class="norecords"><td colspan="5" class="Normal">No records were found</td></tr>');
-        }
-    });
-});

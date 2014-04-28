@@ -7,31 +7,37 @@
 /* Filter Boxes */
 var catBoxes = $('input:checkbox.cats');
 var langBoxes = $('input:checkbox.langs');
-//Slider
+
+/* Slider */
 var minPrice;
 var maxPrice;
 var slider;
-//Other filter buttons;
+
+/* Other filter buttons */
 var enableSlider;
 var default_operator;
-//Pagination
+
+/* Pagination */
 var paginatorDiv = $('.page-selector');
 var paginator = $('.pagesDropDown');
 var currentPage;
-$(function() {
-    if (!window.console)
+
+$(document).ready(function() {
+    /* Alternative to console.log for IE */
+    if (!window.console) {
         console = {log: function() {
             }
         };
-});
-$(document).ready(function() {
+    }
 
+    /* Adds a trim function to the String prototype */
     if (typeof String.prototype.trim !== 'function') {
         String.prototype.trim = function() {
             return this.replace(/^\s+|\s+$/g, '');
         };
     }
 
+    /* Set default variables on document load */
     catBoxes = $('input:checkbox.cats');
     langBoxes = $('input:checkbox.langs');
     default_operator = $('input:checkbox.default_operator');
@@ -39,9 +45,9 @@ $(document).ready(function() {
     enableSlider = $('.enableSlider');
     paginatorDiv = $('.page-selector');
     paginator = $('.pagesDropDown');
-    /**
-     * Event listeners
-     */
+
+
+    /* Action listener for the slider (onchange, enable/disable slider) */
     enableSlider.on('change', function(resp) {
         if (enableSlider.prop('checked')) {
             slider.slider('enable');
@@ -49,19 +55,26 @@ $(document).ready(function() {
             slider.slider('disable');
         }
     });
+
+    /* Action listener for the paginator (onchange, show new results) */
     paginator.on('change', function(resp) {
-        //Show new results 
         searchDatabaseNow(paginator.val());
 
     });
+
+    /* Action listener for the window (on "Enter"-press, search) */
+    $(window).keydown(function(event) {
+        if (event.keyCode === 13) {
+            searchDatabaseNow();
+            event.preventDefault ? event.preventDefault() : event.returnValue = false;
+            return false;
+        }
+    });
 });
-$(window).keydown(function(event) {
-    if (event.keyCode === 13) {
-        searchDatabaseNow();
-        event.preventDefault ? event.preventDefault() : event.returnValue = false;
-        return false;
-    }
-});
+
+/**
+ * Sets the minimum and maximum for the price slider.
+ */
 function setMinMaxSlider() {
     $.ajax({
         url: "init",
@@ -104,6 +117,13 @@ function setMinMaxSlider() {
     });
 }
 
+/**
+ * Retrieve the values from all fields and then search the database using an 
+ * AJAX request.
+ * 
+ * @param {type} page
+ * @returns {Boolean} false if no results/error
+ */
 function searchDatabaseNow(page) {
     currentPage = page;
     $('#results').css('display', 'none');
@@ -151,7 +171,7 @@ function searchDatabaseNow(page) {
         },
         error: function(resp) {
             console.log(url);
-            bootbox.alert("Could not find any results due to an error. Are you sure you disabled AdBlock or other advertising-software? If you did, the cause might be on our side...");
+            bootbox.alert("Could not find any results due to an error. Are you sure you disabled AdBlock or other anti-advertising-software? If you did, the cause might be on our side...");
             $("#spinner").hide();
         }
     });
@@ -159,13 +179,25 @@ function searchDatabaseNow(page) {
     return false;
 }
 
-function addZero(i) {
-    if (i < 10) {
-        i = "0" + i;
+/**
+ * Converts an integer to a String (adding a leading 0 to numbers below 10). 
+ * 
+ * @param Integer integerToString
+ * @returns String integerToString (changed)
+ */
+function addZero(integerToString) {
+    if (integerToString < 10) {
+        integerToString = "0" + integerToString;
     }
-    return i;
+    return integerToString;
 }
 
+/**
+ * Creates a dateString from a dateObject
+ * 
+ * @param DateObject date
+ * @returns String dateString
+ */
 function createDateString(date) {
     var dateString = date.getDay() + "/"
             + date.getMonth() + "/"
@@ -176,12 +208,18 @@ function createDateString(date) {
     return dateString;
 }
 
+/**
+ * Parses a JSON response into results, using another AJAX call returning 
+ * a template filled with all results for a specific page.
+ * 
+ * @param JSON-String resp
+ */
 function processRequestedESData(resp) {
     $('.result').html(""); //Clear results
     var resultCount = resp['hits']['total']; //Set resultCount
 
+    /* Push results to an array */
     var results = [];
-    //Show all results
     $.each(resp['hits']['hits'], function(i, obj) {
         var result = new Object();
 
@@ -208,6 +246,8 @@ function processRequestedESData(resp) {
         result.imgUrl = imgUrl;
         results.push(result);
     });
+
+    /* If results were found, retrieve a template */
     if (results.length > 0) {
         $.ajax({
             url: '/search/results',
@@ -224,39 +264,42 @@ function processRequestedESData(resp) {
             }
         });
     }
-    //Show message if no results were found
+
+    /* Show message if no results were found */
     if (resultCount === 0) {
         $('#resultCount').html("");
         $('.result').append("After a small search, no results were found...");
     } else {
         $('#resultCount').html("Results found: " + resultCount);
     }
-    //Animate to results
+
+    /* Animate to results */
     $('#results').css('display', 'block');
     if ($('html, body').is(':animated') === false) {
         $('html, body').animate({
             scrollTop: $('#results').position().top - 60
         }, 1300);
     }
-    //Instantiate paginator
+
+    /* Instantiate paginator */
     var paginatorDiv = $('.page-selector');
     var paginator = $('.pagesDropDown');
     paginator.html("");
-    //Hide paginator if less than 10 results
+
+    /* Hide paginator if less than 10 results */
     if (resultCount < 1) {
         paginatorDiv.hide();
     } else {
         paginatorDiv.show();
     }
-    //Add amount of pages to paginator
+    /* Add amount of pages to paginator */
     var pages = resultCount / 10;
     var lastPageEmpty = false;
     if (resultCount % 10 === 0) {
         lastPageEmpty = true;
-
     }
 
-    //Populate page selector
+    /* Populate page selector */
     for (var i = 0; i <= pages; i++) {
         if (lastPageEmpty === true) {
             if (i === (pages)) {
@@ -266,14 +309,18 @@ function processRequestedESData(resp) {
         paginator.append('<option value="' + (i + 1) + '">' + (i + 1) + '</option');
     }
 
-    //Set page selector to current page
+    /* Set page selector to current page */
     if (currentPage) {
         paginator.val(currentPage);
     }
     $('#pageOf').html(" of " + Math.ceil(pages));
 }
 
-
+/**
+ * Retrieve all selected categories
+ * 
+ * @returns Array catOpts
+ */
 function getCatOpts() {
     var catOpts = [];
     catBoxes.each(function() {
@@ -284,6 +331,11 @@ function getCatOpts() {
     return catOpts;
 }
 
+/**
+ * Retrieve all selected languages
+ * 
+ * @returns Array langOpts
+ */
 function getLangOpts() {
     var langOpts = [];
     langBoxes.each(function() {
@@ -294,24 +346,36 @@ function getLangOpts() {
     return langOpts;
 }
 
+/**
+ * Check all languages
+ */
 function checkLang() {
     langBoxes.each(function() {
         this.checked = true;
     });
 }
 
+/**
+ * Uncheck all languages
+ */
 function uncheckLang() {
     langBoxes.each(function() {
         this.checked = false;
     });
 }
 
+/**
+ * Check all categories
+ */
 function checkCat() {
     catBoxes.each(function() {
         this.checked = true;
     });
 }
 
+/**
+ * Uncheck all categories
+ */
 function uncheckCat() {
     catBoxes.each(function() {
         this.checked = false;

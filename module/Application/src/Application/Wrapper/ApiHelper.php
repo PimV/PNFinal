@@ -1,9 +1,14 @@
 <?php
 
+/* !
+ * PubNxt v0.01
+ * Copyright 2014 Source Republic
+ * Author: Pim Verlangen
+ */
+
 namespace Application\Wrapper;
 
 define('ENDPOINT', 'https://beta.flxone.com/api');
-
 //define('ENDPOINT', 'https://platform.flxone.com/api');
 define('APPLICATION_PATH', getcwd());
 define('CACHE_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR);
@@ -34,7 +39,6 @@ class ApiHelper {
 
         $response = $this->cURL->post(ENDPOINT, '/auth', $userInfo);
         if ($response->statusText === "200 OK") {
-            //$this->authorizedUser = new User($this->cURL->get(ENDPOINT, '/user/current'));
             $this->getCurrentUser();
         } else {
             $this->authorizedUser = null;

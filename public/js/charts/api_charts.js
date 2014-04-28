@@ -67,8 +67,11 @@ $(document).ready(function() {
     /* Actionlistener for the overlay. If clicked, opens the popup with an 
      enlarged chart */
     $('.overlay').on('click', function() {
+        /* Show large modal */
         var box1 = bootbox.alert('<div style="width: 1100px; height: 700px;" id="enlargedChartContainer"></div>');
         box1.find('.modal-content').css({'width': '1200px', 'margin-left': '-300px'});
+
+        /* Draw the chart in the popup */
         enlargeChart($(this).data("chart"), $(this).data("stockChart"));
 
     });

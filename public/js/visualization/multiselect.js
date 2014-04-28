@@ -4,9 +4,16 @@
  * Author: Pim Verlangen
  */
 
-var selectedValues;
+var selectedValues; //Selected Beacon IDs
 
-$(function() {
+$(document).ready(function() {
+    /* ???????????? */
+    $.expr[':'].Contains = function(a, i, m) {
+        return jQuery(a).text().toUpperCase()
+                .indexOf(m[3].toUpperCase()) >= 0;
+    };
+
+    /* Initialize the multi-select box */
     $("#beacon").multiselect({
         close: function(event, ui) {
             beaconIds = $('#beacon').val();
@@ -21,6 +28,7 @@ $(function() {
         }
     }).multiselectfilter();
 
+    /* Load all blocks on document ready */
     updateCumulativeValues($('#beacon').val());
     updateReferers($('#beacon').val());
     updateDomains($('#beacon').val());
@@ -28,7 +36,12 @@ $(function() {
     selectedValues = $('#beacon').val();
 });
 
-
+/**
+ * Check if a selection has been changed in the multi-select.
+ * 
+ * @param Array beaconIds
+ * @returns {Boolean} true if changed
+ */
 function selectionChanged(beaconIds) {
     if (selectedValues) {
         var checkLength = beaconIds.length;
