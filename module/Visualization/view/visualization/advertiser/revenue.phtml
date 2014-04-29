@@ -9,6 +9,8 @@ $this->headLink()
 
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/numbers/real-time.js');
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/numbers/cumulative-values.js');
+$this->headScript()->appendFile($this->basePath() . '/js/visualization/charts/general.js');
+$this->headScript()->appendFile($this->basePath() . '/js/visualization/charts/views-over-time.js');
 $this->headScript()->appendFile($this->basePath() . '/js/charts/api_charts.js');
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/tables/referers.js');
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/tables/domains.js');
@@ -17,15 +19,16 @@ $this->headScript()->appendFile($this->basePath() . '//cdn.leafletjs.com/leaflet
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/views-per-city.js');
 ?>
 
-<script type="text/javascript">
+<!-- DISABLE THESE COMMENTS TO SHOW GOOGLE SPREADSHEET CHARTS ! -->
+<!--<script type="text/javascript">
 <?php
-if (count($this->report->getReportingKeys()) > 0) {
-    foreach ($this->report->getReportingKeys() as $key) {
-        echo "start('" . $key . "', 'visuals1')";
-    }
-}
+//if (count($this->report->getReportingKeys()) > 0) {
+//    foreach ($this->report->getReportingKeys() as $key) {
+//        echo "start('" . $key . "', 'visuals1');";
+//    }
+//}
 ?>
-</script>
+</script>-->
 
 <h1>Revenue for <span class="bold"><?php echo $this->report->getSiteTitle(); ?></span></h1>
 
@@ -58,17 +61,12 @@ if (count($this->report->getReportingKeys()) > 0) {
 
         </div>
         <div id="devices" class="inline-block hide-overflow">
-            <?php echo $this->partial('partial/tables/device.phtml'); ?>
+            <?php //echo $this->partial('partial/tables/device.phtml'); ?>
         </div>
     </div>
     <div class="row">
         <div>
-            <?php echo $this->partial('partial/tables/referers.phtml'); ?>
-        </div>
-    </div>
-    <div class="row">
-        <div>
-            <?php echo $this->partial('partial/tables/domains.phtml'); ?>
+            <?php echo $this->partial('partial/tables/per-site-data.phtml'); ?>
         </div>
     </div>
     <div class="row">
@@ -76,18 +74,22 @@ if (count($this->report->getReportingKeys()) > 0) {
             <?php echo $this->partial('partial/maps/views-per-city.phtml'); ?>
         </div>
     </div>
-    <div id="selectableGraphic">
-        <?php echo $this->partial('partial/charts/selectable.phtml'); ?>
-    </div>
 
-    <?php if (count($this->report->getReportingKeys()) > 0) { ?>
-        <h3>Dynamic (Self) Reporting</h3>
-        <div class="graphicContainer" id="visuals1"></div>
-        <?php
-    } else {
-        echo 'No visual information ready. If this is incorrect according to you, please contact us.';
-    }
-    ?> 
+
+    <!-- DISABLE THESE COMMENTS TO SHOW A SELECTABLE GRAPHIC CHART! -->
+    <!--    <div id="selectableGraphic">
+    <?php //echo $this->partial('partial/charts/selectable.phtml'); ?>
+        </div> -->
+
+    <!-- DISABLE THESE COMMENTS TO SHOW GOOGLE SPREADSHEET CHARTS ! -->
+    <?php //if (count($this->report->getReportingKeys()) > 0) { ?>
+    <!-- <h3>Dynamic (Self) Reporting</h3>
+     <div class="graphicContainer" id="visuals1"></div> -->
+    <?php
+//    } else {
+//        echo 'No visual information ready. If this is incorrect according to you, please contact us.';
+//    }
+    ?> -->
 </div>
 <br/>
 <div>

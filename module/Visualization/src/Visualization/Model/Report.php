@@ -12,11 +12,13 @@ class Report {
     protected $site_id;
     protected $site_title;
     protected $google_keys;
+    protected $isValid = true;
 
-    function __construct($adapter, $id = null) {
+    public function __construct($adapter, $id = null) {
         $this->adapter = $adapter;
         if ($id == null) {
             //Wait, what? How could this ID be 0/null?!
+            $this->isValid = false;
         }
         $this->site_id = $id;
 
@@ -37,7 +39,7 @@ class Report {
         }
     }
 
-    function setSiteTitle($id) {
+    public function setSiteTitle($id) {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from('site');
@@ -50,10 +52,12 @@ class Report {
 
         if (count($results) > 0) {
             $this->site_title = $results[0]['title'];
+        } else {
+            $this->isValid = false;
         }
     }
 
-    function setReportingKeys($raw_results) {
+    public function setReportingKeys($raw_results) {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from('reporting');
@@ -74,12 +78,16 @@ class Report {
         }
     }
 
-    function getReportingKeys() {
+    public function getReportingKeys() {
         return $this->google_keys;
     }
 
-    function getSiteTitle() {
+    public function getSiteTitle() {
         return $this->site_title;
+    }
+
+    public function isReportValid() {
+        return $this->isValid;
     }
 
 }

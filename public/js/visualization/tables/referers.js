@@ -48,7 +48,7 @@ function updateReferers(beaconIds) {
 function getReferers(beaconIds) {
     /* Set dimensions/measures for the  "referers" block */
     var dimensions = ["flx_referer_url"];
-    var measures = ["flx_pixels_sum"];
+    var measures = [["flx_pixels_sum", "flx_uuid_distinct", "flx_time_on_site_avg", "flx_form_field_click_sum"]];
 
     /* Set loading visuals */
     $('#referers').fadeTo(1000, '0.5');
@@ -66,10 +66,17 @@ function getReferers(beaconIds) {
             if ('undefined' === typeof resp) {
                 return;
             }
-
+            console.log(resp);
             /* Loop through response to get useful data and store it in the "referers-table" table. */
             $.each(resp[0]['data'], function(i, data) {
-                $('#referers-table tr:last').after('<tr><td>' + data["flx_referer_url"] + '</td><td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td></tr>');
+                $('#referers-table tr:last').after(
+                        '<tr>' +
+                        '<td>' + data["flx_referer_url"] + '</td>' +
+                        '<td>' + formatNumber(parseFloat(data["flx_uuid_distinct"], 0)) + '</td>' +
+                        '<td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td>' +
+                        '<td>' + formatNumber(parseFloat(data["flx_form_field_click_sum"], 0)) + '</td>' +
+                        '<td>' + formatNumber(parseFloat(data["flx_time_on_site_avg"], 1)) + '</td>' +
+                        '</tr>');
             });
 
         },

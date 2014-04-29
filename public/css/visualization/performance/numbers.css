@@ -7,20 +7,18 @@
 }
 
 .numberTitleBlock {
+    font-weight: bold;
     line-height: 20px;
 }
 
 .numberTitle {
-    //font-weight: bold;
     font-size: 15px;    
 }
 
 .blockId {
     border: 2px solid #000;
-    //border-radius: 10px;
-    //float: left;
-    //margin: 50px;
-    width: 300px;
+    min-width: 200px;
+    padding: 5px;
     display: inline-block;
 }
 
@@ -31,7 +29,6 @@
 .centerText {
     text-align: center;
 }
-
 
 .number-spinner {
     opacity: 0;

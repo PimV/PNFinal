@@ -9,6 +9,10 @@ $(document).ready(function() {
     $('.logout').on('click', function() {
         localStorage.clear();
     });
+
+    $('#roleBox').on('change', function() {
+        switchRole();
+    })
 });
 
 /**

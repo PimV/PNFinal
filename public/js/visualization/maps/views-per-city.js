@@ -49,6 +49,7 @@ $(document).ready(function() {
  * @returns {undefined}
  */
 function addMarkers(beaconIds) {
+    console.log("Getting Views per City: Started!");
     /* Remove any markers, if there were any */
     removeMarkers();
 
@@ -93,17 +94,10 @@ function addMarkers(beaconIds) {
                     }
 
                     /* Create circle marker */
-                    var circleRadius = calculateCircleRadius(largestViews, pixel_views);
-                    var circle = L.circle([long, lat], circleRadius, {
-                        color: 'red',
-                        fillColor: '#f03',
-                        fillOpacity: calculateCircleOpacity(largestViews, pixel_views)
-                    }).addTo(map);
-                    circle.bindPopup(city + '<br/>' + pixel_views);
-                    markers.addLayer(circle);
+                    createMarker(largestViews, pixel_views, long, lat, city);
 
                     /* Add retrieved data to table */
-                    $('#views-per-city-table tr:last').after('<tr><td>' + city + '</td><td>' + formatNumber(parseFloat(pixel_views, 0)) + '</td></tr>');
+                    addToViewsPerCityTable(city, pixel_views);
                 }
             });
             /* Add all the retrieved markers to the map */
@@ -119,6 +113,36 @@ function addMarkers(beaconIds) {
             console.log("Updating Views per City: Done!");
         }
     });
+}
+
+/**
+ * Creates a circle marker by the given parameters.
+ * 
+ * @param Integer largestViews
+ * @param Integer pixel_views
+ * @param Float long
+ * @param Float lat
+ * @param String city
+ */
+function createMarker(largestViews, pixel_views, long, lat, city) {
+    var circleRadius = calculateCircleRadius(largestViews, pixel_views);
+    var circle = L.circle([long, lat], circleRadius, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: calculateCircleOpacity(largestViews, pixel_views)
+    });
+    circle.bindPopup(city + '<br/>' + pixel_views);
+    markers.addLayer(circle);
+}
+
+/**
+ * Adds a row to the "views-per-city-table" table with the given parameters.
+ * 
+ * @param String city
+ * @param Integer pixel_views
+ */
+function addToViewsPerCityTable(city, pixel_views) {
+    $('#views-per-city-table tr:last').after('<tr><td>' + city + '</td><td>' + formatNumber(parseFloat(pixel_views, 0)) + '</td></tr>');
 }
 
 /**

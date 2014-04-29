@@ -59,14 +59,20 @@ class AdvertiserController extends AbstractActionController {
             return $this->redirect()->toUrl('/visualization/advertiser/revenue-home');
         }
 
+        //Retrieve Dynamic Reports
+        $report = new Report($sm->get('db'), $id);
+        if ($report->isReportValid() === false) {
+            return $this->redirect()->toUrl('/visualization/advertiser/revenue-home');
+        }
+
         //Init APIHelper
         $helper = new \Application\Wrapper\ApiHelper();
 
         //Retrieve Beacons
         $beacons = $helper->trackingBeacon(true);
 
-        //Retrieve Dynamic Reports
-        $report = new Report($sm->get('db'), $id);
+
+
 
 
         return array('report' => $report, 'pixels' => "0", 'beacons' => $beacons, 'unique_users' => 0);
@@ -116,9 +122,16 @@ class AdvertiserController extends AbstractActionController {
         $measure = $_POST['measure'];
         $beaconIds = $_POST['beaconIds'];
         $limit = $_POST['limit'];
+        $orderByDimension = $_POST['orderByDimension'];
+        if ($orderByDimension === "true") {
+            $orderByDimension = true;
+        } else if ($orderByDimension === "false") {
+            $orderByDimension = false;
+        }
         $orderType = $_POST['orderType'];
-        $response = $helper->vizDataMultiple($dimension, $measure, $beaconIds, $limit, null, $orderType, null, null);
-
+        $date_start = $_POST['date_start'];
+        $date_end = $_POST['date_end'];
+        $response = $helper->vizDataMultiple($dimension, $measure, $beaconIds, $limit, $orderByDimension, $orderType, $date_start, $date_end);
         echo $response;
         die;
     }

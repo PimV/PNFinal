@@ -36,6 +36,15 @@ $(document).ready(function() {
     selectedValues = $('#beacon').val();
 });
 
+
+function getBeaconById(id) {
+    if ($('#beacon option[value=' + id + ']').length > 0) {
+        return $('#beacon option[value=' + id + ']').text();
+    } else {
+        return;
+    }
+}
+
 /**
  * Check if a selection has been changed in the multi-select.
  * 

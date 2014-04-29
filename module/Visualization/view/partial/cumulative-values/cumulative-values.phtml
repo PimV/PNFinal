@@ -1,32 +1,13 @@
 <div>
     <h2>Cumulative Values  <img height="25" width="25" class="number-spinner" id="cumulative-values-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></h2>
 </div>
-<div id="cumulative-values" class="hide-overflow">
+<div id="cumulative-values" class="hide-overflow small-table-font">
 
     <div id="spinner" style="">
 
     </div>
     <div class="blockId">
-        <div id="impressions">
-            <div class="actualNumber">
-                <div class="numberType">
-                    <div class="numberTitleBlock">
-                        <span class="font-icon glyphicon glyphicon-eye-open centerText" style="color:#0066FF;"></span><br/>
-                        <span class="numberTitle centerText">Total Pixel Views</span>
-                    </div>
-                    <div>
-                        <span id="total_view_count" class="number centerText">
-                            <?php
-                            echo 0; //$this->total_views;
-                            ?>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="blockId">
-        <div id="pixels">
+        <div id="unique-users">
             <div class="actualNumber">
                 <div class="numberType">
                     <div class="numberTitleBlock">
@@ -45,7 +26,46 @@
         </div>
     </div>
     <div class="blockId">
-        <div id="impressions_bid">
+        <div id="pixels">
+            <div class="actualNumber">
+                <div class="numberType">
+                    <div class="numberTitleBlock">
+                        <span class="font-icon glyphicon glyphicon-eye-open centerText" style="color:#0066FF;"></span><br/>
+                        <span class="numberTitle centerText">Total Pixel Views</span>
+                    </div>
+                    <div>
+                        <span id="total_view_count" class="number centerText">
+                            <?php
+                            echo 0; //$this->total_views;
+                            ?>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="blockId">
+        <div id="form-clicks">
+            <div class="actualNumber">
+                <div class="numberType">
+                    <div class="numberTitleBlock">
+                        <span  class="font-icon glyphicon glyphicon-hand-up centerText" style="color:#0066FF;"></span><br/>
+                        <span class="numberTitle centerText">Form Clicks</span>
+                    </div>
+                    <div>
+                        <span id="click_count" class="number centerText">
+                            <?php
+                            echo '0'; //"Not Implemented";
+                            ?>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="blockId">
+        <div id="avg-time-on-site">
             <div class="actualNumber">
                 <div class="numberType">
                     <div class="numberTitleBlock">
@@ -63,23 +83,5 @@
             </div>
         </div>
     </div>
-    <div class="blockId">
-        <div id="click">
-            <div class="actualNumber">
-                <div class="numberType">
-                    <div class="numberTitleBlock">
-                        <span  class="font-icon glyphicon glyphicon-eye-close centerText" style="color:#0066FF;"></span><br/>
-                        <span class="numberTitle centerText">Bounce Rate (%)</span>
-                    </div>
-                    <div>
-                        <span id="click_count" class="numSber centerText">
-                            <?php
-                            echo '0 <span height="10" width="10" class="font-icon glyphicon glyphicon-exclamation-sign centerText" style="color:red;"></span>'; //"Not Implemented";
-                            ?>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 </div>

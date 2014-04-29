@@ -53,7 +53,7 @@ function updateDomains(beaconIds) {
 function getDomains(beaconIds) {
     /* Set dimensions/measures for the  "domain" block */
     var dimensions = ["flx_site_domain"];
-    var measures = ["flx_pixels_sum"];
+    var measures = [["flx_pixels_sum", "flx_uuid_distinct", "flx_time_on_site_avg", "flx_form_field_click_sum"]];
 
     /* Set loading visuals */
     $("#domains-table").find("tr:gt(0)").remove();
@@ -71,10 +71,16 @@ function getDomains(beaconIds) {
             if ('undefined' === typeof resp) {
                 return;
             }
-
             /* Loop through response to get useful data and store it in the "domains-table" table. */
             $.each(resp[0]['data'], function(i, data) {
-                $('#domains-table tr:last').after('<tr><td>' + data["flx_site_domain"] + '</td><td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td></tr>');
+                $('#domains-table tr:last').after(
+                        '<tr>' +
+                        '<td>' + data["flx_site_domain"] + '</td>' +
+                        '<td>' + formatNumber(parseFloat(data["flx_uuid_distinct"], 0)) + '</td>' +
+                        '<td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td>' +
+                        '<td>' + formatNumber(parseFloat(data["flx_form_field_click_sum"], 0)) + '</td>' +
+                        '<td>' + formatNumber(parseFloat(data["flx_time_on_site_avg"], 1)) + '</td>' +
+                        '</tr>');
             });
 
         },

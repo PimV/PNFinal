@@ -47,24 +47,6 @@ class ApiHelper {
         return $response;
     }
 
-    public function getUniqueUserCount($date_start, $date_end) {
-        if (!isset($date_start)) {
-            //$date_start = date('Y-m-d');
-        }
-
-        if (!isset($date_end)) {
-            //$date_end = date('Y-m-d');
-        }
-
-        $date_start = "2014-04-01";
-        $date_end = "2014-04-01";
-
-        $response = $this->vizData("flx_uuid", "flx_pixels_sum", false, "asc", $date_start, $date_end);
-        $uu_count = -1;
-        $response = json_decode($response, true);
-        return count($response['response']['data'][0]['data']);
-    }
-
     public function test($dimension, $measure, $beaconIds = null) {
         $this->getCurrentUser();
         $beaconFilter = null;
@@ -77,13 +59,13 @@ class ApiHelper {
 
         $dataParams = array(
             array(
-                "dimensions" => array("flx_geo_city", "flx_geo_long", "flx_geo_lat"),
+                "dimensions" => array("flx_pixel_id", "date"),
                 "measures" => array("flx_pixels_sum"),
                 "filters" => array(
                     array(
                         "dimension" => "date",
-                        "date_start" => "2013-12-15",
-                        "date_end" => "2014-04-22",
+                        "date_start" => "2014-04-20",
+                        "date_end" => "2014-04-28",
                         "date_dynamic" => null
                     ),
                     $beaconFilter,
@@ -145,8 +127,6 @@ class ApiHelper {
             $this->test($dimension, $measure, $beaconIds);
         }
 
-
-
         $response = $this->addParamsToResponse($response, $dataParams);
         return $response;
     }
@@ -200,7 +180,7 @@ class ApiHelper {
 
         $hash = md5($functionCall);
         $cachePath = CACHE_PATH . 'tracking_beacon_' . $hash . ".cache";
-        if (file_exists($cachePath) && (time() - filemtime($cachePath) < 1 * 3600)) {
+        if (file_exists($cachePath) && (time() - filemtime($cachePath) < 6 * 3600)) {
             $response = file_get_contents($cachePath);
         } else {
             while (empty($response) && $retries <= 3) {
@@ -364,20 +344,29 @@ class ApiHelper {
             $dimension = $dimensions[$i];
             $measure = $measures[$i];
 
+//            $orderBy = $measure;
+//            if ($orderByDimension === true) {
+//                $orderBy = $dimension;
+//            }
+            $dimensionPiece = array($dimension);
+            if (is_array($dimension)) {
+                $dimensionPiece = array_values($dimension);
+                $dimension = $dimensionPiece[0];
+            }
+
+            $measurePiece = array($measure);
+            if (is_array($measure)) {
+                $measurePiece = array_values($measure);
+                $measure = $measurePiece[0];
+            }
+
             $orderBy = $measure;
             if ($orderByDimension === true) {
                 $orderBy = $dimension;
             }
-            $dimensionPiece = array($dimension);
-            if (is_array($dimension)) {
-                $dimensionPiece = array_values($dimension);
-            }
-
-
-
             $query = array(
                 "dimensions" => $dimensionPiece,
-                "measures" => array($measure),
+                "measures" => $measurePiece,
                 "filters" => array(
                     array(
                         "dimension" => "date",
@@ -408,7 +397,7 @@ class ApiHelper {
         foreach ($queryHashes as $key => $value) {
             $count++;
             if (file_exists($value)) {
-                if (time() - filemtime($value) < 1 * 3600) {
+                if (time() - filemtime($value) < 6 * 3600) {
                     $cachedResults[$key] = $value;
                     unset($queries[$count]);
                 }
@@ -464,7 +453,7 @@ class ApiHelper {
 
     private function writeToCache($response, $queries, $queryHashes) {
         foreach ($queryHashes as $key => $value) {
-            if (!file_exists($value) || (time() - filemtime($value) > 1 * 3600)) {
+            if (!file_exists($value) || (time() - filemtime($value) > 6 * 3600)) {
                 if (isset($response[$key]['data']) && !empty($response[$key]['data'])) {
                     file_put_contents($value, \Zend\Json\JSON::encode($response[$key]));
                 } else {

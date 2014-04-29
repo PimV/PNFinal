@@ -182,14 +182,13 @@ function convertRawData(google_key, containerId, sheetCount, json, processId) {
  */
 function processData(google_key, containerId, sheetCount, procData, sheetTitle, processId) {
     var configObject = generateConfigObject(procData, sheetTitle, sheetCount);
-    console.log(config);
     var series = new Array();
     for (var column = 2; column <= 7; column++) {
         if (procData[[1, column]]) {
-            var newSerie = createSerie(procData, column, config.rows);
+            var newSerie = createSerie(procData, column, configObject.rows, configObject);
             if (newSerie !== 'null') {
                 series.push(newSerie);
-                if (config.solo === true) {
+                if (configObject.solo === true) {
                     break;
                 }
             }
@@ -212,7 +211,7 @@ function createChartOptions(containerId, configObject, series, sheetCount, proce
     containerId = checkContainer(containerId, configObject, sheetCount, processId);
 
     /* Set the container size for the defined container */
-    setContainerSize(containerId, config.size);
+    setContainerSize(containerId, configObject.size);
 
     /* Set the rotation in the configObject */
     var rotation = 0;
@@ -268,30 +267,30 @@ function createChartOptions(containerId, configObject, series, sheetCount, proce
  * @param Array rows
  * @returns serieObject
  */
-function createSerie(procData, column, rows) {
+function createSerie(procData, column, rows, configObject) {
     var serieName = procData[[1, column]];
     var serieType;
     var serieColor;
     switch (column) {
         case 2:
-            serieColor = config.color1;
-            serieType = config.columnOne;
+            serieColor = configObject.color1;
+            serieType = configObject.columnOne;
             break;
         case 3:
-            serieColor = config.color2;
-            serieType = config.columnTwo;
+            serieColor = configObject.color2;
+            serieType = configObject.columnTwo;
             break;
         case 4:
-            serieColor = config.color3;
-            serieType = config.columnThree;
+            serieColor = configObject.color3;
+            serieType = configObject.columnThree;
             break;
         case 5:
-            serieColor = config.color4;
-            serieType = config.columnFour;
+            serieColor = configObject.color4;
+            serieType = configObject.columnFour;
             break;
         case 6:
-            serieColor = config.color5;
-            serieType = config.columnFive;
+            serieColor = configObject.color5;
+            serieType = configObject.columnFive;
             break;
         case 7:
             serieType = 'flags';
@@ -301,7 +300,7 @@ function createSerie(procData, column, rows) {
     for (var row = 2; row <= rows + 1; row++) {
         var value = procData[[row, 1]];
 
-        xValues[row] = parseXValue(value);
+        xValues[row] = parseXValue(value, configObject);
     }
 
     var yValues = [];
@@ -310,7 +309,7 @@ function createSerie(procData, column, rows) {
         if (serieType === 'flags') {
             yValues[row] = value;
         } else {
-            yValues[row] = parseYValue(value);
+            yValues[row] = parseYValue(value, configObject);
         }
 
     }
@@ -318,22 +317,22 @@ function createSerie(procData, column, rows) {
     points.splice(0, 1);
     for (var i = 2; i <= rows + 1; i++) {
         if (serieType !== 'flags') {
-            point = createPoint(config, xValues[i], yValues[i], serieType);
+            point = createPoint(configObject, xValues[i], yValues[i], serieType);
             points.push(point);
         } else {
             if (typeof yValues[i] !== 'undefined') {
-                point = createFlag(config, xValues[i], yValues[i], serieType, i, points.length + 1);
+                point = createFlag(configObject, xValues[i], yValues[i], serieType, i, points.length + 1);
                 points.push(point);
             }
 
         }
 
     }
-    return createSerieObject(serieName, points, serieType, serieColor, config);
+    return createSerieObject(serieName, points, serieType, serieColor, configObject);
 }
 
 /**
- * Returns the pre-defined config cells for mapping purposes.
+ * Returns the pre-defined configObject cells for mapping purposes.
  * 
  * @returns Array CONFIG_CELLS
  */
@@ -364,31 +363,31 @@ function fillConfigCells() {
 /**
  * Creates and returns the configObject with defaults.
  * 
- * @returns configObject config
+ * @returns configObject configObject
  */
 function createConfig() {
-    config = new Object();
-    config.title = 'undefined';
-    config.xScale = 'category';
-    config.yScale = 'linear';
-    config.highStock = 'no';
-    config.columnOne = 'line';
-    config.columnTwo = 'line';
-    config.columnThree = 'line';
-    config.columnFour = 'line';
-    config.columnFive = 'line';
-    config.rows = -1;
-    config.solo = false;
-    config.size = 'normal';
-    config.color1 = null;
-    config.color2 = null;
-    config.color3 = null;
-    config.color4 = null;
-    config.color5 = null;
-    config.stacking = 'no';
-    config.angledLabels = 'no';
-    config.sharedLegend = 'no';
-    return config;
+    var configObject = new Object();
+    configObject.title = 'undefined';
+    configObject.xScale = 'category';
+    configObject.yScale = 'linear';
+    configObject.highStock = 'no';
+    configObject.columnOne = 'line';
+    configObject.columnTwo = 'line';
+    configObject.columnThree = 'line';
+    configObject.columnFour = 'line';
+    configObject.columnFive = 'line';
+    configObject.rows = -1;
+    configObject.solo = false;
+    configObject.size = 'normal';
+    configObject.color1 = null;
+    configObject.color2 = null;
+    configObject.color3 = null;
+    configObject.color4 = null;
+    configObject.color5 = null;
+    configObject.stacking = 'no';
+    configObject.angledLabels = 'no';
+    configObject.sharedLegend = 'no';
+    return configObject;
 }
 
 /**
@@ -398,118 +397,118 @@ function createConfig() {
  * @param Array procData
  * @param String sheetTitle
  * @param Integer sheetCount
- * @returns configObject config
+ * @returns configObject configObject
  */
 function generateConfigObject(procData, sheetTitle, sheetCount) {
     var configCells = fillConfigCells();
-    var config = createConfig();
+    var configObject = createConfig();
     var configKeys = Object.keys(configCells);
-    config.sheet = sheetCount;
+    configObject.sheet = sheetCount;
     $.each(configKeys, function(i, key) {
         switch (i) {
             case 0:
                 if (procData[key]) {
-                    config.title = procData[key];
+                    configObject.title = procData[key];
                 } else {
-                    config.title = sheetTitle;
+                    configObject.title = sheetTitle;
                 }
                 break;
             case 1:
                 if (procData[key]) {
-                    config.xScale = procData[key];
+                    configObject.xScale = procData[key];
                 }
                 break;
             case 2:
                 if (procData[key]) {
-                    config.yScale = procData[key];
+                    configObject.yScale = procData[key];
                 }
                 break;
             case 3:
                 if (procData[key]) {
-                    config.highStock = procData[key];
+                    configObject.highStock = procData[key];
                 }
                 break;
             case 4:
                 if (procData[key]) {
                     if (procData[key].endsWith('*')) {
-                        config.solo = true;
+                        configObject.solo = true;
                     }
-                    config.columnOne = procData[key];
+                    configObject.columnOne = procData[key];
                 }
                 break;
             case 5:
                 if (procData[key]) {
-                    config.columnTwo = procData[key];
+                    configObject.columnTwo = procData[key];
                 }
                 break;
             case 6:
                 if (procData[key]) {
-                    config.columnThree = procData[key];
+                    configObject.columnThree = procData[key];
                 }
                 break;
             case 7:
                 if (procData[key]) {
-                    config.columnFour = procData[key];
+                    configObject.columnFour = procData[key];
                 }
                 break;
             case 8:
                 if (procData[key]) {
-                    config.columnFive = procData[key];
+                    configObject.columnFive = procData[key];
                 }
                 break;
             case 9:
                 if (procData[key]) {
-                    config.rows = parseInt(procData[key]);
+                    configObject.rows = parseInt(procData[key]);
                 }
                 break;
             case 10:
                 if (procData[key]) {
-                    config.size = procData[key];
+                    configObject.size = procData[key];
                 }
                 break;
             case 11:
                 if (procData[key]) {
-                    config.color1 = procData[key];
+                    configObject.color1 = procData[key];
                 }
                 break;
             case 12:
                 if (procData[key]) {
-                    config.color2 = procData[key];
+                    configObject.color2 = procData[key];
                 }
                 break;
             case 13:
                 if (procData[key]) {
-                    config.color3 = procData[key];
+                    configObject.color3 = procData[key];
                 }
                 break;
             case 14:
                 if (procData[key]) {
-                    config.color4 = procData[key];
+                    configObject.color4 = procData[key];
                 }
                 break;
             case 15:
                 if (procData[key]) {
-                    config.color5 = procData[key];
+                    configObject.color5 = procData[key];
                 }
                 break;
             case 16:
                 if (procData[key]) {
-                    config.stacking = procData[key];
+                    configObject.stacking = procData[key];
                 }
                 break;
             case 17:
                 if (procData[key]) {
-                    config.angledLabels = procData[key];
+                    configObject.angledLabels = procData[key];
                 }
                 break;
             case 18:
                 if (procData[key]) {
-                    config.sharedLegend = procData[key];
+                    configObject.sharedLegend = procData[key];
                 }
                 break;
         }
     });
-    return config;
+    return configObject;
 }
 
 /**
@@ -533,8 +532,8 @@ function dateParser(dateString) {
  * @param mixed xValue
  * @returns mixed xValue (parsed)
  */
-function parseXValue(xValue) {
-    switch (config.xScale) {
+function parseXValue(xValue, configObject) {
+    switch (configObject.xScale) {
         case 'datetime':
             xValue = parseFloat(dateParser(xValue));
             break;
@@ -550,25 +549,25 @@ function parseXValue(xValue) {
  * @param mixed yValue
  * @returns mixed yValue (parsed)
  */
-function parseYValue(yValue) {
+function parseYValue(yValue, configObject) {
     return parseFloat(yValue);
 }
 
 /**
- * Creates a point out of a given xValue and yValue according to the config
+ * Creates a point out of a given xValue and yValue according to the configObject
  * optins and serieTypes. Point is later used in the creation of the series.
  * 
- * @param configObject config
+ * @param configObject configObject
  * @param mixed xValue
  * @param mixed yValue
  * @param String serieType
  * @returns pointObject point
  */
-function createPoint(config, xValue, yValue, serieType) {
+function createPoint(configObject, xValue, yValue, serieType) {
     point = new Object();
     point.y = parseFloat(yValue);
     point.name = xValue;
-    if (config.xScale === 'datetime' || serieType.startsWith('pie')) {
+    if (configObject.xScale === 'datetime' || serieType.startsWith('pie')) {
 
         point.x = xValue;
     }
@@ -578,7 +577,7 @@ function createPoint(config, xValue, yValue, serieType) {
 /**
  * Creates a flag out of a given yValue, i (x-coordinate) and index(flag-content).
  * 
- * @param configObject config
+ * @param configObject configObject
  * @param mixed xValue
  * @param mixed yValue
  * @param String serieType
@@ -586,7 +585,7 @@ function createPoint(config, xValue, yValue, serieType) {
  * @param String index
  * @returns pointObject point
  */
-function createFlag(config, xValue, yValue, serieType, i, index) {
+function createFlag(configObject, xValue, yValue, serieType, i, index) {
     point = new Object();
     point.x = i - 2;
     point.text = yValue;
@@ -602,10 +601,10 @@ function createFlag(config, xValue, yValue, serieType, i, index) {
  * @param Array data
  * @param String serieType
  * @param String serieColor
- * @param configObject config
+ * @param configObject configObject
  * @returns serieObject serie
  */
-function createSerieObject(serieName, data, serieType, serieColor, config) {
+function createSerieObject(serieName, data, serieType, serieColor, configObject) {
     var serie = new Object();
     serie.name = serieName;
     serie.data = data;
@@ -636,32 +635,32 @@ function createSerieObject(serieName, data, serieType, serieColor, config) {
  * series and flags will be added.
  * 
  * @param chartOptionsObject options
- * @param configObject config
+ * @param configObject configObject
  * @param Array(SerieObjects) series
  */
-function createChart(options, config, series) {
+function createChart(options, configObject, series) {
     var chart;
-    if (config.xScale !== 'datetime') {
+    if (configObject.xScale !== 'datetime') {
         options = setTooltip(options);
     }
-    if (config.highStock === 'no') {
+    if (configObject.highStock === 'no') {
 
         chart = new Highcharts.Chart(options);
     } else {
         chart = new Highcharts.StockChart(options);
     }
 
-    if (config.stacking === 'yes') {
+    if (configObject.stacking === 'yes') {
         console.log("Enabling stacks");
         chart = enableStacking(chart);
     }
 
-    config.solo = series.length < 2;
+    configObject.solo = series.length < 2;
     $.each(series, function(i, serie) {
         if (serie.type === 'flags') {
             serie = addHighestFlags(serie, chart);
         } else {
-            if (config.solo === true) {
+            if (configObject.solo === true) {
                 serie.size = "60%";
                 serie.dataLabels = {enabled: true, align: 'left', crop: false};
                 serie.center = [null, null];
@@ -677,16 +676,16 @@ function createChart(options, config, series) {
  * Creates a unique containerId
  * 
  * @param String renderContainer
- * @param configObject config
+ * @param configObject configObject
  * @param Integer sheetCount
  * @param Integer processId
  * @returns String containerId
  */
-function checkContainer(renderContainer, config, sheetCount, processId) {
+function checkContainer(renderContainer, configObject, sheetCount, processId) {
     var mainContainer = renderContainer;
     renderContainer = renderContainer + "_" + sheetCount;
     renderContainer = "sub_" + renderContainer;
-    appendDiv(mainContainer, renderContainer, sheetCount, config, processId);
+    appendDiv(mainContainer, renderContainer, sheetCount, configObject, processId);
     return renderContainer;
 }
 
@@ -696,10 +695,10 @@ function checkContainer(renderContainer, config, sheetCount, processId) {
  * @param String mainContainer
  * @param String subContainer
  * @param Integer sheetCount
- * @param configObject config
+ * @param configObject configObject
  * @param Integer processId
  */
-function appendDiv(mainContainer, subContainer, sheetCount, config, processId) {
+function appendDiv(mainContainer, subContainer, sheetCount, configObject, processId) {
     positionClass = "left chartMargin";
     $.each(sheetIds[processId], function(i, id) {
         if (sheetCount === id) {
