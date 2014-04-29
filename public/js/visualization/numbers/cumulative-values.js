@@ -3,6 +3,10 @@
  * Copyright 2014 Source Republic
  * Author: Pim Verlangen
  */
+var totalViewsData;
+var uniqueUsersData;
+var avgTimeOnSiteData;
+var clickCountData;
 
 var cumulativeValuesAjax;
 
@@ -27,6 +31,7 @@ function getAllCumulativeValues(beaconIds) {
             var addCount = 0;
 
             /* Total Views */
+            totalViewsData = resp[0];
             var totalViews = 0;
             var totalViewsTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
             addCount = 0;
@@ -45,6 +50,7 @@ function getAllCumulativeValues(beaconIds) {
             $('#pixels').tipsy({html: true});
 
             /* Unique Users */
+            uniqueUsersData = resp[1];
             var uniqueUsers = 0;
             var uniqueUsersTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
             addCount = 0;
@@ -63,6 +69,7 @@ function getAllCumulativeValues(beaconIds) {
             $('#unique-users').tipsy({html: true});
 
             /* Average Time on Article */
+            avgTimeOnSiteData = resp[2];
             var avgTimeOnSite = 0;
             var avgTimeOnSiteTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
             addCount = 0;
@@ -90,6 +97,7 @@ function getAllCumulativeValues(beaconIds) {
             $('#avg-time-on-site').tipsy({html: true});
 
             /* Click Count */
+            clickCountData = resp[3];
             var clickCount = 0;
             var clickCountTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
             addCount = 0;

@@ -33,6 +33,7 @@ function sendData(dimension, measure, beaconIds) {
         data: {dimension: dimension, measure: measure, beaconIds: beaconIds},
         dataType: 'json',
         success: function(resp) {
+            console.log(resp);
             console.log(resp['response']['data'][0]['data'].length);
             $('#output').text(JSON.stringify(resp, undefined, 2));
         },

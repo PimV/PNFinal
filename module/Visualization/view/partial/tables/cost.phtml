@@ -1,0 +1,16 @@
+<?php $this->headScript()->appendFile($this->basePath() . '/js/visualization/tables/cost.js'); ?>
+<h3>On Page Data <img height="25" width="25" class="number-spinner" id="cost-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></h3>
+<div id="cost">
+    <div id="cost-tabs">
+        <ul>
+            <li><a href="#campaign-1">Campaign Costs</a></li>
+            <li><a href="#pixel-1">Pixel Costs</a></li>
+        </ul>
+        <div id="campaign-1">
+            <?php echo $this->partial('partial/tables/cost-campaign.phtml'); ?>
+        </div>
+        <div id="pixel-1">
+            <?php echo $this->partial('partial/tables/cost-pixel.phtml'); ?>
+        </div>
+    </div>
+</div>

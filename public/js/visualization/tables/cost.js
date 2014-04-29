@@ -4,7 +4,7 @@ $(document).ready(function() {
             tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>",
             tabCounter = 2;
 
-    var tabs = $("#per-site-tabs").tabs();
+    var tabs = $("#cost-tabs").tabs();
 
     // modal dialog init: custom buttons and a "close" callback resetting the form inside
     var dialog = $("#dialog").dialog({

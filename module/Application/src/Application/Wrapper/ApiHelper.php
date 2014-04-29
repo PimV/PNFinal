@@ -59,8 +59,8 @@ class ApiHelper {
 
         $dataParams = array(
             array(
-                "dimensions" => array("flx_pixel_id", "date"),
-                "measures" => array("flx_pixels_sum"),
+                "dimensions" => array($dimension),
+                "measures" => array($measure),
                 "filters" => array(
                     array(
                         "dimension" => "date",
@@ -68,15 +68,15 @@ class ApiHelper {
                         "date_end" => "2014-04-28",
                         "date_dynamic" => null
                     ),
-                    $beaconFilter,
-                    array(
-                        "measure" => "flx_pixels_sum",
-                        "min" => "10"
-                    )
+                    $beaconFilter//,
+//                    array(
+//                        "measure" => "flx_pixels_sum",
+//                        "min" => "10"
+//                    )
                 ),
-                "limit" => $limit,
+                "limit" => "1000",
                 "order" => array(array(
-                        "key" => "flx_pixels_sum",
+                        "key" => $measure,
                         "order" => "desc"
                     ))
             ),
