@@ -3,14 +3,15 @@
 <div id="cost">
     <div id="cost-tabs">
         <ul>
-            <li><a href="#campaign-1">Campaign Costs</a></li>
-            <li><a href="#pixel-1">Pixel Costs</a></li>
+            <li><a href="#campaign-1">Campaign Costs <img height="25" width="25" class="number-spinner" id="cost-campaign-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></a></li>
+            <li><a href="#pixel-1">Pixel Costs <img height="25" width="25" class="number-spinner" id="cost-pixel-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></a></li>
         </ul>
-        <div id="campaign-1">
-            <?php echo $this->partial('partial/tables/cost-campaign.phtml'); ?>
-        </div>
         <div id="pixel-1">
             <?php echo $this->partial('partial/tables/cost-pixel.phtml'); ?>
         </div>
+        <div id="campaign-1">
+            <?php echo $this->partial('partial/tables/cost-campaign.phtml'); ?>
+        </div>
+
     </div>
 </div>

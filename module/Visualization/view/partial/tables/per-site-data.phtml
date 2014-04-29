@@ -1,5 +1,5 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/visualization/tables/per-site-data.js'); ?>
-<h3>On Page Data <img height="25" width="25" class="number-spinner" id="referers-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></h3>
+<h3>On Page Data</h3>
 <div id="per-site">
     <div id="dialog" title="Tab data">
         <form>
@@ -12,12 +12,10 @@
         </form>
     </div>
 
-
-
     <div id="per-site-tabs">
         <ul>
-            <li><a href="#referers-1">Referers</a></li>
-            <li><a href="#domains-1">Domains</a></li>
+            <li><a href="#referers-1">Referers <img height="25" width="25" class="number-spinner" id="referers-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></a></li>
+            <li><a href="#domains-1">Domains <img height="25" width="25" class="domains-spinner" id="domains-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></a></li>
             <li class="rightTab"><button id="add_tab">Add Group</button></li>
         </ul>
         <div id="referers-1">

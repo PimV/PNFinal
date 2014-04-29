@@ -23,6 +23,7 @@ $(document).ready(function() {
                 updateReferers(beaconIds);
                 updateDomains(beaconIds);
                 addMarkers(beaconIds);
+                determineCosts(beaconIds);
             }
             selectedValues = beaconIds;
         }
@@ -33,6 +34,7 @@ $(document).ready(function() {
     updateReferers($('#beacon').val());
     updateDomains($('#beacon').val());
     addMarkers($('#beacon').val());
+    determineCosts($('#beacon').val());
     selectedValues = $('#beacon').val();
 });
 

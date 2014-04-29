@@ -1,11 +1,10 @@
 <?php $this->headScript()->appendFile($this->basePath() . '/js/visualization/tables/cost-pixel.js'); ?>
-<h3>Pixel Costs<img height="25" width="25" class="number-spinner" id="cost-pixel-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></h3>
-<div class="top-margin">
-    <table class="table small-table-font">
+<div id="cost-pixel">
+    <table id="cost-pixel-table" class="table small-table-font">
         <tr>
             <th>Pixel</th>
-            <th>Cost per 1.000 views</th>
-            <th>Cost per 1.000 users</th>
+            <th>$ / 1.000 views</th>
+            <th>$ / 1.000 users</th>
         </tr>
     </table>
 </div>

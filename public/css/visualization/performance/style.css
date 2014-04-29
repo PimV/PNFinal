@@ -35,6 +35,18 @@
     font-size: 11px;
 }
 
+#cost,
+#cost-tabs {
+    width: 650px;
+    height: 350px;
+}
+
+#cost-pixel-table {
+    height: 24em;
+    overflow-y: scroll;
+    display: block;
+}
+
 /* jQuery Tabs Layout */
 #dialog label, #dialog input { display:block; }
 #dialog label { margin-top: 0.5em; }
