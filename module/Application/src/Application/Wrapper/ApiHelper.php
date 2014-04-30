@@ -15,10 +15,11 @@ define('CACHE_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTO
 
 use Application\Curl\cURL;
 
-class ApiHelper {
+class ApiHelper implements ServiceLocatorAwareInterface{
 
     private $cURL;
     private $authorizedUser;
+    protected $services;
     public $loginCount = 0;
 
     public function __construct() {
@@ -48,6 +49,8 @@ class ApiHelper {
     }
 
     public function test($dimension, $measure, $beaconIds = null) {
+        var_dump(\Application\Module::getConfig());
+        die;
         $this->getCurrentUser();
         $beaconFilter = null;
         if (isset($beaconIds) && !empty($beaconIds)) {
@@ -81,26 +84,6 @@ class ApiHelper {
                     ))
             ),
         );
-//        $dataParams = array(
-//            array(
-//                "dimensions" => array($dimension),
-//                "measures" => array($measure),
-//                "filters" => array(
-//                    array(
-//                        "dimension" => "date",
-//                        "date_start" => "2013-04-15",
-//                        "date_end" => "2014-04-22",
-//                        "date_dynamic" => null
-//                    ),
-//                    $beaconFilter
-//                ),
-//                "limit" => $limit,
-//                "order" => array(array(
-//                        "key" => $measure,
-//                        "order" => "desc"
-//                    ))
-//            ),
-//        );
 
         if (isset($this->authorizedUser)) {
             $x = \Zend\Json\Json::encode($dataParams);

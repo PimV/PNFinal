@@ -12,7 +12,7 @@ return array(
         'ZfcUserDoctrineORM',
         'BjyAuthorize',
         'PNUser',
-        //The following modules are specific to PubNext
+        //The following modules are specific to PubNxt
         'Visualization',
         'Search',
     ),

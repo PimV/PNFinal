@@ -30,11 +30,11 @@ return array(
     'db' => array(
         'driver' => 'Pdo_Mysql',
         'dsn' => 'mysql:dbname=pnfinal;host=5.199.151.136;port=3306',
-       //'database' => 'pnfinal',
+        //'database' => 'pnfinal',
         'username' => 'PimVerlangen',
         'password' => 'verlangen',
-       //'hostname' => '5.199.151.136',
-       // 'port' => '3306',
+    //'hostname' => '5.199.151.136',
+    // 'port' => '3306',
     ),
     'service_manager' => array(
         'factories' => array(
@@ -48,4 +48,8 @@ return array(
     }
         ),
     ),
+    'API_config' => array(
+        'username' => 'pim@sourcerepublic.com',
+        'password' => 'c04E419379006f2203f1Ba51829cA87e'
+    )
 );

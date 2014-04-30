@@ -8,7 +8,7 @@ use Application\Wrapper\ApiHelper;
 use Application\Curl\cURL;
 use Visualization\Model\Report;
 
-class AdvertiserController extends AbstractActionController {
+class AdvertiserController extends AbstractActionController  {
 
     protected $siteTable;
     protected $site_user_table;
@@ -79,6 +79,8 @@ class AdvertiserController extends AbstractActionController {
     }
 
     public function testAction() {
+        var_dump(\Application\Module::getAutoloaderConfig());
+        die;
         return array();
     }
 
