@@ -17,7 +17,7 @@ function getAllCumulativeValues(beaconIds) {
     $('#cumulative-values').fadeTo(1000, '0.5');
     $('#cumulative-values-spinner').fadeTo(1000, '1.0');
     cumulativeValuesAjax = $.ajax({
-        url: '/visualization/advertiser/viz-data-multiple',
+        url: '/application/api/viz-data-multiple',
         method: 'POST',
         data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, orderType: orderType},
         dataType: 'json',
@@ -31,23 +31,24 @@ function getAllCumulativeValues(beaconIds) {
             var addCount = 0;
 
             /* Total Views */
-            totalViewsData = resp[0];
-            var totalViews = 0;
-            var totalViewsTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
-            addCount = 0;
-            $.each(resp[0]['data'], function(i, data) {
-
-                totalViews = +totalViews + parseFloat(data['flx_pixels_sum']);
-                if (addCount < 5) {
-                    addCount++;
-                    totalViewsTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_pixels_sum'], 0)) + " pixel loads<br/>";
-                }
-            });
-            totalViews = formatNumber(totalViews, 0);
-            $('#total_view_count').text(totalViews);
-            totalViewsTooltipText = totalViewsTooltipText.replace('{addedToTop5}', addCount);
-            $('#pixels').attr("original-title", totalViewsTooltipText);
-            $('#pixels').tipsy({html: true});
+            parseTotalViews(resp[0]);
+//            totalViewsData = resp[0];
+//            var totalViews = 0;
+//            var totalViewsTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
+//            addCount = 0;
+//            $.each(resp[0]['data'], function(i, data) {
+//
+//                totalViews = +totalViews + parseFloat(data['flx_pixels_sum']);
+//                if (addCount < 5) {
+//                    addCount++;
+//                    totalViewsTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_pixels_sum'], 0)) + " pixel loads<br/>";
+//                }
+//            });
+//            totalViews = formatNumber(totalViews, 0);
+//            $('#total_view_count').text(totalViews);
+//            totalViewsTooltipText = totalViewsTooltipText.replace('{addedToTop5}', addCount);
+//            $('#pixels').attr("original-title", totalViewsTooltipText);
+//            $('#pixels').tipsy({html: true});
 
             /* Unique Users */
             uniqueUsersData = resp[1];
@@ -127,6 +128,26 @@ function getAllCumulativeValues(beaconIds) {
             console.log("Updating Cumulative Values: Done!");
         }
     });
+}
+
+function parseTotalViews(totalViewsArray) {
+    totalViewsData = totalViewsArray;
+    var totalViews = 0;
+    var totalViewsTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
+    var addCount = 0;
+    $.each(totalViewsArray['data'], function(i, data) {
+
+        totalViews = +totalViews + parseFloat(data['flx_pixels_sum']);
+        if (addCount < 5) {
+            addCount++;
+            totalViewsTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_pixels_sum'], 0)) + " pixel loads<br/>";
+        }
+    });
+    totalViews = formatNumber(totalViews, 0);
+    $('#total_view_count').text(totalViews);
+    totalViewsTooltipText = totalViewsTooltipText.replace('{addedToTop5}', addCount);
+    $('#pixels').attr("original-title", totalViewsTooltipText);
+    $('#pixels').tipsy({html: true});
 }
 
 /**

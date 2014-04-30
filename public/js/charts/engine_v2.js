@@ -324,9 +324,7 @@ function createSerie(procData, column, rows, configObject) {
                 point = createFlag(configObject, xValues[i], yValues[i], serieType, i, points.length + 1);
                 points.push(point);
             }
-
         }
-
     }
     return createSerieObject(serieName, points, serieType, serieColor, configObject);
 }

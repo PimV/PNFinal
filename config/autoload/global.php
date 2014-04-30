@@ -47,9 +47,5 @@ return array(
         return $adapter;
     }
         ),
-    ),
-    'API_config' => array(
-        'username' => 'pim@sourcerepublic.com',
-        'password' => 'c04E419379006f2203f1Ba51829cA87e'
     )
 );

@@ -77,7 +77,7 @@ function refresh(dimension, measure, container) {
     $('#dynamic-chart-spinner').fadeTo(1000, '1');
     var interval = setInterval(setLoadingMessage, 500);
     $.ajax({
-        url: '/visualization/advertiser/viz-data-multiple',
+        url: '/application/api/viz-data-multiple',
         method: 'POST',
         data: {dimension: dimensionData, measure: measureData},
         dataType: 'json',

@@ -117,6 +117,44 @@ function setMinMaxSlider() {
     });
 }
 
+function getPriceRangeSearch() {
+    var priceRange;
+    if (enableSlider.prop('checked')) {
+        priceRange = [minPrice, maxPrice];
+    } else {
+        priceRange = null;
+    }
+    return priceRange;
+}
+
+function getSearchOperator() {
+    var operator = "AND";
+    if ($('.default_operator').prop('checked')) {
+        operator = "OR";
+    }
+    return operator;
+}
+
+function getKeywordSearch() {
+    if (typeof $('#keywordSearch').val() !== 'undefined') {
+        var keywords = $('#keywordSearch').val().trim();
+        if (keywords.length < 1) {
+            keywords = " ";
+        }
+    }
+    return keywords;
+}
+
+function getURLSearch() {
+    if (typeof $('#urlSearch').val() !== 'undefined') {
+        var urls = $('#urlSearch').val().trim();
+        if (urls.length < 1) {
+            urls = " ";
+        }
+    }
+    return urls;
+}
+
 /**
  * Retrieve the values from all fields and then search the database using an 
  * AJAX request.
@@ -128,34 +166,15 @@ function searchDatabaseNow(page) {
     currentPage = page;
     $('#results').css('display', 'none');
     $('.result').html("");
-    var url = $('#roleVar').val() + '/search';
-    var priceRange;
-    if (enableSlider.prop('checked')) {
-        priceRange = [minPrice, maxPrice];
-    } else {
-        priceRange = null;
-    }
-
-    var operator = "AND";
-    if ($('.default_operator').prop('checked')) {
-        operator = "OR";
-    }
 
     var catOpts = getCatOpts();
     var langOpts = getLangOpts();
-    if (typeof $('#keywordSearch').val() !== 'undefined') {
-        var keywords = $('#keywordSearch').val().trim();
-        if (keywords.length < 1) {
-            keywords = " ";
-        }
-    }
-    if (typeof $('#urlSearch').val() !== 'undefined') {
-        var urls = $('#urlSearch').val().trim();
-        if (urls.length < 1) {
-            urls = " ";
-        }
-    }
+    var priceRange = getPriceRangeSearch();
+    var keywords = getKeywordSearch();
+    var urls = getURLSearch();
+    var operator = getSearchOperator();
 
+    var url = $('#roleVar').val() + '/search';
     $.ajax({
         url: url,
         type: 'POST',
@@ -166,7 +185,7 @@ function searchDatabaseNow(page) {
         },
         dataType: 'json',
         success: function(resp) {
-            processRequestedESData(resp);
+            parseSearchResponse(resp);
             $("#spinner").hide();
         },
         error: function(resp) {
@@ -214,7 +233,7 @@ function createDateString(date) {
  * 
  * @param JSON-String resp
  */
-function processRequestedESData(resp) {
+function parseSearchResponse(resp) {
     $('.result').html(""); //Clear results
     var resultCount = resp['hits']['total']; //Set resultCount
 

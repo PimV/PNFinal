@@ -15,7 +15,7 @@ define('CACHE_PATH', APPLICATION_PATH . DIRECTORY_SEPARATOR . 'public' . DIRECTO
 
 use Application\Curl\cURL;
 
-class ApiHelper implements ServiceLocatorAwareInterface{
+class ApiHelper {
 
     private $cURL;
     private $authorizedUser;

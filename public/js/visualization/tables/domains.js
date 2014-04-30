@@ -62,7 +62,7 @@ function getDomains(beaconIds) {
 
     /* The AJAX Request */
     domainsAjax = $.ajax({
-        url: '/visualization/advertiser/viz-data-multiple',
+        url: '/application/api/viz-data-multiple',
         method: 'POST',
         data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, limit: 15, orderType: "desc"},
         dataType: 'json',

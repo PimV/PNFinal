@@ -67,7 +67,7 @@ function addMarkers(beaconIds) {
 
     /* The AJAX Request */
     domainsAjax = $.ajax({
-        url: '/visualization/advertiser/viz-data-multiple',
+        url: '/application/api/viz-data-multiple',
         method: 'POST',
         data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, orderType: "desc"},
         dataType: 'json',

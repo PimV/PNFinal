@@ -81,7 +81,7 @@ function showViewsOverTime(beaconIds, container) {
         }
         viewsOverTimeAjax = $.ajax({
             //url: '/visualization/advertiser/views-over-time',
-            url: '/visualization/advertiser/viz-data-multiple',
+            url: '/application/api/viz-data-multiple',
             method: 'POST',
             data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, orderByDimension: orderByDimension, orderType: orderType, date_start: date_start, date_end: date_end},
             dataType: 'json',

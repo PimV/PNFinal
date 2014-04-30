@@ -83,7 +83,7 @@ function determineCosts(beaconIds) {
     $('#cost-pixel').fadeTo(1000, '0.5');
     $('#cost-pixel-spinner').fadeTo(1000, '1.0');
     costAjax = $.ajax({
-        url: '/visualization/advertiser/viz-data-multiple',
+        url: '/application/api/viz-data-multiple',
         method: 'POST',
         data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, orderType: orderType},
         dataType: 'json',

@@ -8,7 +8,7 @@ use Application\Wrapper\ApiHelper;
 use Application\Curl\cURL;
 use Visualization\Model\Report;
 
-class AdvertiserController extends AbstractActionController  {
+class AdvertiserController extends AbstractActionController {
 
     protected $siteTable;
     protected $site_user_table;
@@ -71,71 +71,7 @@ class AdvertiserController extends AbstractActionController  {
         //Retrieve Beacons
         $beacons = $helper->trackingBeacon(true);
 
-
-
-
-
         return array('report' => $report, 'pixels' => "0", 'beacons' => $beacons, 'unique_users' => 0);
-    }
-
-    public function testAction() {
-        var_dump(\Application\Module::getAutoloaderConfig());
-        die;
-        return array();
-    }
-
-    public function testDataAction() {
-        if (!isset($this->helper)) {
-            $this->helper = new \Application\Wrapper\ApiHelper();
-        }
-
-
-        $dimension = $_POST['dimension'];
-        $measure = $_POST['measure'];
-        $beaconIds = $_POST['beaconIds'];
-        $response = $this->helper->test($dimension, $measure, $beaconIds);
-        //$response = $this->helper->test2($dimension, $measure, $beaconIds);
-        echo $response;
-        die;
-    }
-
-    public function viewsOverTimeAction() {
-        $helper = new \Application\Wrapper\ApiHelper();
-        $beacons = $_POST['beaconIds'];
-        $date_start = $_POST['date_start'];
-        $date_end = $_POST['date_end'];
-        echo $helper->getViewsOverTime($date_start, $date_end, $beacons);
-        die;
-    }
-
-    public function vizDataAction() {
-        $helper = new \Application\Wrapper\ApiHelper();
-        $dimension = $_POST['dimension'];
-        $measure = $_POST['measure'];
-        $beaconIds = $_POST['beaconIds'];
-        $response = $helper->vizData($dimension, $measure, $beaconIds);
-        echo $response;
-        die;
-    }
-
-    public function vizDataMultipleAction() {
-        $helper = new \Application\Wrapper\ApiHelper();
-        $dimension = $_POST['dimension'];
-        $measure = $_POST['measure'];
-        $beaconIds = $_POST['beaconIds'];
-        $limit = $_POST['limit'];
-        $orderByDimension = $_POST['orderByDimension'];
-        if ($orderByDimension === "true") {
-            $orderByDimension = true;
-        } else if ($orderByDimension === "false") {
-            $orderByDimension = false;
-        }
-        $orderType = $_POST['orderType'];
-        $date_start = $_POST['date_start'];
-        $date_end = $_POST['date_end'];
-        $response = $helper->vizDataMultiple($dimension, $measure, $beaconIds, $limit, $orderByDimension, $orderType, $date_start, $date_end);
-        echo $response;
-        die;
     }
 
     public function generalAction() {
