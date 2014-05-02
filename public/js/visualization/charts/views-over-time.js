@@ -145,38 +145,40 @@ function drawVoTChart(serieData, categories, container) {
             /* If the chart is drawn already and the container is not changed, 
              redraw the chart in the same container by changing the serieData. */
             viewsOverTimeChart.series[0].setData(serieData, false, true, true);
+            createViewsOverTimeChartOptions(container, serieData);
             viewsOverTimeChart.redraw();
         } else {
             if (!container) {
                 container = "views-over-time-graphic";
             }
             /* Create the chart options object */
-            viewsOverTimeChartOptions = {
-                chart: {
-                    renderTo: container,
-                    zoomType: 'xy',
-                    type: 'line'
-                },
-                title: {
-                    text: '<div>Views over Time</div>'
-                },
-                xAxis: {
-                    type: 'datetime'
-                },
-                tooltip: {
-                    shared: false
-                },
-                plotOptions: {
-                    series: {
-                        allowPointSelect: true
-                    }
-                },
-                series: [{
-                        id: "serie_0",
-                        name: "Views",
-                        data: serieData
-                    }]
-            };
+            createViewsOverTimeChartOptions(container, serieData);
+//            viewsOverTimeChartOptions = {
+//                chart: {
+//                    renderTo: container,
+//                    zoomType: 'xy',
+//                    type: 'line'
+//                },
+//                title: {
+//                    text: '<div>Views over Time</div>'
+//                },
+//                xAxis: {
+//                    type: 'datetime'
+//                },
+//                tooltip: {
+//                    shared: false
+//                },
+//                plotOptions: {
+//                    series: {
+//                        allowPointSelect: true
+//                    }
+//                },
+//                series: [{
+//                        id: "serie_0",
+//                        name: "Views",
+//                        data: serieData
+//                    }]
+//            };
 
             /* Create the actual chart */
             viewsOverTimeChart = new Highcharts.StockChart(viewsOverTimeChartOptions);
@@ -188,4 +190,33 @@ function drawVoTChart(serieData, categories, container) {
     } else {
         $('#views-over-time-status').text("No data found. Please specify a different date range.");
     }
+}
+
+function createViewsOverTimeChartOptions(container, serieData) {
+    viewsOverTimeChartOptions = {
+        chart: {
+            renderTo: container,
+            zoomType: 'xy',
+            type: 'line'
+        },
+        title: {
+            text: '<div>Views over Time</div>'
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        tooltip: {
+            shared: false
+        },
+        plotOptions: {
+            series: {
+                allowPointSelect: true
+            }
+        },
+        series: [{
+                id: "serie_0",
+                name: "Views",
+                data: serieData
+            }]
+    };
 }

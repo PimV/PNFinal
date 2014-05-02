@@ -28,7 +28,7 @@ $(document).ready(function() {
 function sendData(dimension, measure, beaconIds) {
     console.log("Sending data...");
     $.ajax({
-        url: '/visualization/advertiser/test-data',
+        url: '/application/api/test-data',
         method: 'POST',
         data: {dimension: dimension, measure: measure, beaconIds: beaconIds},
         dataType: 'json',

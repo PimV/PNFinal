@@ -68,6 +68,7 @@ function setLoadingMessage() {
     setStatus(loadingSpanValue);
 }
 
+
 function refresh(dimension, measure, container) {
     if (!container) {
         container = "selectableGraphicContainer";
@@ -98,7 +99,7 @@ function refresh(dimension, measure, container) {
                                 if (i > 50) {
                                     return;
                                 }
-
+                                
                                 series.push({y: parseFloat(data[measure]), name: data[dimension]});
                                 categories.push(data[dimension]);
 

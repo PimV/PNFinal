@@ -9,6 +9,9 @@
 #referers {
 }
 
+#views-per-city-map-container {
+    display: inline-block !important;
+}
 #views-per-city-map {
     height: 450px;
     width: 450px;

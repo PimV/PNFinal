@@ -27,96 +27,17 @@ function getAllCumulativeValues(beaconIds) {
                 return;
             }
 
-            /* Add count for top 5 */
-            var addCount = 0;
-
             /* Total Views */
             parseTotalViews(resp[0]);
-//            totalViewsData = resp[0];
-//            var totalViews = 0;
-//            var totalViewsTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
-//            addCount = 0;
-//            $.each(resp[0]['data'], function(i, data) {
-//
-//                totalViews = +totalViews + parseFloat(data['flx_pixels_sum']);
-//                if (addCount < 5) {
-//                    addCount++;
-//                    totalViewsTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_pixels_sum'], 0)) + " pixel loads<br/>";
-//                }
-//            });
-//            totalViews = formatNumber(totalViews, 0);
-//            $('#total_view_count').text(totalViews);
-//            totalViewsTooltipText = totalViewsTooltipText.replace('{addedToTop5}', addCount);
-//            $('#pixels').attr("original-title", totalViewsTooltipText);
-//            $('#pixels').tipsy({html: true});
 
             /* Unique Users */
-            uniqueUsersData = resp[1];
-            var uniqueUsers = 0;
-            var uniqueUsersTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
-            addCount = 0;
-            $.each(resp[1]['data'], function(i, data) {
-
-                uniqueUsers = +uniqueUsers + parseFloat(data['flx_uuid_distinct']);
-                if (addCount < 5) {
-                    addCount++;
-                    uniqueUsersTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_uuid_distinct'], 0)) + " unique users<br/>";
-                }
-            });
-            uniqueUsers = formatNumber(uniqueUsers, 0);
-            $('#unique_user_count').text(uniqueUsers);
-            uniqueUsersTooltipText = uniqueUsersTooltipText.replace('{addedToTop5}', addCount);
-            $('#unique-users').attr("original-title", uniqueUsersTooltipText);
-            $('#unique-users').tipsy({html: true});
+            parseUniqueUsers(resp[1]);
 
             /* Average Time on Article */
-            avgTimeOnSiteData = resp[2];
-            var avgTimeOnSite = 0;
-            var avgTimeOnSiteTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
-            addCount = 0;
-            var numberToAdd = 0;
-            $.each(resp[2]['data'], function(i, data) {
-                numberToAdd = parseFloat(data['flx_time_on_site_avg']);
-                if (!isNaN(numberToAdd)) {
-
-                    avgTimeOnSite = +avgTimeOnSite + numberToAdd;
-                    if (addCount < 5) {
-                        addCount++;
-                        avgTimeOnSiteTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(numberToAdd, 1) + "s<br/>";
-                    }
-                }
-            });
-            var division = 1;
-            if (beaconIds) {
-                division = beaconIds.length;
-            }
-            avgTimeOnSite = (avgTimeOnSite / division);
-            avgTimeOnSite = formatNumber(avgTimeOnSite);
-            $('#avg_time_on_site').text(avgTimeOnSite);
-            avgTimeOnSiteTooltipText = avgTimeOnSiteTooltipText.replace('{addedToTop5}', addCount);
-            $('#avg-time-on-site').attr("original-title", avgTimeOnSiteTooltipText);
-            $('#avg-time-on-site').tipsy({html: true});
+            parseAvgTimeOnSite(resp[2], beaconIds);
 
             /* Click Count */
-            clickCountData = resp[3];
-            var clickCount = 0;
-            var clickCountTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
-            addCount = 0;
-            $.each(resp[3]['data'], function(i, data) {
-                if (!isNaN(parseFloat(data['flx_form_field_click_sum']))) {
-
-                    clickCount = +clickCount + parseFloat(data['flx_form_field_click_sum']);
-                    if (addCount < 5) {
-                        addCount++;
-                        clickCountTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_form_field_click_sum'], 0)) + " form clicks<br/>";
-                    }
-                }
-            });
-            clickCount = formatNumber(clickCount, 0);
-            $('#click_count').text(clickCount);
-            clickCountTooltipText = clickCountTooltipText.replace('{addedToTop5}', addCount);
-            $('#form-clicks').attr("original-title", clickCountTooltipText);
-            $('#form-clicks').tipsy({html: true});
+            parseFormClicks(resp[3]);
         },
         error: function(resp) {
             console.log(resp);
@@ -148,6 +69,77 @@ function parseTotalViews(totalViewsArray) {
     totalViewsTooltipText = totalViewsTooltipText.replace('{addedToTop5}', addCount);
     $('#pixels').attr("original-title", totalViewsTooltipText);
     $('#pixels').tipsy({html: true});
+}
+
+function parseUniqueUsers(uniqueUsersArray) {
+    uniqueUsersData = uniqueUsersArray;
+    var uniqueUsers = 0;
+    var uniqueUsersTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
+    var addCount = 0;
+    $.each(uniqueUsersArray['data'], function(i, data) {
+
+        uniqueUsers = +uniqueUsers + parseFloat(data['flx_uuid_distinct']);
+        if (addCount < 5) {
+            addCount++;
+            uniqueUsersTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_uuid_distinct'], 0)) + " unique users<br/>";
+        }
+    });
+    uniqueUsers = formatNumber(uniqueUsers, 0);
+    $('#unique_user_count').text(uniqueUsers);
+    uniqueUsersTooltipText = uniqueUsersTooltipText.replace('{addedToTop5}', addCount);
+    $('#unique-users').attr("original-title", uniqueUsersTooltipText);
+    $('#unique-users').tipsy({html: true});
+}
+
+function parseAvgTimeOnSite(avgTimeOnSiteArray, beaconIds) {
+    avgTimeOnSiteData = avgTimeOnSiteArray;
+    var avgTimeOnSite = 0;
+    var avgTimeOnSiteTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
+    var addCount = 0;
+    var numberToAdd = 0;
+    $.each(avgTimeOnSiteArray['data'], function(i, data) {
+        numberToAdd = parseFloat(data['flx_time_on_site_avg']);
+        if (!isNaN(numberToAdd)) {
+
+            avgTimeOnSite = +avgTimeOnSite + numberToAdd;
+            if (addCount < 5) {
+                addCount++;
+                avgTimeOnSiteTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(numberToAdd, 1) + "s<br/>";
+            }
+        }
+    });
+    var division = 1;
+    if (beaconIds) {
+        division = beaconIds.length;
+    }
+    avgTimeOnSite = (avgTimeOnSite / division);
+    avgTimeOnSite = formatNumber(avgTimeOnSite);
+    $('#avg_time_on_site').text(avgTimeOnSite);
+    avgTimeOnSiteTooltipText = avgTimeOnSiteTooltipText.replace('{addedToTop5}', addCount);
+    $('#avg-time-on-site').attr("original-title", avgTimeOnSiteTooltipText);
+    $('#avg-time-on-site').tipsy({html: true});
+}
+
+function parseFormClicks(formClickArray) {
+    clickCountData = formClickArray;
+    var clickCount = 0;
+    var clickCountTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
+    var addCount = 0;
+    $.each(formClickArray['data'], function(i, data) {
+        if (!isNaN(parseFloat(data['flx_form_field_click_sum']))) {
+
+            clickCount = +clickCount + parseFloat(data['flx_form_field_click_sum']);
+            if (addCount < 5) {
+                addCount++;
+                clickCountTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_form_field_click_sum'], 0)) + " form clicks<br/>";
+            }
+        }
+    });
+    clickCount = formatNumber(clickCount, 0);
+    $('#click_count').text(clickCount);
+    clickCountTooltipText = clickCountTooltipText.replace('{addedToTop5}', addCount);
+    $('#form-clicks').attr("original-title", clickCountTooltipText);
+    $('#form-clicks').tipsy({html: true});
 }
 
 /**

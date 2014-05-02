@@ -2,7 +2,8 @@ $(document).ready(function() {
     var tabTitle = $("#tab_title"),
             tabContent = $("#tab_content"),
             tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>",
-            tabCounter = 2;
+            tabCounter = 3,
+            customGroupTable = $('#custom-group-table');
 
     var tabs = $("#per-site-tabs").tabs();
 
@@ -32,16 +33,68 @@ $(document).ready(function() {
     });
 
     // actual addTab function: adds new tab using the input from the form above
-    function addTab() {
-        var label = tabTitle.val() || "Tab " + tabCounter,
-                id = "tabs-" + tabCounter,
-                li = $(tabTemplate.replace(/#\{href\}/g, "#" + id).replace(/#\{label\}/g, label)),
-                tabContentHtml = tabContent.val() || "Tab " + tabCounter + " content.";
+    function addTab(uniqueUsers, views, formClicks, avgTime) {
+        var table = $('#table_group').val();
+        
+        var label = $("#tab_title").val();
+        var groupType = 0;
+        var uniqueUsers = 0;
+        var views = 0;
+        var formClicks = 0;
+        var avgTime = 0;
 
-        tabs.find(".ui-tabs-nav").append(li);
-        tabs.append("<div id='" + id + "'><p>" + tabContentHtml + "</p></div>");
-        tabs.tabs("refresh");
-        tabCounter++;
+        var uniqueUserAdd;
+        var viewsAdd;
+        var formClicksAdd;
+        var avgTimeAdd;
+
+        var groupEntityCount = 0;
+        $('#' + table + '-table tr:gt(0) input[type="checkbox"]:checked').each(function() {
+            groupEntityCount++;
+            var row = $(this).parent().parent();
+            var rowcells = row.find('td');
+
+            uniqueUserAdd = parseFloat($(rowcells[2]).text().replace(/\./g, ''));
+            console.log(uniqueUserAdd);
+            if (!isNaN(uniqueUserAdd)) {
+                uniqueUsers += uniqueUserAdd;
+            }
+
+            viewsAdd = parseFloat($(rowcells[3]).text().replace(/\./g, ''));
+            if (!isNaN(viewsAdd)) {
+                views += viewsAdd;
+            }
+
+            formClicksAdd = parseFloat($(rowcells[4]).text().replace(/\./g, ''));
+            if (!isNaN(formClicksAdd)) {
+                formClicks += formClicksAdd;
+            }
+            avgTimeAdd = parseFloat($(rowcells[5]).text().replace(/\./g, ''));
+            if (!isNaN(avgTimeAdd)) {
+                avgTime += avgTimeAdd;
+            }
+        });
+        if (groupEntityCount < 1) {
+            return;
+        }
+        groupType = table;
+
+        /* Calculate Average for avgTime */
+        avgTime = avgTime / groupEntityCount;
+        avgTime = avgTime.toFixed(1);
+
+        uniqueUsers = parseFloat(uniqueUsers);
+        views = parseFloat(views);
+        formClicks = parseFloat(formClicks);
+        $('#custom-group-table tr:last').after(
+                '<tr>' +
+                '<td>' + label + '</td>' +
+                '<td>' + groupType + '</td>' +
+                '<td>' + formatNumber(uniqueUsers, 0) + '</td>' +
+                '<td>' + formatNumber(views, 0) + '</td>' +
+                '<td>' + formatNumber(formClicks, 0) + '</td>' +
+                '<td>' + avgTime + '</td>' +
+                '</tr>');
     }
 
     // addTab button: just opens the dialog

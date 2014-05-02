@@ -49,8 +49,6 @@ class ApiHelper {
     }
 
     public function test($dimension, $measure, $beaconIds = null) {
-        var_dump(\Application\Module::getConfig());
-        die;
         $this->getCurrentUser();
         $beaconFilter = null;
         if (isset($beaconIds) && !empty($beaconIds)) {
@@ -94,6 +92,7 @@ class ApiHelper {
             'x' => $x,
             'x_signature' => $x_signature
         );
+
 
         $retries = 0;
         while (empty($response) && $retries <= 3) {

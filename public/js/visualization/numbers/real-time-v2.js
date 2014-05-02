@@ -2,10 +2,15 @@ var pixelPrevValue;
 var pixelUpdateInterval;
 
 $(document).ready(function() {
-    getRealTimeValue($('#beacon').val());
+    getRealTimeValue($('#beacon_select').val());
 //setInterval(function() {
     //    getRealTimeValue($('#beacon').val());
     //}, 10000);
+    window.beforeunload = function() {
+        if (pixelUpdateInterval) {
+            clearInterval(pixelUpdateInterval);
+        }
+    };
 });
 
 

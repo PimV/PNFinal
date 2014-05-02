@@ -1,5 +1,21 @@
 <h3>Select your Pixels</h3>
-<select multiple="multiple" id="beacon">
+<select multiple="multiple" id="publisher_select">
+    <?php
+    foreach ($this->beacons as $beacon) {
+
+        echo '<option selected="selected" value="' . $beacon->getId() . '">' . $beacon->getName() . '</option>';
+    }
+    ?>
+</select>
+<select multiple="multiple" id="campaign_select">
+    <?php
+    foreach ($this->beacons as $beacon) {
+
+        echo '<option selected="selected" value="' . $beacon->getId() . '">' . $beacon->getName() . '</option>';
+    }
+    ?>
+</select>
+<select multiple="multiple" id="beacon_select">
     <?php
     foreach ($this->beacons as $beacon) {
 

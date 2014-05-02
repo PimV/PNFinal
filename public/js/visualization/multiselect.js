@@ -13,10 +13,22 @@ $(document).ready(function() {
                 .indexOf(m[3].toUpperCase()) >= 0;
     };
 
-    /* Initialize the multi-select box */
-    $("#beacon").multiselect({
+    /* Initiailize the publisher-select box */
+    $("#publisher_select").multiselect({
         close: function(event, ui) {
-            beaconIds = $('#beacon').val();
+        }
+    }).multiselectfilter();
+
+    /* Initialize the campaign-select box */
+    $("#campaign_select").multiselect({
+        close: function(event, ui) {
+        }
+    }).multiselectfilter();
+
+    /* Initialize the beacon-select box */
+    $("#beacon_select").multiselect({
+        close: function(event, ui) {
+            beaconIds = $('#beacon_select').val();
             if (selectionChanged(beaconIds) === true) {
                 showViewsOverTime(beaconIds);
                 updateCumulativeValues(beaconIds);
@@ -30,18 +42,18 @@ $(document).ready(function() {
     }).multiselectfilter();
 
     /* Load all blocks on document ready */
-    updateCumulativeValues($('#beacon').val());
-    updateReferers($('#beacon').val());
-    updateDomains($('#beacon').val());
-    addMarkers($('#beacon').val());
-    determineCosts($('#beacon').val());
-    selectedValues = $('#beacon').val();
+    updateCumulativeValues($('#beacon_select').val());
+    updateReferers($('#beacon_select').val());
+    updateDomains($('#beacon_select').val());
+    addMarkers($('#beacon_select').val());
+    determineCosts($('#beacon_select').val());
+    selectedValues = $('#beacon_select').val();
 });
 
 
 function getBeaconById(id) {
-    if ($('#beacon option[value=' + id + ']').length > 0) {
-        return $('#beacon option[value=' + id + ']').text();
+    if ($('#beacon_select option[value=' + id + ']').length > 0) {
+        return $('#beacon_select option[value=' + id + ']').text();
     } else {
         return;
     }

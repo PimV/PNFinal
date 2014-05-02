@@ -1,4 +1,18 @@
 <h3>Select your Pixels</h3>
+<select id="publisher_select" name="publisher_select" multiple="multiple">
+    <?php
+    foreach ($pixelEntities as $pixelEntity) {
+        echo '<option value="' . $pixelEntity['id'] . '">' . $pixelEntity['name'] . '</option>';
+    }
+    ?>
+</select>
+<select id="campaign_select" name="campaign_select" multiple="multiple">
+    <?php
+    foreach ($pixelEntities as $pixelEntity) {
+        echo '<option value="' . $pixelEntity['id'] . '">' . $pixelEntity['name'] . '</option>';
+    }
+    ?>
+</select>
 <select id="pixel_select" name="pixel_select" multiple="multiple">
     <?php
     foreach ($pixelEntities as $pixelEntity) {

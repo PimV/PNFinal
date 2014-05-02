@@ -29,6 +29,9 @@ $(document).ready(function() {
             $('#referers-table').append('<tr class="norecords"><td colspan="5" class="Normal">No records were found</td></tr>');
         }
     });
+    $('#selectAllReferers').on('change', function() {
+        toggleAllReferers();
+    });
 });
 
 /**
@@ -43,6 +46,18 @@ function updateReferers(beaconIds) {
     }
     console.log("Getting Referers: Started!");
     getReferers(beaconIds);
+}
+
+function toggleAllReferers() {
+    if ($('#selectAllReferers').prop('checked') === true) {
+        $('#referers-table input[type="checkbox"]').each(function() {
+            this.checked = true;
+        });
+    } else {
+        $('#referers-table input[type="checkbox"]').each(function() {
+            this.checked = false;
+        });
+    }
 }
 
 function getReferers(beaconIds) {
@@ -71,6 +86,7 @@ function getReferers(beaconIds) {
             $.each(resp[0]['data'], function(i, data) {
                 $('#referers-table tr:last').after(
                         '<tr>' +
+                        '<td><input type="checkbox" value="' + data["flx_site_domain"] + '"></td>' +
                         '<td>' + data["flx_referer_url"] + '</td>' +
                         '<td>' + formatNumber(parseFloat(data["flx_uuid_distinct"], 0)) + '</td>' +
                         '<td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td>' +

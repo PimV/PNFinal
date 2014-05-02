@@ -29,6 +29,10 @@ $(document).ready(function() {
             $('#domains-table').append('<tr class="norecords"><td colspan="5" class="Normal">No records were found</td></tr>');
         }
     });
+
+    $('#selectAllDomains').on('change', function() {
+        toggleAllDomains();
+    });
 });
 
 /**
@@ -43,6 +47,19 @@ function updateDomains(beaconIds) {
     }
     console.log("Getting Domains: Started!");
     getDomains(beaconIds);
+}
+
+
+function toggleAllDomains() {
+    if ($('#selectAllDomains').prop('checked') === true) {
+        $('#domains-table input[type="checkbox"]').each(function() {
+            this.checked = true;
+        });
+    } else {
+        $('#domains-table input[type="checkbox"]').each(function() {
+            this.checked = false;
+        });
+    }
 }
 
 /**
@@ -75,6 +92,7 @@ function getDomains(beaconIds) {
             $.each(resp[0]['data'], function(i, data) {
                 $('#domains-table tr:last').after(
                         '<tr>' +
+                        '<td><input type="checkbox" value="' + data["flx_site_domain"] + '"></td>' +
                         '<td>' + data["flx_site_domain"] + '</td>' +
                         '<td>' + formatNumber(parseFloat(data["flx_uuid_distinct"], 0)) + '</td>' +
                         '<td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td>' +

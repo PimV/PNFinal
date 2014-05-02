@@ -6,8 +6,11 @@
             <fieldset class="ui-helper-reset">
                 <label for="tab_title">Title</label>
                 <input type="text" name="tab_title" id="tab_title" value="" class="ui-widget-content ui-corner-all">
-                <label for="tab_content">Content</label>
-                <textarea name="tab_content" id="tab_content" class="ui-widget-content ui-corner-all"></textarea>
+                <label for="table_group">Title</label>
+                <select id="table_group">
+                    <option value="domains">Domain</option>
+                    <option value="referers">Referer</option>
+                </select>
             </fieldset>
         </form>
     </div>
@@ -16,13 +19,18 @@
         <ul>
             <li><a href="#referers-1">Referers <img height="25" width="25" class="number-spinner" id="referers-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></a></li>
             <li><a href="#domains-1">Domains <img height="25" width="25" class="domains-spinner" id="domains-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></a></li>
+
             <li class="rightTab"><button id="add_tab">Add Group</button></li>
+            <li class="rightTab"><a href="#custom-groups-1">Custom Groups<img style="visibility:hidden" height="25" width="25"/></a></li>
         </ul>
         <div id="referers-1">
             <?php echo $this->partial('partial/tables/referers.phtml'); ?>
         </div>
         <div id="domains-1">
             <?php echo $this->partial('partial/tables/domains.phtml'); ?>
+        </div>
+        <div id="custom-groups-1">
+            <?php echo $this->partial('partial/tables/custom-groups.phtml'); ?>
         </div>
 
     </div>
