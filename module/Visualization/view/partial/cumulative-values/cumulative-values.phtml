@@ -6,101 +6,113 @@
     <div id="spinner" style="">
 
     </div>
-    <div class="blockId">
-        <div id="real-time-pixels">
-            <div class="actualNumber">
-                <div class="numberType">
-                    <div class="numberTitleBlock">
-                        <span  class="font-icon  glyphicon glyphicon-bullhorn centerText" style="color:#0066FF;"></span><br/>
-                        <span class="numberTitle centerText">Real Time Pixel Views</span>
-                    </div>
-                    <div>
-                        <span id="real-time-pixel-count" class="number centerText">
-                            <?php
-                            echo $pixels;
-                            ?>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="blockId">
-        <div id="unique-users">
-            <div class="actualNumber">
-                <div class="numberType">
-                    <div class="numberTitleBlock">
-                        <span  class="font-icon  glyphicon glyphicon-user centerText" style="color:#0066FF;"></span><br/>
-                        <span class="numberTitle centerText">Unique Users</span>
-                    </div>
-                    <div>
-                        <span id="unique_user_count" class="number centerText">
-                            <?php
-                            echo $this->unique_users;
-                            ?>
-                        </span>
+    <div>
+        <ul class="in-row-sortable">
+            <li>
+                <div class="blockId">
+                    <div id="real-time-pixels">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span  class="font-icon  glyphicon glyphicon-bullhorn centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Real Time Pixel Views</span>
+                                </div>
+                                <div>
+                                    <span id="real-time-pixel-count" class="number centerText">
+                                        <?php
+                                        echo $pixels;
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="blockId">
-        <div id="pixels">
-            <div class="actualNumber">
-                <div class="numberType">
-                    <div class="numberTitleBlock">
-                        <span class="font-icon glyphicon glyphicon-eye-open centerText" style="color:#0066FF;"></span><br/>
-                        <span class="numberTitle centerText">Total Pixel Views</span>
-                    </div>
-                    <div>
-                        <span id="total_view_count" class="number centerText">
-                            <?php
-                            echo 0; //$this->total_views;
-                            ?>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="blockId">
-        <div id="form-clicks">
-            <div class="actualNumber">
-                <div class="numberType">
-                    <div class="numberTitleBlock">
-                        <span  class="font-icon glyphicon glyphicon-hand-up centerText" style="color:#0066FF;"></span><br/>
-                        <span class="numberTitle centerText">Form Clicks</span>
-                    </div>
-                    <div>
-                        <span id="click_count" class="number centerText">
-                            <?php
-                            echo '0'; //"Not Implemented";
-                            ?>
-                        </span>
+            </li>
+            <li>
+                <div class="blockId">
+                    <div id="unique-users">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span  class="font-icon  glyphicon glyphicon-user centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Unique Users</span>
+                                </div>
+                                <div>
+                                    <span id="unique_user_count" class="number centerText">
+                                        <?php
+                                        echo $this->unique_users;
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="blockId">
-        <div id="avg-time-on-site">
-            <div class="actualNumber">
-                <div class="numberType">
-                    <div class="numberTitleBlock">
-                        <span class="font-icon  glyphicon glyphicon-time centerText" style="color:#0066FF;"></span><br/>
-                        <span class="numberTitle centerText">Average Time on Article (in seconds)</span>
-                    </div>
-                    <div>
-                        <span id="avg_time_on_site" class="number centerText">
-                            <?php
-                            echo $pixels;
-                            ?>
-                        </span>
+            </li>
+            <li>
+                <div class="blockId">
+                    <div id="pixels">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span class="font-icon glyphicon glyphicon-eye-open centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Total Pixel Views</span>
+                                </div>
+                                <div>
+                                    <span id="total_view_count" class="number centerText">
+                                        <?php
+                                        echo 0; //$this->total_views;
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </li>
+            <li>
+                <div class="blockId">
+                    <div id="form-clicks">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span  class="font-icon glyphicon glyphicon-hand-up centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Form Clicks</span>
+                                </div>
+                                <div>
+                                    <span id="click_count" class="number centerText">
+                                        <?php
+                                        echo '0'; //"Not Implemented";
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="blockId">
+                    <div id="avg-time-on-site">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span class="font-icon  glyphicon glyphicon-time centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Average Time on Article (in seconds)</span>
+                                </div>
+                                <div>
+                                    <span id="avg_time_on_site" class="number centerText">
+                                        <?php
+                                        echo $pixels;
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
     </div>
-
 </div>

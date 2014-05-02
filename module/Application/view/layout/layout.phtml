@@ -17,6 +17,7 @@
         echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
                 ->prependStylesheet($this->basePath() . '/css/style.css')
                 ->prependStylesheet($this->basePath() . '/css/tipsy.css')
+                ->prependStylesheet($this->basePath() . '/css/jquery.gridster.css')
                 ->prependStylesheet($this->basePath() . '/css/bootstrap-theme.min.css')
                 ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
                 ->prependStylesheet($this->basePath() . '/css/navigation/sidebar.css')
@@ -43,6 +44,7 @@
                 ->appendFile($this->basePath() . '/js/jquery.multiselect.min.js')
                 ->appendFile($this->basePath() . '/js/jquery.multiselect.filter.js')
                 ->appendFile($this->basePath() . '/js/jquery.tipsy.js')
+                ->appendFile($this->basePath() . '/js/jquery.gridster.js')
         ;
         ?>
 

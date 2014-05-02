@@ -162,7 +162,7 @@ class ApiHelper {
 
         $hash = md5($functionCall);
         $cachePath = CACHE_PATH . 'tracking_beacon_' . $hash . ".cache";
-        if (file_exists($cachePath) && (time() - filemtime($cachePath) < 6 * 3600)) {
+        if (file_exists($cachePath) && (time() - filemtime($cachePath) < 24 * 3600)) {
             $response = file_get_contents($cachePath);
         } else {
             while (empty($response) && $retries <= 3) {
@@ -283,7 +283,8 @@ class ApiHelper {
 
         //Default end date
         if (null === $date_end) {
-            $date_end = date('Y-m-d');
+            //$date_end = date('Y-m-d');
+            $date_end = "2014-05-01"; // DEBUG ! DATE WE HAVE CACHE FROM!
         }
 
         //Default start date
@@ -379,7 +380,7 @@ class ApiHelper {
         foreach ($queryHashes as $key => $value) {
             $count++;
             if (file_exists($value)) {
-                if (time() - filemtime($value) < 6 * 3600) {
+                if (time() - filemtime($value) < 24 * 3600) {
                     $cachedResults[$key] = $value;
                     unset($queries[$count]);
                 }

@@ -18,12 +18,6 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/multisele
 $this->headScript()->appendFile($this->basePath() . '//cdn.leafletjs.com/leaflet-0.7.2/leaflet.js');
 $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/views-per-city.js');
 ?>
-<style>
-    #sortable-visuals { list-style-type: none; margin: 0; padding: 0; width: auto; }
-    .in-row-sortable { list-style-type: none; margin: 0; padding: 0; width: auto; }
-    .in-row-sortable li { margin: 3px 3px 3px 0; padding: 1px; float: left;  }
-    .ui-state-highlight { background: #99ccff; border: 2px #0033ff dotted; opacity:0.3 }
-</style>
 
 <!-- DISABLE THESE COMMENTS TO SHOW GOOGLE SPREADSHEET CHARTS ! -->
 <!--<script type="text/javascript">
@@ -60,41 +54,26 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
 </div>
 
 <div id="visuals">
-    <ul id="sortable-visuals">
-        <li>
+    <div class="row">
+        <div id="views-over-time" class="inline-block hide-overflow">
+            <?php echo $this->partial('partial/charts/views-over-time.phtml'); ?>
 
-            <div class="row">
-                <ul class="in-row-sortable">
-                    <li>
-                        <div id="views-over-time" class="inline-block hide-overflow">
-                            <?php echo $this->partial('partial/charts/views-over-time.phtml'); ?>
-                        </div>
-                    </li>
-                    <li>
-                        <div id="devices" class="inline-block hide-overflow">
-                            <?php //echo $this->partial('partial/tables/device.phtml'); ?>
-                            <?php echo $this->partial('partial/tables/cost.phtml'); ?>
-                        </div>
-                    <li>
-                </ul>
-            </div>
-
-        </li>
-        <li>
-            <div class="row">
-                <div>
-                    <?php echo $this->partial('partial/tables/per-site-data.phtml'); ?>
-                </div>
-            </div>
-        </li>
-        <li>
-            <div class="row">
-                <div>
-                    <?php echo $this->partial('partial/maps/views-per-city.phtml'); ?>
-                </div>
-            </div>
-        </li>
-    </ul>
+        </div>
+        <div id="devices" class="inline-block hide-overflow">
+            <?php //echo $this->partial('partial/tables/device.phtml'); ?>
+            <?php echo $this->partial('partial/tables/cost.phtml'); ?>
+        </div>
+    </div>
+    <div class="row">
+        <div>
+            <?php echo $this->partial('partial/tables/per-site-data.phtml'); ?>
+        </div>
+    </div>
+    <div class="row">
+        <div>
+            <?php echo $this->partial('partial/maps/views-per-city.phtml'); ?>
+        </div>
+    </div>
 
 
     <!-- DISABLE THESE COMMENTS TO SHOW A SELECTABLE GRAPHIC CHART! -->
@@ -110,7 +89,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
 //    } else {
 //        echo 'No visual information ready. If this is incorrect according to you, please contact us.';
 //    }
-    ?> 
+    ?> -->
 </div>
 <br/>
 <div>

@@ -48,6 +48,23 @@ $(document).ready(function() {
     addMarkers($('#beacon_select').val());
     determineCosts($('#beacon_select').val());
     selectedValues = $('#beacon_select').val();
+    $('#sortable-visuals').sortable({
+        placeholder: "ui-state-highlight",
+        connectWith: ".in-row-sortable",
+        start: function(e, ui) {
+            ui.placeholder.height(ui.item.height());
+            ui.placeholder.width(ui.item.width());
+        }
+    });
+    $('.in-row-sortable').sortable({
+        placeholder: "ui-state-highlight",
+        start: function(e, ui) {
+            ui.placeholder.height(ui.item.height());
+            ui.placeholder.width(ui.item.width());
+        }
+    });
+
+    // $('.in-row-sortable').sortable();
 });
 
 

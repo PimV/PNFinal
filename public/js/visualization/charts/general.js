@@ -23,7 +23,7 @@ $(document).ready(function() {
 
         /* Draw the chart in the popup */
         console.log($(this).data('chartoptions'));
-        enlargeChart($(this).data("chartoptions"), $(this).data("stockchart"));
+        enlargeChart($(this).data("chart"), $(this).data("stockchart"));
 
     });
 });
@@ -63,25 +63,28 @@ $(document).ready(function() {
 
 function enlargeChart(chartOptions, stockChart) {
     /* Remove content from enlargedChartContainer */
-//    if (popupChart) {
-//        console.log("Destroying previous popupchart");
-//        popupChart.destroy();
-//    }
+    if (popupChart) {
+        console.log("Destroying previous popupchart");
+        popupChart.destroy();
+        $("#enlargedChartContainer").html("");
+    }
 
     /* Retrieve the chartOptions from the given chartName */
-    var actualChartOptions = window[chartOptions];
-    console.log(chartOptions);
-    console.log(actualChartOptions);
-    /* Change the 'renderTo' entry from the chartOptions */
-    actualChartOptions.chart.renderTo = 'enlargedChartContainer';
+    var actualChartOptions = window[chartOptions].options;
 
     /* Initialize the chart */
-
     if (stockChart === true) {
-        console.log("Popping up stockchart");
-        popupChart = new Highcharts.StockChart(actualChartOptions);
+        popupChart = new Highcharts.StockChart(Highcharts.merge(actualChartOptions, {
+            chart: {
+                renderTo: "enlargedChartContainer"
+            }
+        }));
     } else {
-        console.log("Popping up normal chart");
-        popupChart = new Highcharts.Chart(actualChartOptions);
+        popupChart = new Highcharts.Chart(Highcharts.merge(actualChartOptions, {
+            chart: {
+                renderTo: "enlargedChartContainer"
+            }
+        }));
     }
+    
 }
