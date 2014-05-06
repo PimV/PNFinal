@@ -7,13 +7,14 @@
 $(document).ready(function() {
     /* Action listener for the 'submit'-button */
     $('#submit').on('click', function() {
-        var dimension = $('#dimensions').val();
-        var measure = $('#measures').val();
-        var beaconIds = $('#beaconIds').val().split(',');
-        if ($('#beaconIds').val().length < 1) {
-            beaconIds = null;
+        var method = $('#method').val();
+        var methodParameters = $('#methodParameters').val();
+        var siteIds = $('#siteIds').val().split(',');
+        if ($('#siteIds').val().length < 1) {
+            console.log("No Siteids");
+            siteIds = null;
         }
-        sendData(dimension, measure, beaconIds);
+        sendData(method, methodParameters, siteIds);//, measure, beaconIds);
     });
 });
 
@@ -25,16 +26,16 @@ $(document).ready(function() {
  * @param String measure
  * @param Array beaconIds
  */
-function sendData(dimension, measure, beaconIds) {
+function sendData(method, methodParameters, siteIds) {
     console.log("Sending data...");
+    methods = [{method: "VisitsSummary.get", params: {period: "range", date: "2014-05-04,2014-05-05"}}, {method: "VisitsSummary.get", params: {period: "range", date: "2014-05-04,2014-05-05"}}];
     $.ajax({
         url: '/application/api/test-data',
         method: 'POST',
-        data: {dimension: dimension, measure: measure, beaconIds: beaconIds},
+        data: {method: method, methodParameters: methodParameters, siteIds: siteIds, methods: methods},
         dataType: 'json',
         success: function(resp) {
             console.log(resp);
-            console.log(resp['response']['data'][0]['data'].length);
             $('#output').text(JSON.stringify(resp, undefined, 2));
         },
         error: function(resp) {
