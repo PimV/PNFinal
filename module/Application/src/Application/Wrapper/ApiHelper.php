@@ -24,7 +24,7 @@ class ApiHelper {
     private $ttl = 6; //Cache Maximum Time
 
     public function __construct() {
-        $this->cURL = new cURL();
+        //$this->cURL = new cURL();
     }
 
     public function getCurl() {
