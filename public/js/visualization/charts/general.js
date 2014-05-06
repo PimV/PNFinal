@@ -1,6 +1,8 @@
 var popupChart;
 
 $(document).ready(function() {
+    hs.graphicsDir = "http://pubnext.pvdns.nl/img/graphics/";
+
     /* Action listener for any overlay. Fades in the overlay on hover, and if the
      user stops hovering, fades the overlay out again. */
     $('.overlay').hover(function() {
@@ -18,14 +20,29 @@ $(document).ready(function() {
      enlarged chart */
     $('.overlay').on('click', function() {
         /* Show large modal */
-        var box1 = bootbox.alert('<div style="width: 1100px; height: 700px;" id="enlargedChartContainer"></div>');
-        box1.find('.modal-content').css({'width': '1200px', 'margin-left': '-300px'});
+        // var box1 = bootbox.alert('<div style="width: 1100px; height: 700px;" id="enlargedChartContainer"></div>');
+        //box1.find('.modal-content').css({'width': '1200px', 'margin-left': '-300px'});
 
         /* Draw the chart in the popup */
-        console.log($(this).data('chartoptions'));
-        enlargeChart($(this).data("chart"), $(this).data("stockchart"));
+        //console.log($(this).data('chartoptions'));
+        //enlargeChart($(this).data("chart"), $(this).data("stockchart"));
 
     });
+
+    hs.Expander.prototype.onAfterExpand = function() {
+        console.log(this.custom);
+        if (this.custom.chartOptions) {
+            var chartOptions = this.custom.chartOptions;
+            if (!this.hasChart) {
+                chartOptions.chart.renderTo = $('.highslide-body')[0];
+                chartOptions.chart.height = $('.highslide-body').parent().height();
+                chartOptions.chart.events.click = function() {
+                };
+                var hsChart = new Highcharts.StockChart(chartOptions);
+            }
+            this.hasChart = true;
+        }
+    }
 });
 
 /**
@@ -39,27 +56,6 @@ $(document).ready(function() {
  * @param String chartName
  * @param boolean stockChart
  */
-//function enlargeChart(chartName, stockChart) {
-//    /* Remove content from enlargedChartContainer */
-//    if (popupChart) {
-//        console.log("Destroying previous popupchart");
-//        popupChart.destroy();
-//    }
-//
-//    /* Retrieve the chartOptions from the given chartName */
-//    var actualChartOptions = window[chartName].options;
-//
-//    /* Change the 'renderTo' entry from the chartOptions */
-//    actualChartOptions.chart.renderTo = 'enlargedChartContainer';
-//
-//    /* Initialize the chart */
-//
-//    if (stockChart === true) {
-//        popupChart = new Highcharts.StockChart(actualChartOptions);
-//    } else {
-//        popupChart = new Highcharts.Chart(actualChartOptions);
-//    }
-//}
 
 function enlargeChart(chartOptions, stockChart) {
     /* Remove content from enlargedChartContainer */
@@ -71,7 +67,7 @@ function enlargeChart(chartOptions, stockChart) {
 
     /* Retrieve the chartOptions from the given chartName */
     var actualChartOptions = window[chartOptions].options;
-
+    $('#enlargedChartContainer .highcharts-container').removeClass();
     /* Initialize the chart */
     if (stockChart === true) {
         popupChart = new Highcharts.StockChart(Highcharts.merge(actualChartOptions, {
@@ -79,12 +75,15 @@ function enlargeChart(chartOptions, stockChart) {
                 renderTo: "enlargedChartContainer"
             }
         }));
+
+        popupChart.render();
     } else {
         popupChart = new Highcharts.Chart(Highcharts.merge(actualChartOptions, {
             chart: {
                 renderTo: "enlargedChartContainer"
             }
         }));
+        popupChart.render();
     }
-    
+
 }

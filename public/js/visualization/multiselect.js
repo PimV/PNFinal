@@ -54,14 +54,16 @@ $(document).ready(function() {
         start: function(e, ui) {
             ui.placeholder.height(ui.item.height());
             ui.placeholder.width(ui.item.width());
-        }
+        },
+        delay: 800
     });
     $('.in-row-sortable').sortable({
         placeholder: "ui-state-highlight",
         start: function(e, ui) {
             ui.placeholder.height(ui.item.height());
             ui.placeholder.width(ui.item.width());
-        }
+        },
+        delay: 800
     });
 
     // $('.in-row-sortable').sortable();

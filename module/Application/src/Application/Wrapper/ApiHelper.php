@@ -21,6 +21,7 @@ class ApiHelper {
     private $authorizedUser;
     protected $services;
     public $loginCount = 0;
+    private $ttl = 6; //Cache Maximum Time
 
     public function __construct() {
         $this->cURL = new cURL();
@@ -162,7 +163,7 @@ class ApiHelper {
 
         $hash = md5($functionCall);
         $cachePath = CACHE_PATH . 'tracking_beacon_' . $hash . ".cache";
-        if (file_exists($cachePath) && (time() - filemtime($cachePath) < 24 * 3600)) {
+        if (file_exists($cachePath) && (time() - filemtime($cachePath) < 36 * 3600)) {
             $response = file_get_contents($cachePath);
         } else {
             while (empty($response) && $retries <= 3) {
@@ -380,7 +381,7 @@ class ApiHelper {
         foreach ($queryHashes as $key => $value) {
             $count++;
             if (file_exists($value)) {
-                if (time() - filemtime($value) < 24 * 3600) {
+                if (time() - filemtime($value) < 36 * 3600) {
                     $cachedResults[$key] = $value;
                     unset($queries[$count]);
                 }

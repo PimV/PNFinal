@@ -197,7 +197,21 @@ function createViewsOverTimeChartOptions(container, serieData) {
         chart: {
             renderTo: container,
             zoomType: 'xy',
-            type: 'line'
+            type: 'line',
+            events: {
+                click: function(event) {
+                    alert("Clicked!");
+                    hs.htmlExpand(document.getElementById(container), {
+                        width: 9999,
+                        height: 9999,
+                        allowWidthReduction: true,
+                        preserveContent: false
+                    }, {
+                        chartOptions: viewsOverTimeChartOptions
+                    });
+                }
+            }
+
         },
         title: {
             text: '<div>Views over Time</div>'
@@ -210,13 +224,16 @@ function createViewsOverTimeChartOptions(container, serieData) {
         },
         plotOptions: {
             series: {
-                allowPointSelect: true
+                //  allowPointSelect: false,
+
+
             }
         },
         series: [{
                 id: "serie_0",
                 name: "Views",
                 data: serieData
+
             }]
     };
 }

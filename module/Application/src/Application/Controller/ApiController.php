@@ -47,14 +47,14 @@ class ApiController extends AbstractActionController {
     }
 
     public function realTimeAction() {
-        $helper = new \Application\Wrapper\ApiHelper();
+        $helper = new Application\Wrapper\ApiHelper();
         $api_helper = $this->getServiceLocator()->get('FlxOneApi');
         echo $helper->getCurl()->get(ENDPOINT . '/quick-stats/network?pretty=1', '/quick-stats/network?pretty=1');
         die;
     }
 
     public function trackingBeaconAction() {
-        $helper = new \Application\Wrapper\ApiHelper();
+        $helper = new Application\Wrapper\ApiHelper();
 
         $someID = null;
         if (isset($_POST['some_id'])) {
@@ -71,7 +71,7 @@ class ApiController extends AbstractActionController {
 
     public function testDataAction() {
         if (!isset($this->helper)) {
-            $this->helper = new \Application\Wrapper\ApiHelper();
+            $helper = new Application\Wrapper\ApiHelper();
         }
 
 
