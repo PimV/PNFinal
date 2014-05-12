@@ -48,7 +48,7 @@ class ApiController extends AbstractActionController {
         $methodParameters = $_POST['methodParameters'];
         $methods = $_POST['methods'];
 
-        $helper->fireRequest($helper->test($siteIds, $methods));
+        $helper->fireRequest($helper->createRequest($siteIds, $methods));
         $helper->echoResponse();
         die;
     }
@@ -58,7 +58,7 @@ class ApiController extends AbstractActionController {
         $siteIds = $_POST['siteIds'];
         $methods = $_POST['methods'];
 
-        $helper->fireRequest($helper->test($siteIds, $methods));
+        $helper->fireRequest($helper->createRequest($siteIds, $methods));
         $helper->echoResponse();
         die;
     }

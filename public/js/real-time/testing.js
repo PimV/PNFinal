@@ -28,7 +28,8 @@ $(document).ready(function() {
  */
 function sendData(method, methodParameters, siteIds) {
     console.log("Sending data...");
-    methods = [{method: "VisitsSummary.get", params: {period: "range", date: "2014-05-04,2014-05-05"}}, {method: "VisitsSummary.get", params: {period: "range", date: "2014-05-04,2014-05-05"}}];
+    //var methods = [{method: "SitesManager.getAllSites", params: {}}];
+    var methods = [{method: "DevicesDetection.getType", params: {period: "range", date: "2014-04-01,2014-05-05", filter_sort_column: 'nb_visits'}}, {method: "VisitsSummary.getUniqueVisitors", params: {period: "range", date: "2014-05-04,yesterday", expanded: 1, flat: 0}}];
     $.ajax({
         url: '/application/api/test-data',
         method: 'POST',

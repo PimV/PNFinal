@@ -78,22 +78,23 @@ class cURL {
         $this->ch = curl_init();
 
 
-        if (!isset($this->cookie) && $this->cookie === null) {
-            $this->generate_cookie_path();
-        }
-
-        if ($request->getFunctionCall() === '/auth') {
-            $this->writeCookie();
-        } else {
-            $this->readCookie();
-        }
-
+//        if (!isset($this->cookie) && $this->cookie === null) {
+//            $this->generate_cookie_path();
+//        }
+//
+//        if ($request->getFunctionCall() === '/auth') {
+//            $this->writeCookie();
+//        } else {
+//            $this->readCookie();
+//        }
+        //  var_dump($request->getUrl());
+        //  die;
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($this->ch, CURLOPT_HEADER, 1);
         curl_setopt($this->ch, CURLOPT_URL, $request->getUrl());
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, 0); //Custom
         //curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0); //Custom
-        curl_setopt($this->ch, CURLOPT_VERBOSE, true);
+        // curl_setopt($this->ch, CURLOPT_VERBOSE, true);
         curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 0);
         curl_setopt($this->ch, CURLOPT_TIMEOUT, 900);
 

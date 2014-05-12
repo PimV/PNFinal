@@ -40,12 +40,12 @@ $(document).ready(function() {
  * 
  * @param Array beaconIds
  */
-function updateReferers(beaconIds) {
+function updateReferers(siteIds) {
     if (referersAjax) {
         referersAjax.abort();
     }
     console.log("Getting Referers: Started!");
-    getReferers(beaconIds);
+    getReferers(siteIds);
 }
 
 function toggleAllReferers() {
@@ -60,11 +60,11 @@ function toggleAllReferers() {
     }
 }
 
-function getReferers(beaconIds) {
+function getReferers(siteIds) {
     /* Set dimensions/measures for the  "referers" block */
-    var dimensions = ["flx_referer_url"];
-    var measures = [["flx_pixels_sum", "flx_uuid_distinct", "flx_time_on_site_avg", "flx_form_field_click_sum"]];
-
+    //var dimensions = ["flx_referer_url"];
+    //var measures = [["flx_pixels_sum", "flx_uuid_distinct", "flx_time_on_site_avg", "flx_form_field_click_sum"]];
+    var methods = [{method: "Referrers.getWebsites", params: {period: "range", date: "2014-04-01,2014-05-05", filter_sort_column: 'nb_visits', expanded: 1}}];
     /* Set loading visuals */
     $('#referers').fadeTo(1000, '0.5');
     $('#referers-spinner').fadeTo(1000, '1.0');
@@ -72,28 +72,42 @@ function getReferers(beaconIds) {
 
     /* The AJAX Request */
     referersAjax = $.ajax({
-        url: '/application/api/viz-data-multiple',
+        url: '/application/api/call-data',
         method: 'POST',
-        data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, limit: 15, orderType: "desc"},
+        data: {methods: methods, siteIds: siteIds},
         dataType: 'json',
         success: function(resp) {
             /* Check if response is valid */
             if ('undefined' === typeof resp) {
                 return;
             }
-            console.log(resp);
-            /* Loop through response to get useful data and store it in the "referers-table" table. */
-            $.each(resp[0]['data'], function(i, data) {
-                $('#referers-table tr:last').after(
-                        '<tr>' +
-                        '<td><input type="checkbox" value="' + data["flx_site_domain"] + '"></td>' +
-                        '<td>' + data["flx_referer_url"] + '</td>' +
-                        '<td>' + formatNumber(parseFloat(data["flx_uuid_distinct"], 0)) + '</td>' +
-                        '<td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td>' +
-                        '<td>' + formatNumber(parseFloat(data["flx_form_field_click_sum"], 0)) + '</td>' +
-                        '<td>' + formatNumber(parseFloat(data["flx_time_on_site_avg"], 1)) + '</td>' +
-                        '</tr>');
+
+
+            $.each(resp[0], function(i, data) {
+                $.each(data, function(i, entry) {
+                    $('#referers-table tr:last').after(
+                            '<tr>' +
+                            '<td><input type="checkbox" value="' + entry["label"] + '"></td>' +
+                            '<td>' + entry["label"] + '</td>' +
+                            '<td>' + formatNumber(parseFloat(entry["sum_daily_nb_uniq_visitors"], 0)) + '</td>' +
+                            '<td>' + formatNumber(parseFloat(entry["nb_visits"], 0)) + '</td>' +
+                            '<td>' + formatNumber(parseFloat(entry["nb_actions"], 0)) + '</td>' +
+                            '<td>' + formatNumber(parseFloat(entry["bounce_count"], 1)) + '</td>' +
+                            '</tr>');
+                });
             });
+            /* Loop through response to get useful data and store it in the "referers-table" table. */
+//            $.each(resp[0]['data'], function(i, data) {
+//                $('#referers-table tr:last').after(
+//                        '<tr>' +
+//                        '<td><input type="checkbox" value="' + data["flx_site_domain"] + '"></td>' +
+//                        '<td>' + data["flx_referer_url"] + '</td>' +
+//                        '<td>' + formatNumber(parseFloat(data["flx_uuid_distinct"], 0)) + '</td>' +
+//                        '<td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td>' +
+//                        '<td>' + formatNumber(parseFloat(data["flx_form_field_click_sum"], 0)) + '</td>' +
+//                        '<td>' + formatNumber(parseFloat(data["flx_time_on_site_avg"], 1)) + '</td>' +
+//                        '</tr>');
+//            });
 
         },
         error: function(resp) {

@@ -10,16 +10,18 @@ var clickCountData;
 
 var cumulativeValuesAjax;
 
-function getAllCumulativeValues(beaconIds) {
-    var dimensions = ["flx_pixel_id", "flx_pixel_id", "flx_pixel_id", "flx_pixel_id"];
-    var measures = ["flx_pixels_sum", "flx_uuid_distinct", "flx_time_on_site_avg", "flx_form_field_click_sum"];
+function getAllCumulativeValues(siteIds) {
+    var methods = [
+        {method: "VisitsSummary.get", params: {period: "range", date: "2014-05-05,yesterday", expanded: 1, flat: 0}},
+        {method: "VisitsSummary.getUniqueVisitors", params: {period: "range", date: "2014-05-05,yesterday", expanded: 1, flat: 0}}
+    ];
     var orderType = "desc";
     $('#cumulative-values').fadeTo(1000, '0.5');
     $('#cumulative-values-spinner').fadeTo(1000, '1.0');
     cumulativeValuesAjax = $.ajax({
-        url: '/application/api/viz-data-multiple',
+        url: '/application/api/call-data',
         method: 'POST',
-        data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, orderType: orderType},
+        data: {methods: methods, siteIds: siteIds},
         dataType: 'json',
         success: function(resp) {
             /* Check if response is valid */
@@ -27,17 +29,15 @@ function getAllCumulativeValues(beaconIds) {
                 return;
             }
 
-            /* Total Views */
-            parseTotalViews(resp[0]);
+            //console.log(resp);
+            /* Visits, Actions, Bounce, Avg Time On Site */
+            getVisitCount(resp[0]);
+            getActionCount(resp[0]);
+            //getBounceCount(resp[0]);
+            getBounceRate(resp[0]);
+            getAvgTimeOnSite(resp[0]);
+            getUniqueVisitors(resp[1]);
 
-            /* Unique Users */
-            parseUniqueUsers(resp[1]);
-
-            /* Average Time on Article */
-            parseAvgTimeOnSite(resp[2], beaconIds);
-
-            /* Click Count */
-            parseFormClicks(resp[3]);
         },
         error: function(resp) {
             console.log(resp);
@@ -51,24 +51,234 @@ function getAllCumulativeValues(beaconIds) {
     });
 }
 
-function parseTotalViews(totalViewsArray) {
-    totalViewsData = totalViewsArray;
-    var totalViews = 0;
-    var totalViewsTooltipText = "Top {addedToTop5} pixels: <br/><br/>";
+function getVisitCount(resp) {
+    var totalVisits = 0;
+    var totalVisitsTooltipText;
     var addCount = 0;
-    $.each(totalViewsArray['data'], function(i, data) {
 
-        totalViews = +totalViews + parseFloat(data['flx_pixels_sum']);
-        if (addCount < 5) {
-            addCount++;
-            totalViewsTooltipText += getBeaconById(data['flx_pixel_id']) + ": " + formatNumber(parseFloat(data['flx_pixels_sum'], 0)) + " pixel loads<br/>";
-        }
-    });
-    totalViews = formatNumber(totalViews, 0);
-    $('#total_view_count').text(totalViews);
-    totalViewsTooltipText = totalViewsTooltipText.replace('{addedToTop5}', addCount);
-    $('#pixels').attr("original-title", totalViewsTooltipText);
-    $('#pixels').tipsy({html: true});
+    /* Is only one site selected? */
+    if (resp['nb_visits']) {
+        totalVisits = resp['nb_visits'];
+    } else {
+        var totalVisitsTooltipText = "Top {addedToTop5} sites: <br/><br/>";
+        var allResults = [];
+        $.each(resp, function(i, site) {
+            if (!isNaN(parseFloat(site["nb_visits"]))) {
+                totalVisits = +totalVisits + parseFloat(site["nb_visits"]);
+                allResults.push({name: getBeaconById(i), value: parseFloat(site["nb_visits"])});
+            }
+        });
+    }
+    if (allResults) {
+        allResults.sort(function(a, b) {
+            return b.value - a.value;
+        });
+        $.each(allResults, function(i, top5entry) {
+            if (i > 4) {
+                return;
+            }
+            totalVisitsTooltipText += top5entry.name + ": " + formatNumber(parseFloat(top5entry.value, 0)) + " total visits<br/>";
+            addCount = i + 1;
+        });
+    }
+    totalVisits = formatNumber(totalVisits, 0);
+    $('#total_view_count').text(totalVisits);
+    if (totalVisitsTooltipText) {
+        totalVisitsTooltipText = totalVisitsTooltipText.replace('{addedToTop5}', addCount);
+        $('#pixels').attr("original-title", totalVisitsTooltipText);
+        $('#pixels').tipsy({html: true});
+    } else {
+        $('#pixels').attr("original-title", "");
+    }
+}
+
+function getActionCount(resp) {
+    var totalActions = 0;
+    var totalActionsTooltipText;
+    var addCount = 0;
+
+    /* Is only one site selected? */
+    if (resp['nb_actions']) {
+        totalActions = resp['nb_actions'];
+    } else {
+        var totalActionsTooltipText = "Top {addedToTop5} sites: <br/><br/>";
+        var allResults = [];
+        $.each(resp, function(i, site) {
+            if (!isNaN(parseFloat(site["nb_actions"]))) {
+                totalActions = +totalActions + parseFloat(site["nb_actions"]);
+                allResults.push({name: getBeaconById(i), value: parseFloat(site["nb_actions"])});
+            }
+        });
+    }
+    if (allResults) {
+        allResults.sort(function(a, b) {
+            return b.value - a.value;
+        });
+        $.each(allResults, function(i, top5entry) {
+            if (i > 4) {
+                return;
+            }
+            totalActionsTooltipText += top5entry.name + ": " + formatNumber(parseFloat(top5entry.value, 0)) + " total actions<br/>";
+            addCount = i + 1;
+
+        });
+    }
+    totalActions = formatNumber(totalActions, 0);
+    $('#click_count').text(totalActions);
+    if (totalActionsTooltipText) {
+        totalActionsTooltipText = totalActionsTooltipText.replace('{addedToTop5}', addCount);
+        $('#form-clicks').attr("original-title", totalActionsTooltipText);
+        $('#form-clicks').tipsy({html: true});
+    } else {
+        $('#form-clicks').attr("original-title", "");
+    }
+}
+
+function getAvgTimeOnSite(resp) {
+    //avg_time_on_site
+    var avgTimeOnSite = 0;
+    var avgTimeOnSiteTooltipText;
+    var addCount = 0;
+
+    /* Is only one site selected? */
+    if (resp['avg_time_on_site']) {
+        avgTimeOnSite = resp['avg_time_on_site'];
+    } else {
+        var avgTimeOnSiteTooltipText = "Top {addedToTop5} sites: <br/><br/>";
+        var items = 0;
+        var allResults = [];
+        $.each(resp, function(i, site) {
+            if (!isNaN(parseFloat(site["avg_time_on_site"]))) {
+                avgTimeOnSite = +avgTimeOnSite + parseFloat(site["avg_time_on_site"]);
+                items++;
+                allResults.push({name: getBeaconById(i), value: parseFloat(site["avg_time_on_site"], 0)});
+            }
+        });
+    }
+    var division = 1;
+    if (items) {
+        division = items;
+    }
+    avgTimeOnSite = (avgTimeOnSite / division);
+    if (allResults) {
+        allResults.sort(function(a, b) {
+            return b.value - a.value;
+        });
+        $.each(allResults, function(i, top5entry) {
+            if (i > 4) {
+                return;
+            }
+            avgTimeOnSiteTooltipText += top5entry.name + ": " + formatNumber(parseFloat(top5entry.value, 0)) + " s<br/>";
+            addCount = i + 1;
+
+        });
+    }
+    avgTimeOnSite = formatNumber(avgTimeOnSite, 0);
+    $('#avg_time_on_site').text(avgTimeOnSite);
+    if (avgTimeOnSiteTooltipText) {
+        avgTimeOnSiteTooltipText = avgTimeOnSiteTooltipText.replace('{addedToTop5}', addCount);
+        $('#avg-time-on-site').attr("original-title", avgTimeOnSiteTooltipText);
+        $('#avg-time-on-site').tipsy({html: true});
+    } else {
+        $('#avg-time-on-site').attr("original-title", "");
+    }
+}
+
+/*
+ * NBACTIONS MOET WORDEN NB_UNIQ_VISITORS!!
+ * 
+ * @param {type} resp
+ * @returns {undefined}
+ */
+function getUniqueVisitors(resp) {
+    var totalUniqueVisitors = 0;
+    var totalUniqueVisitorsTooltipText;
+    var addCount = 0;
+
+    /* Is only one site selected? */
+    if (resp['nb_actions']) {
+        totalUniqueVisitors = resp['nb_actions'];
+    } else {
+        var totalUniqueVisitorsTooltipText = "Top {addedToTop5} sites: <br/><br/>";
+        var allResults = [];
+        $.each(resp, function(i, site) {
+            if (!isNaN(parseFloat(site["nb_actions"]))) {
+                totalUniqueVisitors = +totalUniqueVisitors + parseFloat(site["nb_actions"]);
+                allResults.push({name: getBeaconById(i), value: parseFloat(site["nb_actions"])});
+            }
+        });
+    }
+    if (allResults) {
+        allResults.sort(function(a, b) {
+            return b.value - a.value;
+        });
+        $.each(allResults, function(i, top5entry) {
+            if (i > 4) {
+                return;
+            }
+            totalUniqueVisitorsTooltipText += top5entry.name + ": " + formatNumber(parseFloat(top5entry.value, 0)) + " s<br/>";
+            addCount = i + 1;
+
+        });
+    }
+    totalUniqueVisitors = formatNumber(totalUniqueVisitors, 0);
+    $('#unique_user_count').text(totalUniqueVisitors);
+    if (totalUniqueVisitorsTooltipText) {
+        totalUniqueVisitorsTooltipText = totalUniqueVisitorsTooltipText.replace('{addedToTop5}', addCount);
+        $('#unique-users').attr("original-title", totalUniqueVisitorsTooltipText);
+        $('#unique-users').tipsy({html: true});
+    } else {
+        $('#unique-users').attr("original-title", "");
+    }
+}
+
+function getBounceRate(resp) {
+    var bounceRate = 0;
+    var bounceRateTooltipText;
+    var addCount = 0;
+
+    /* Is only one site selected? */
+    if (resp['bounce_rate']) {
+        bounceRate = resp['bounce_rate'];
+    } else {
+        bounceRateTooltipText = "Top {addedToTop5} sites: <br/><br/>";
+        var allResults = [];
+        var items = 0;
+        $.each(resp, function(i, site) {
+            if (!isNaN(parseFloat(site["bounce_rate"]))) {
+                bounceRate = +bounceRate + parseFloat(site["bounce_rate"]);
+                items++;
+                allResults.push({name: getBeaconById(i), value: parseFloat(site["bounce_rate"])});
+            }
+        });
+    }
+    var division = 1;
+    if (items) {
+        division = items;
+    }
+    bounceRate = (bounceRate / division);
+    if (allResults) {
+        allResults.sort(function(a, b) {
+            return b.value - a.value;
+        });
+        $.each(allResults, function(i, top5entry) {
+            if (i > 4) {
+                return;
+            }
+            bounceRateTooltipText += top5entry.name + ": " + formatNumber(parseFloat(top5entry.value, 0)) + " %<br/>";
+            addCount = i + 1;
+
+        });
+    }
+    bounceRate = formatNumber(bounceRate, 0);
+    $('#bounce_rate').text(bounceRate);
+    if (bounceRateTooltipText) {
+        bounceRateTooltipText = bounceRateTooltipText.replace('{addedToTop5}', addCount);
+        $('#bounce-rate').attr("original-title", bounceRateTooltipText);
+        $('#bounce-rate').tipsy({html: true});
+    } else {
+        $('#bounce-rate').attr("original-title", "");
+    }
 }
 
 function parseUniqueUsers(uniqueUsersArray) {
@@ -148,12 +358,14 @@ function parseFormClicks(formClickArray) {
  * 
  * @param Array beaconIds
  */
-function updateCumulativeValues(beaconIds) {
+function updateCumulativeValues(siteIds) {
     if (cumulativeValuesAjax) {
         cumulativeValuesAjax.abort();
     }
     console.log("Getting Cumulative Values: Started!");
-    getAllCumulativeValues(beaconIds);
+    //console.log(siteIds);
+    getAllCumulativeValues(siteIds);
+
 }
 
 /**

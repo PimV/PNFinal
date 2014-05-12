@@ -68,10 +68,10 @@ class AdvertiserController extends AbstractActionController {
         //Init APIHelper
         $helper = new \Application\Wrapper\ApiHelper();
 
-        //Retrieve Beacons
-        $beacons = $helper->trackingBeacon(true);
+        //Retrieve Sites        
+        $sites = $helper->getSites();
 
-        return array('report' => $report, 'pixels' => "0", 'beacons' => $beacons, 'unique_users' => 0);
+        return array('report' => $report, 'pixels' => "0", 'sites' => $sites, 'unique_users' => 0);
     }
 
     public function generalAction() {

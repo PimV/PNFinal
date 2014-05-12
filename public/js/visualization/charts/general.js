@@ -2,6 +2,8 @@ var popupChart;
 
 $(document).ready(function() {
     hs.graphicsDir = "http://pubnext.pvdns.nl/img/graphics/";
+    hs.outlinesDir = '/outlines/';
+    hs.align = 'center';
 
     /* Action listener for any overlay. Fades in the overlay on hover, and if the
      user stops hovering, fades the overlay out again. */
@@ -30,17 +32,24 @@ $(document).ready(function() {
     });
 
     hs.Expander.prototype.onAfterExpand = function() {
-        console.log(this.custom);
+        console.log(this);
+        console.log("waiting over");
         if (this.custom.chartOptions) {
-            var chartOptions = this.custom.chartOptions;
-            if (!this.hasChart) {
-                chartOptions.chart.renderTo = $('.highslide-body')[0];
-                chartOptions.chart.height = $('.highslide-body').parent().height();
-                chartOptions.chart.events.click = function() {
-                };
-                var hsChart = new Highcharts.StockChart(chartOptions);
-            }
-            this.hasChart = true;
+            var popUpChartOptions = this.custom.chartOptions;
+            console.log(popUpChartOptions);
+            //if (!this.hasChart) {
+            var renderTo = $('.highslide-body')[0];
+            popUpChartOptions.chart.renderTo = renderTo;
+            popUpChartOptions.chart.height = $('.highslide-body').parent().height();
+            popUpChartOptions.chart.width = $('.highslide-body').parent().width();
+            popUpChartOptions.chart.events.click = function() {
+            };
+
+            var hsChart = new Highcharts.StockChart(popUpChartOptions);
+
+
+            //}
+            //this.hasChart = true;
         }
     }
 });

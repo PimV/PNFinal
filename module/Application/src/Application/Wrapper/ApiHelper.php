@@ -26,7 +26,7 @@ class ApiHelper {
     private $latestRequest;
 
     public function __construct() {
-        
+        $this->cURL = new cURL();
     }
 
     public function test($siteIds, $methods) {
@@ -42,8 +42,10 @@ class ApiHelper {
             $newRequest = "&urls[" . $i . "]=";
             $newMethod = "&method=" . $methods[$i]['method'];
             $newMethodParameters = "";
-            foreach ($methods[$i]['params'] as $methodParamKey => $methodParamValue) {
-                $newMethodParameters .= "&" . $methodParamKey . "=" . $methodParamValue;
+            if (isset($methods[$i]['params'])) {
+                foreach ($methods[$i]['params'] as $methodParamKey => $methodParamValue) {
+                    $newMethodParameters .= "&" . $methodParamKey . "=" . $methodParamValue;
+                }
             }
 
             $newRequest .= urlencode($newMethod . $newMethodParameters);
@@ -62,7 +64,7 @@ class ApiHelper {
         }
 
         $url .= $idSite;
-        
+
         return $url;
     }
 
@@ -87,10 +89,11 @@ class ApiHelper {
             $newRequest = "&urls[" . $i . "]=";
             $newMethod = "&method=" . $methods[$i]['method'];
             $newMethodParameters = "";
-            foreach ($methods[$i]['params'] as $methodParamKey => $methodParamValue) {
-                $newMethodParameters .= "&" . $methodParamKey . "=" . $methodParamValue;
+            if (isset($methods[$i]['params'])) {
+                foreach ($methods[$i]['params'] as $methodParamKey => $methodParamValue) {
+                    $newMethodParameters .= "&" . $methodParamKey . "=" . $methodParamValue;
+                }
             }
-
             $newRequest .= urlencode($newMethod . $newMethodParameters);
             $url .= $newRequest;
         }
@@ -107,6 +110,10 @@ class ApiHelper {
         }
 
         $url .= $idSite;
+
+        $url = str_replace(']', '%5D', str_replace('[', '%5B', $url));
+
+        return $url;
     }
 
     /**
@@ -115,11 +122,15 @@ class ApiHelper {
      * @param String $query
      * @return JSON rawResponse
      */
-    public function fireRequest($query) {
+    public function fireRequest($url) {
         $retryCount = 0;
         $rawResponse;
         while ($retryCount < 5 && empty($rawResponse)) {
-            $rawResponse = file_get_contents($query);
+            // $rawResponse = file_get_contents($url);
+            // $request = $this->cURL->newRequest("get", $url, "nothing");
+            //$rawResponse = $this->cURL->sendRequest($request);
+           // echo $url;
+            $rawResponse = $this->cURL->get($url);
             $retryCount++;
         }
         $this->latestResponse = $rawResponse;
@@ -128,6 +139,20 @@ class ApiHelper {
 
     public function echoResponse() {
         echo $this->latestResponse;
+    }
+
+    public function getSites() {
+        $methods = array(array(
+                "method" => "SitesManager.getAllSites",
+                "params" =>
+                null
+        ));
+        $request = $this->createRequest(null, $methods);
+        $arrayResponse = json_decode($this->fireRequest($request), true);
+        if (isset($arrayResponse[0])) {
+            return $arrayResponse[0];
+        }
+        return array();
     }
 
 }

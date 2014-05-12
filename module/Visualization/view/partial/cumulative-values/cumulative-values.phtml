@@ -8,27 +8,27 @@
     </div>
     <div>
         <ul class="in-row-sortable">
-            <li>
-                <div class="blockId">
-                    <div id="real-time-pixels">
-                        <div class="actualNumber">
-                            <div class="numberType">
-                                <div class="numberTitleBlock">
-                                    <span  class="font-icon  glyphicon glyphicon-bullhorn centerText" style="color:#0066FF;"></span><br/>
-                                    <span class="numberTitle centerText">Real Time Pixel Views</span>
-                                </div>
-                                <div>
-                                    <span id="real-time-pixel-count" class="number centerText">
-                                        <?php
-                                        echo $pixels;
-                                        ?>
-                                    </span>
+            <!--            <li>
+                            <div class="blockId">
+                                <div id="real-time-pixels">
+                                    <div class="actualNumber">
+                                        <div class="numberType">
+                                            <div class="numberTitleBlock">
+                                                <span  class="font-icon  glyphicon glyphicon-bullhorn centerText" style="color:#0066FF;"></span><br/>
+                                                <span class="numberTitle centerText">Real Time Pixel Views</span>
+                                            </div>
+                                            <div>
+                                                <span id="real-time-pixel-count" class="number centerText">
+            <?php
+            //echo $pixels;
+            ?>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </li>
+                        </li>-->
             <li>
                 <div class="blockId">
                     <div id="unique-users">
@@ -57,7 +57,7 @@
                             <div class="numberType">
                                 <div class="numberTitleBlock">
                                     <span class="font-icon glyphicon glyphicon-eye-open centerText" style="color:#0066FF;"></span><br/>
-                                    <span class="numberTitle centerText">Total Pixel Views</span>
+                                    <span class="numberTitle centerText">Total Visits</span>
                                 </div>
                                 <div>
                                     <span id="total_view_count" class="number centerText">
@@ -78,7 +78,7 @@
                             <div class="numberType">
                                 <div class="numberTitleBlock">
                                     <span  class="font-icon glyphicon glyphicon-hand-up centerText" style="color:#0066FF;"></span><br/>
-                                    <span class="numberTitle centerText">Form Clicks</span>
+                                    <span class="numberTitle centerText">Total Actions</span>
                                 </div>
                                 <div>
                                     <span id="click_count" class="number centerText">
@@ -103,6 +103,27 @@
                                 </div>
                                 <div>
                                     <span id="avg_time_on_site" class="number centerText">
+                                        <?php
+                                        echo $pixels;
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="blockId">
+                    <div id="bounce-rate">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span class="font-icon  glyphicon glyphicon-time centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Bounce Rate (%)</span>
+                                </div>
+                                <div>
+                                    <span id="bounce_rate" class="number centerText">
                                         <?php
                                         echo $pixels;
                                         ?>

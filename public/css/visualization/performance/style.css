@@ -1,12 +1,31 @@
 #devices {
-   // margin-left: 50px;
-    //position: absolute;
+    height: 570px;
 }
+
+
 
 #views-over-time {
 }
 
-#referers {
+#referers-table tbody {
+    height: 450px;
+    overflow: auto;
+}
+
+#referers-table .largeHeader {
+    width: 60%;
+}
+
+#referers-table .smallHeader {
+    width: 10%;
+}
+
+thead > tr, tbody {
+    display:block;
+}
+
+#referers-table {
+    height: 450px;
 }
 
 #views-per-city-map-container {
@@ -30,14 +49,6 @@
     display: block;
 }
 
-.top-margin {
-    margin-top: 20px;
-}
-
-.small-table-font {
-    font-size: 11px;
-}
-
 #cost,
 #cost-tabs {
     width: 650px;
@@ -49,6 +60,27 @@
     overflow-y: scroll;
     display: block;
 }
+
+.last-updated-text {
+    font-size: 12px;
+}
+
+.large-sortable > li {
+    margin-right: 50px !important;
+}
+.top-margin {
+    margin-top: 20px;
+}
+
+.second-in-row {
+    margin-left: 50px;
+}
+
+.small-table-font {
+    font-size: 11px;
+}
+
+
 
 /* jQuery Tabs Layout */
 #dialog label, #dialog input { display:block; }

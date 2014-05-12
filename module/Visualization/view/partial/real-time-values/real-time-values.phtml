@@ -1,0 +1,102 @@
+<div>
+    <h2>
+        <span>Real Time Values </span>
+        <img height="25" width="25" class="number-spinner" id="cumulative-values-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/>
+    </h2>
+    <span class="last-updated-text">Last updated: </span>
+
+</div>
+<div id="real-time-values" class="hide-overflow small-table-font">
+
+    <div id="spinner" style="">
+
+    </div>
+    <div>
+        <ul class="in-row-sortable">
+            <li>
+                <div class="blockId">
+                    <div id="visits">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span  class="font-icon  glyphicon glyphicon-bullhorn centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Visits</span>
+                                </div>
+                                <div>
+                                    <span id="visits-count" class="number centerText">
+                                        <?php
+                                        echo 0;
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="blockId">
+                    <div id="actions">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span  class="font-icon  glyphicon glyphicon-user centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Actions</span>
+                                </div>
+                                <div>
+                                    <span id="actions-count" class="number centerText">
+                                        <?php
+                                        echo 0;
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="blockId">
+                    <div id="visits-converted">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span class="font-icon glyphicon glyphicon-eye-open centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Visits Converted</span>
+                                </div>
+                                <div>
+                                    <span id="visits-converted-count" class="number centerText">
+                                        <?php
+                                        echo 0;
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="blockId">
+                    <div id="visitors">
+                        <div class="actualNumber">
+                            <div class="numberType">
+                                <div class="numberTitleBlock">
+                                    <span  class="font-icon glyphicon glyphicon-hand-up centerText" style="color:#0066FF;"></span><br/>
+                                    <span class="numberTitle centerText">Visitors</span>
+                                </div>
+                                <div>
+                                    <span id="visitors-count" class="number centerText">
+                                        <?php
+                                        echo 0; //"Not Implemented";
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>           
+        </ul>
+    </div>
+</div>

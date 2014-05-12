@@ -48,7 +48,7 @@ $(document).ready(function() {
  * @param {type} beaconIds
  * @returns {undefined}
  */
-function addMarkers(beaconIds) {
+function addMarkers(siteIds) {
     console.log("Getting Views per City: Started!");
     /* Remove any markers, if there were any */
     removeMarkers();
@@ -57,8 +57,7 @@ function addMarkers(beaconIds) {
     markers = new L.LayerGroup();
 
     /* Set dimensions/measures for the "views-per-city" block */
-    var dimensions = [["flx_geo_city", "flx_geo_long", "flx_geo_lat"]];
-    var measures = ["flx_pixels_sum"];
+    var methods = [{method: "UserCountry.getCity", params: {period: "range", date: "2014-04-01,2014-05-05", filter_sort_column: 'nb_visits'}}];
 
     /* Set loading visuals */
     $("#views-per-city-table").find("tr:gt(0)").remove();
@@ -66,10 +65,11 @@ function addMarkers(beaconIds) {
     $('#views-per-city-spinner').fadeTo(1000, '1.0');
 
     /* The AJAX Request */
+
     domainsAjax = $.ajax({
-        url: '/application/api/viz-data-multiple',
+        url: '/application/api/call-data',
         method: 'POST',
-        data: {dimension: dimensions, measure: measures, beaconIds: beaconIds, orderType: "desc"},
+        data: {methods: methods, siteIds: siteIds},
         dataType: 'json',
         success: function(resp) {
             /* Check if response is valid */
@@ -79,29 +79,61 @@ function addMarkers(beaconIds) {
 
             /* Loop through response to get useful data for the views-per-city-map */
             var largestViews;
-            $.each(resp[0]['data'], function(i, data) {
-                /* Retrieve values */
-                var long = parseFloat(data['flx_geo_lat']);
-                var lat = parseFloat(data['flx_geo_long']);
-                var city = data['flx_geo_city'];
-                var pixel_views = data['flx_pixels_sum'];
+            var allResults = [];
+            console.log(Object.keys(resp).length);
+            $.each(resp[0], function(i, data) {
+                $.each(data, function(i, cityEntry) {
+                    var long = cityEntry['long'];
+                    var lat = cityEntry['lat'];
+                    var key = long + ":" + lat;
+                    var city = cityEntry['city_name'];
+                    var pixel_views = parseFloat(cityEntry['nb_visits']);
 
-                /* Check if city string equals to "0". If it is "0", don't use
-                 the data */
-                if (city !== '0') {
-                    if (!largestViews) {
-                        largestViews = pixel_views;
+                    if (key in allResults) {
+                        allResults[key].value = parseFloat(allResults[key].value) + parseFloat(pixel_views);
+                    } else {
+                        allResults[key] = {key: key, city: city, value: pixel_views};
                     }
 
-                    /* Create circle marker */
-                    createMarker(largestViews, pixel_views, long, lat, city);
 
-                    /* Add retrieved data to table */
-                    addToViewsPerCityTable(city, pixel_views);
-                }
+
+
+
+                });
             });
+            for (var latlng in allResults)
+            {
+
+                var result = allResults[latlng];
+                if (result.key) {
+                    /* Retrieve values */
+                    var lat = result.key.split(':')[0];
+                    var long = result.key.split(':')[1];
+
+                    var city = result.city;
+                    var pixel_views = result.value;
+
+                    /* Check if city string equals to "0". If it is "0", don't use
+                     the data */
+                    if (city !== 'Unknown') {
+                        if (!largestViews) {
+                            largestViews = pixel_views;
+                        }
+
+                        /* Create circle marker */
+                        createMarker(largestViews, pixel_views, long, lat, city);
+
+                        /* Add retrieved data to table */
+                        addToViewsPerCityTable(city, pixel_views);
+                    }
+
+                }
+
+
+            }
             /* Add all the retrieved markers to the map */
             map.addLayer(markers);
+
         },
         error: function(resp) {
             console.log(resp);

@@ -28,25 +28,25 @@ $(document).ready(function() {
     /* Initialize the beacon-select box */
     $("#beacon_select").multiselect({
         close: function(event, ui) {
-            beaconIds = $('#beacon_select').val();
-            if (selectionChanged(beaconIds) === true) {
-                showViewsOverTime(beaconIds);
-                updateCumulativeValues(beaconIds);
-                updateReferers(beaconIds);
-                updateDomains(beaconIds);
-                addMarkers(beaconIds);
-                determineCosts(beaconIds);
+            var siteIds = $('#beacon_select').val();
+            if (selectionChanged(siteIds) === true) {
+                showViewsOverTime(siteIds);
+                updateCumulativeValues(siteIds);
+                updateReferers(siteIds);
+                // updateDomains(siteIds);
+                addMarkers(siteIds);
+                // determineCosts(siteIds);
             }
-            selectedValues = beaconIds;
+            selectedValues = siteIds;
         }
     }).multiselectfilter();
 
     /* Load all blocks on document ready */
     updateCumulativeValues($('#beacon_select').val());
     updateReferers($('#beacon_select').val());
-    updateDomains($('#beacon_select').val());
+//    updateDomains($('#beacon_select').val());
     addMarkers($('#beacon_select').val());
-    determineCosts($('#beacon_select').val());
+//    determineCosts($('#beacon_select').val());
     selectedValues = $('#beacon_select').val();
     $('#sortable-visuals').sortable({
         placeholder: "ui-state-highlight",
@@ -55,7 +55,7 @@ $(document).ready(function() {
             ui.placeholder.height(ui.item.height());
             ui.placeholder.width(ui.item.width());
         },
-        delay: 800
+        delay: 300
     });
     $('.in-row-sortable').sortable({
         placeholder: "ui-state-highlight",
@@ -63,7 +63,7 @@ $(document).ready(function() {
             ui.placeholder.height(ui.item.height());
             ui.placeholder.width(ui.item.width());
         },
-        delay: 800
+        delay: 300
     });
 
     // $('.in-row-sortable').sortable();
@@ -86,7 +86,12 @@ function getBeaconById(id) {
  */
 function selectionChanged(beaconIds) {
     if (selectedValues) {
-        var checkLength = beaconIds.length;
+        var checkLength;
+        if (beaconIds) {
+            checkLength = beaconIds.length;
+        } else {
+            checkLength = 0;
+        }
         if (selectedValues.length > beaconIds.length) {
             checkLength = selectedValues.length;
         }

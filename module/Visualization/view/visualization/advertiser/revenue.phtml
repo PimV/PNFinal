@@ -48,9 +48,11 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
 
 <div id="numbers">
     <div>
-        <!--        <div class="row">
-        <?php //echo $this->partial('partial/real-time/real-time.phtml'); ?>
-                </div>-->
+        <div class="row">
+            <?php
+            echo $this->partial('partial/real-time-values/real-time-values.phtml');
+            ?>
+        </div>
         <div class="row">
             <?php
             echo $this->partial('partial/cumulative-values/cumulative-values.phtml');
@@ -60,18 +62,17 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
 </div>
 
 <div id="visuals">
-    <ul id="sortable-visuals">
+    <ul id="sortable-visuals">        
         <li>
-
             <div class="row">
-                <ul class="in-row-sortable">
+                <ul class="in-row-sortable large-sortable">
                     <li>
                         <div id="views-over-time" class="inline-block hide-overflow">
                             <?php echo $this->partial('partial/charts/views-over-time.phtml'); ?>
                         </div>
                     </li>
                     <li>
-                        <div id="devices" class="inline-block hide-overflow">
+                        <div id="costs" class="inline-block hide-overflow">
                             <?php //echo $this->partial('partial/tables/device.phtml'); ?>
                             <?php echo $this->partial('partial/tables/cost.phtml'); ?>
                         </div>
@@ -89,9 +90,18 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
         </li>
         <li>
             <div class="row">
-                <div>
-                    <?php echo $this->partial('partial/maps/views-per-city.phtml'); ?>
-                </div>
+                <ul class="in-row-sortable large-sortable">
+                    <li>
+                        <div id="views-per-city" class="inline-block hide-overflow">
+                            <?php echo $this->partial('partial/maps/views-per-city.phtml'); ?>
+                        </div>
+                    </li>
+                    <li>
+                        <div id="devices" class="inline-block hide-overflow row-margin-left">
+                            <?php echo $this->partial('partial/tables/device.phtml'); ?> 
+                        </div>
+                    </li>
+                </ul>
             </div>
         </li>
     </ul>
