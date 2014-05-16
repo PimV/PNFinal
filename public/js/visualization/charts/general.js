@@ -44,8 +44,13 @@ $(document).ready(function() {
             popUpChartOptions.chart.width = $('.highslide-body').parent().width();
             popUpChartOptions.chart.events.click = function() {
             };
+            var hsChart;
+            if (popUpChartOptions.chart.stockChart === true) {
+                hsChart = new Highcharts.StockChart(popUpChartOptions);
+            } else {
+                hsChart = new Highcharts.Chart(popUpChartOptions);
+            }
 
-            var hsChart = new Highcharts.StockChart(popUpChartOptions);
 
 
             //}

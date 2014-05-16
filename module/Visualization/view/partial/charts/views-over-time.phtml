@@ -1,6 +1,9 @@
-<h3>Views Over Time <img height="25" width="25" class="number-spinner" id="views-over-time-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></h3>
+<div class="title">
+    <span class="title-text">Views over Time </span>
+    <img height="25" width="25" class="number-spinner" id="views-over-time-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/>
+</div>
 
-<div class="chartMargin top-margin">
+<div class="chartMargin top-margin content-container">
 
     <label for="date_start">Start date:</label><input type="date" id="date_start" name="date_start" value="<?php echo date('Y-m-d', strtotime(date('Y-m-d') . '-1 year')); ?>" style="margin-right: 50px">
     <label for="date_end">Final date:</label><input type="date" id="date_end" name="date_end" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>" style="margin-right: 50px">
@@ -8,9 +11,9 @@
     <div class="chartContainer" style="width: 545px; height: 310px;">
         <span class="graph_status" id="views-over-time-status">Loading Views over Time chart...</span>
 
-<!--        <div data-chart="viewsOverTimeChart" data-chartoptions="viewsOverTimeChartOptions" data-stockchart="true" id="views-over-time-overlay" class="overlay">
-            <span class="overlay-status"></span>
-        </div>-->
+        <!--        <div data-chart="viewsOverTimeChart" data-chartoptions="viewsOverTimeChartOptions" data-stockchart="true" id="views-over-time-overlay" class="overlay">
+                    <span class="overlay-status"></span>
+                </div>-->
         <div id="views-over-time-graphic" style="width: 540px; height: 300px;">
 
         </div>

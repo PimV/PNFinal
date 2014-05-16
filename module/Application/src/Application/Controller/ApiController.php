@@ -36,6 +36,12 @@ class ApiController extends AbstractActionController {
         die;
     }
 
+    public function testCurlAction() {    
+        $helper = new ApiHelper();
+        echo $helper->testCurl();
+        die;
+    }
+
     public function testAction() {
 
         return array();
@@ -50,6 +56,7 @@ class ApiController extends AbstractActionController {
 
         $helper->fireRequest($helper->createRequest($siteIds, $methods));
         $helper->echoResponse();
+        //$helper->getLatestUrl();
         die;
     }
 

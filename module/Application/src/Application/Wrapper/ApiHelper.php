@@ -24,11 +24,21 @@ class ApiHelper {
     private $format = "&format=json";
     private $token = "&token_auth=81f5f971b84c7f4892355209b462404e";
     private $latestRequest;
+    private $latestUrl;
 
     public function __construct() {
         $this->cURL = new cURL();
     }
 
+    public function testCurl() {
+        $url = 'https://analytics.pubnxt.net/index.php?module=API&method=API.getBulkRequest&format=json&token_auth=81f5f971b84c7f4892355209b462404e&urls%5B0%5D=%26method%3DSitesManager.getAllSites%26idSite%3Dall';
+        //$response = file_get_contents($url);
+        $response = $this->cURL->get($url);
+        
+       return $response;
+        //return
+    }
+    
     public function test($siteIds, $methods) {
         $url = ENDPOINT;
 
@@ -84,20 +94,6 @@ class ApiHelper {
         $url .= $this->format;
         $url .= $this->token;
 
-        /* Add all requests */
-        for ($i = 0; $i < count($methods); $i++) {
-            $newRequest = "&urls[" . $i . "]=";
-            $newMethod = "&method=" . $methods[$i]['method'];
-            $newMethodParameters = "";
-            if (isset($methods[$i]['params'])) {
-                foreach ($methods[$i]['params'] as $methodParamKey => $methodParamValue) {
-                    $newMethodParameters .= "&" . $methodParamKey . "=" . $methodParamValue;
-                }
-            }
-            $newRequest .= urlencode($newMethod . $newMethodParameters);
-            $url .= $newRequest;
-        }
-
         /* For which site IDs */
         $idSite = "&idSite=";
         if (isset($siteIds) && !empty($siteIds)) {
@@ -109,7 +105,20 @@ class ApiHelper {
             $idSite .= "all";
         }
 
-        $url .= $idSite;
+        /* Add all requests */
+        for ($i = 0; $i < count($methods); $i++) {
+            $newRequest = "&urls[" . $i . "]=";
+            $newMethod = "&method=" . $methods[$i]['method'];
+            $newMethodParameters = "";
+            if (isset($methods[$i]['params'])) {
+                foreach ($methods[$i]['params'] as $methodParamKey => $methodParamValue) {
+                    $newMethodParameters .= "&" . $methodParamKey . "=" . $methodParamValue;
+                }
+            }
+            $newMethodParameters .= $idSite;
+            $newRequest .= urlencode($newMethod . $newMethodParameters);
+            $url .= $newRequest;
+        }
 
         $url = str_replace(']', '%5D', str_replace('[', '%5B', $url));
 
@@ -124,12 +133,9 @@ class ApiHelper {
      */
     public function fireRequest($url) {
         $retryCount = 0;
+        $this->latestUrl = $url;
         $rawResponse;
         while ($retryCount < 5 && empty($rawResponse)) {
-            // $rawResponse = file_get_contents($url);
-            // $request = $this->cURL->newRequest("get", $url, "nothing");
-            //$rawResponse = $this->cURL->sendRequest($request);
-           // echo $url;
             $rawResponse = $this->cURL->get($url);
             $retryCount++;
         }
@@ -139,6 +145,11 @@ class ApiHelper {
 
     public function echoResponse() {
         echo $this->latestResponse;
+    }
+
+    //  https://analytics.pubnxt.net/index.php?module=API&method=API.getBulkRequest&format=json&token_auth=81f5f971b84c7f4892355209b462404e&urls%5B0%5D=%26method%3DLive.getCounters%26lastMinutes%3D1&idSite=all
+    public function getLatestUrl() {
+        echo $this->latestUrl;
     }
 
     public function getSites() {

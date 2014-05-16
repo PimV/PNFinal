@@ -80,27 +80,43 @@ function addMarkers(siteIds) {
             /* Loop through response to get useful data for the views-per-city-map */
             var largestViews;
             var allResults = [];
-            console.log(Object.keys(resp).length);
+            //console.log(resp);
+            //console.log(Object.keys(resp).length);
             $.each(resp[0], function(i, data) {
-                $.each(data, function(i, cityEntry) {
-                    var long = cityEntry['long'];
-                    var lat = cityEntry['lat'];
+                if (data['long']) {
+                   // console.log(data);
+                    var long = data['long'];
+                    var lat = data['lat'];
                     var key = long + ":" + lat;
-                    var city = cityEntry['city_name'];
-                    var pixel_views = parseFloat(cityEntry['nb_visits']);
-
+                    var city = data['city_name'];
+                    var pixel_views = parseFloat(data['nb_visits']);
+                   
                     if (key in allResults) {
                         allResults[key].value = parseFloat(allResults[key].value) + parseFloat(pixel_views);
                     } else {
                         allResults[key] = {key: key, city: city, value: pixel_views};
                     }
+                } else {
+                    
+                    $.each(data, function(i, cityEntry) {
+                        var long = cityEntry['long'];
+                        var lat = cityEntry['lat'];
+                        var key = long + ":" + lat;
+                        var city = cityEntry['city_name'];
+                        var pixel_views = parseFloat(cityEntry['nb_visits']);
 
-
-
-
-
-                });
+                        if (key in allResults) {
+                            allResults[key].value = parseFloat(allResults[key].value) + parseFloat(pixel_views);
+                        } else {
+                            allResults[key] = {key: key, city: city, value: pixel_views};
+                        }
+                    });
+                }
             });
+            
+           
+            
+         
             for (var latlng in allResults)
             {
 
@@ -115,7 +131,7 @@ function addMarkers(siteIds) {
 
                     /* Check if city string equals to "0". If it is "0", don't use
                      the data */
-                    if (city !== 'Unknown') {
+                    if (city && city !== 'Unknown') {
                         if (!largestViews) {
                             largestViews = pixel_views;
                         }
@@ -157,7 +173,11 @@ function addMarkers(siteIds) {
  * @param String city
  */
 function createMarker(largestViews, pixel_views, long, lat, city) {
+    if (!long || isNaN(long) || !lat || isNaN(lat)) {
+        return;
+    }
     var circleRadius = calculateCircleRadius(largestViews, pixel_views);
+    
     var circle = L.circle([long, lat], circleRadius, {
         color: 'red',
         fillColor: '#f03',

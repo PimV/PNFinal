@@ -48,12 +48,12 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
 
 <div id="numbers">
     <div>
-        <div class="row">
+        <div id="real-time-values-row" class="separate-part" style="display:none; opacity:0;">
             <?php
             echo $this->partial('partial/real-time-values/real-time-values.phtml');
             ?>
         </div>
-        <div class="row">
+        <div id="cumulative-values-row" class="separate-part">
             <?php
             echo $this->partial('partial/cumulative-values/cumulative-values.phtml');
             ?>
@@ -67,12 +67,12 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
             <div class="row">
                 <ul class="in-row-sortable large-sortable">
                     <li>
-                        <div id="views-over-time" class="inline-block hide-overflow">
+                        <div id="views-over-time-row" class="inline-block hide-overflow separate-part">
                             <?php echo $this->partial('partial/charts/views-over-time.phtml'); ?>
                         </div>
                     </li>
                     <li>
-                        <div id="costs" class="inline-block hide-overflow">
+                        <div id="costs-row" class="inline-block hide-overflow separate-part">
                             <?php //echo $this->partial('partial/tables/device.phtml'); ?>
                             <?php echo $this->partial('partial/tables/cost.phtml'); ?>
                         </div>
@@ -83,7 +83,7 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
         </li>
         <li>
             <div class="row">
-                <div>
+                <div id="per-site-data-row" class="separate-part">
                     <?php echo $this->partial('partial/tables/per-site-data.phtml'); ?>
                 </div>
             </div>
@@ -92,12 +92,12 @@ $this->headScript()->appendFile($this->basePath() . '/js/visualization/maps/view
             <div class="row">
                 <ul class="in-row-sortable large-sortable">
                     <li>
-                        <div id="views-per-city" class="inline-block hide-overflow">
+                        <div id="views-per-city-row" class="inline-block hide-overflow separate-part">
                             <?php echo $this->partial('partial/maps/views-per-city.phtml'); ?>
                         </div>
                     </li>
                     <li>
-                        <div id="devices" class="inline-block hide-overflow row-margin-left">
+                        <div id="devices-row" class="inline-block hide-overflow row-margin-left separate-part">
                             <?php echo $this->partial('partial/tables/device.phtml'); ?> 
                         </div>
                     </li>

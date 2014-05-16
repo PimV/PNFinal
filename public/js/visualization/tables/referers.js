@@ -82,32 +82,32 @@ function getReferers(siteIds) {
                 return;
             }
 
-
+            console.log(resp);
             $.each(resp[0], function(i, data) {
-                $.each(data, function(i, entry) {
+                if (data['label']) {
                     $('#referers-table tr:last').after(
                             '<tr>' +
-                            '<td><input type="checkbox" value="' + entry["label"] + '"></td>' +
-                            '<td>' + entry["label"] + '</td>' +
-                            '<td>' + formatNumber(parseFloat(entry["sum_daily_nb_uniq_visitors"], 0)) + '</td>' +
-                            '<td>' + formatNumber(parseFloat(entry["nb_visits"], 0)) + '</td>' +
-                            '<td>' + formatNumber(parseFloat(entry["nb_actions"], 0)) + '</td>' +
-                            '<td>' + formatNumber(parseFloat(entry["bounce_count"], 1)) + '</td>' +
+                            '<td><input type="checkbox" value="' + data["label"] + '"></td>' +
+                            '<td>' + data["label"] + '</td>' +
+                            '<td>' + formatNumber(parseFloat(data["sum_daily_nb_uniq_visitors"], 0)) + '</td>' +
+                            '<td>' + formatNumber(parseFloat(data["nb_visits"], 0)) + '</td>' +
+                            '<td>' + formatNumber(parseFloat(data["nb_actions"], 0)) + '</td>' +
+                            '<td>' + formatNumber(parseFloat(data["bounce_count"], 1)) + '</td>' +
                             '</tr>');
-                });
+                } else {
+                    $.each(data, function(i, entry) {
+                        $('#referers-table tr:last').after(
+                                '<tr>' +
+                                '<td><input type="checkbox" value="' + entry["label"] + '"></td>' +
+                                '<td>' + entry["label"] + '</td>' +
+                                '<td>' + formatNumber(parseFloat(entry["sum_daily_nb_uniq_visitors"], 0)) + '</td>' +
+                                '<td>' + formatNumber(parseFloat(entry["nb_visits"], 0)) + '</td>' +
+                                '<td>' + formatNumber(parseFloat(entry["nb_actions"], 0)) + '</td>' +
+                                '<td>' + formatNumber(parseFloat(entry["bounce_count"], 1)) + '</td>' +
+                                '</tr>');
+                    });
+                }
             });
-            /* Loop through response to get useful data and store it in the "referers-table" table. */
-//            $.each(resp[0]['data'], function(i, data) {
-//                $('#referers-table tr:last').after(
-//                        '<tr>' +
-//                        '<td><input type="checkbox" value="' + data["flx_site_domain"] + '"></td>' +
-//                        '<td>' + data["flx_referer_url"] + '</td>' +
-//                        '<td>' + formatNumber(parseFloat(data["flx_uuid_distinct"], 0)) + '</td>' +
-//                        '<td>' + formatNumber(parseFloat(data["flx_pixels_sum"], 0)) + '</td>' +
-//                        '<td>' + formatNumber(parseFloat(data["flx_form_field_click_sum"], 0)) + '</td>' +
-//                        '<td>' + formatNumber(parseFloat(data["flx_time_on_site_avg"], 1)) + '</td>' +
-//                        '</tr>');
-//            });
 
         },
         error: function(resp) {

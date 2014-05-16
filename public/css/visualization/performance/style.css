@@ -1,5 +1,38 @@
+.title {
+    border-bottom: #d4e6ff 1px solid;
+    background: #f6faff;
+    padding: 5px;
+}
+
+.title-text {
+    font-size: 24px;
+}
+
+.content-container {
+    padding:10px;
+}
+
+.separate-part {
+    border: #d4e6ff 1px solid;
+    background: #fcfdff;
+}
+
 #devices {
-    height: 570px;
+    height: 590px;
+}
+
+#devices-chart {
+    height: 280px;
+}
+
+#devices-select-list {
+    list-style: none;    
+}
+
+#devices-select-list > li {
+    margin-right: 50px;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 

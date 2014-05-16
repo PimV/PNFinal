@@ -33,11 +33,20 @@ $(document).ready(function() {
                 showViewsOverTime(siteIds);
                 updateCumulativeValues(siteIds);
                 updateReferers(siteIds);
+                getRealTimeValues(siteIds);
+                getDevicesTable(siteIds);
                 // updateDomains(siteIds);
                 addMarkers(siteIds);
                 // determineCosts(siteIds);
             }
-            selectedValues = siteIds;
+            if (siteIds && siteIds.length === 1) {
+                showRealTimeValues();
+            } else {
+                hideRealTimeValues();
+            }
+            if (siteIds) {
+                selectedValues = siteIds;
+            }
         }
     }).multiselectfilter();
 
@@ -46,6 +55,7 @@ $(document).ready(function() {
     updateReferers($('#beacon_select').val());
 //    updateDomains($('#beacon_select').val());
     addMarkers($('#beacon_select').val());
+    getDevicesTable($('#beacon_select').val());
 //    determineCosts($('#beacon_select').val());
     selectedValues = $('#beacon_select').val();
     $('#sortable-visuals').sortable({
@@ -69,6 +79,12 @@ $(document).ready(function() {
     // $('.in-row-sortable').sortable();
 });
 
+function addZero(integerToString) {
+    if (integerToString < 10) {
+        integerToString = "0" + integerToString;
+    }
+    return integerToString;
+}
 
 function getBeaconById(id) {
     if ($('#beacon_select option[value=' + id + ']').length > 0) {
@@ -85,6 +101,7 @@ function getBeaconById(id) {
  * @returns {Boolean} true if changed
  */
 function selectionChanged(beaconIds) {
+    var changed = false;
     if (selectedValues) {
         var checkLength;
         if (beaconIds) {
@@ -92,13 +109,23 @@ function selectionChanged(beaconIds) {
         } else {
             checkLength = 0;
         }
-        if (selectedValues.length > beaconIds.length) {
-            checkLength = selectedValues.length;
+        if (beaconIds) {
+            if (selectedValues.length > beaconIds.length) {
+                checkLength = selectedValues.length;
+            }
         }
         for (var i = 0; i < checkLength; i++) {
             if (selectedValues[i] !== beaconIds[i]) {
-                return true;
+                changed = true;
+                break;
+                //return true;
             }
         }
     }
+
+    if (changed === true) {
+
+    }
+
+    return changed;
 }

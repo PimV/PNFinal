@@ -63,17 +63,56 @@ function showViewsOverTime(siteIds, container) {
             /* Sets the dimension and date for the views over time chart */
 
             //var allSeries;
-            console.log(resp[0]);
+            console.log(resp);
             var series = [];
             var allResults = [];
-            $.each(resp[0], function(i, data) {
-                for (var key in data) {
-                    if (key in allResults) {
-                        allResults[key].value = parseFloat(allResults[key].value) + parseFloat(data[key]);
-                    } else {
-                        allResults[key] = {key: key, value: parseFloat(data[key])};
+
+            var isSingle = false;
+            $.each(resp, function(i, respEntry) {
+                if (respEntry[1]) {
+                    $.each(respEntry, function(i, data) {
+                        for (var key in data) {
+
+                            //   console.log(key);
+                            if (key in allResults) {
+                                allResults[key].value = parseFloat(allResults[key].value) + parseFloat(data[key]);
+                            } else {
+                                allResults[key] = {key: key, value: parseFloat(data[key])};
+                            }
+                        }
+                    });
+                    console.log("Multiple");
+                } else {
+                    for (var key in respEntry) {
+
+                        //   console.log(key);
+                        if (key in allResults) {
+                            allResults[key].value = parseFloat(allResults[key].value) + parseFloat(respEntry[key]);
+                        } else {
+                            allResults[key] = {key: key, value: parseFloat(respEntry[key])};
+                        }
                     }
+                    console.log("Single");
                 }
+            });
+            $.each(resp[0], function(i, data) {
+
+                if (isNaN(parseFloat(data))) {
+
+                    // console.log(data);
+                }
+                else {
+                    //  console.log(data);
+                }
+//                for (var key in data) {
+//
+//                    //   console.log(key);
+//                    if (key in allResults) {
+//                        allResults[key].value = parseFloat(allResults[key].value) + parseFloat(data[key]);
+//                    } else {
+//                        allResults[key] = {key: key, value: parseFloat(data[key])};
+//                    }
+//                }
 //                $.each(data, function(i, dateEntry) {
 //                    
 //                    //  var key = Object.keys(dateEntry);
@@ -171,7 +210,7 @@ function drawVoTChart(serieData, categories, container) {
             }
             /* Create the chart options object */
             var chartOptions = createViewsOverTimeChartOptions(container, serieData);
-            
+
             /* Create the actual chart */
             chartOptions.chart.events.click = function(event) {
                 window.setTimeout(function() {
@@ -203,6 +242,7 @@ function drawVoTChart(serieData, categories, container) {
 function createViewsOverTimeChartOptions(container, serieData) {
     var chartOptions = {
         chart: {
+            stockChart: true,
             renderTo: container,
             zoomType: 'xy',
             type: 'line',
@@ -223,6 +263,9 @@ function createViewsOverTimeChartOptions(container, serieData) {
         },
         title: {
             text: '<div>Views over Time</div>'
+        },
+        subtitle: {
+            text: 'Click to enlarge'
         },
         xAxis: {
             type: 'datetime'

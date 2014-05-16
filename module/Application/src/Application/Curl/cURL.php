@@ -94,7 +94,7 @@ class cURL {
         curl_setopt($this->ch, CURLOPT_URL, $request->getUrl());
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, 0); //Custom
         //curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0); //Custom
-        // curl_setopt($this->ch, CURLOPT_VERBOSE, true);
+        curl_setopt($this->ch, CURLOPT_VERBOSE, true);
         curl_setopt($this->ch, CURLOPT_CONNECTTIMEOUT, 0);
         curl_setopt($this->ch, CURLOPT_TIMEOUT, 900);
 
@@ -121,7 +121,7 @@ class cURL {
         $this->prepareRequest($request);
 
         $result = curl_exec($this->ch);
-
+        //var_dump(curl_error($this->ch));
         if ($result === FALSE) {
             throw new \RuntimeException("cURL Request failed with error: " . curl_error($this->ch));
         }

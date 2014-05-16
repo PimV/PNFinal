@@ -1,37 +1,61 @@
-<div id="devices-container">
-    <h3>Cumulatives per Device <img height="25" width="25" class="number-spinner" id="device-table-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/></h3>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/visualization/tables/devices.js'); ?>
+<div class="title">
+    <span class="title-text">Device Information </span>
+    <img height="25" width="25" class="number-spinner" id="devices-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/>
+</div>
+<div id="devices-container" class="content-container">
+
+
+
     <div class="top-margin">
-        <table class="table">
-            <tr>
-                <th></th>
-                <th>PC/Laptop</th>
-                <th>Tablet</th>
-                <th>Mobile</th>
-            </tr>
-            <tr>
-                <td><b>Total Views</b></td>
-                <td id="pc-views">???</td>
-                <td id="tablet-views">???</td>
-                <td id="mobile-views">???</td>
-            </tr>
-            <tr>
-                <td><b>Clicks</b></td>
-                <td id="pc-clicks">???</td>
-                <td id="tablet-clicks">???</td>
-                <td id="mobile-clicks">???</td>
-            </tr>
-            <tr>
-                <td><b>Unique Users</b></td>
-                <td id="pc-users">???</td>
-                <td id="tablet-users">???</td>
-                <td id="mobile-users">???</td>
-            </tr>
-            <tr>
-                <td><b>Avg. Time on Site</b></td>
-                <td id="pc-time">???</td>
-                <td id="tablet-time">???</td>
-                <td id="mobile-time">???</td>
-            </tr>
-        </table>
+        <h4>Table view</h4>
+        <div id="devices-table">
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th>Desktop</th>
+                    <th>Mobile</th>
+                    <th>Unknown</th>
+                </tr>
+                <tr>
+                    <td><b>Visits</b></td>
+                    <td id="pc-visits">???</td>
+                    <td id="mobile-visits">???</td>
+                    <td id="unknown-visits">???</td>
+
+                </tr>
+                <tr>
+                    <td><b>Actions</b></td>
+                    <td id="pc-actions">???</td>
+                    <td id="mobile-actions">???</td>
+                    <td id="unknown-actions">???</td>
+
+                </tr>
+                <tr>
+                    <td><b>Unique Visitors</b></td>
+                    <td id="pc-uvisitors">???</td>
+                    <td id="mobile-uvisitors">???</td>
+                    <td id="unknown-uvisitors">???</td>
+
+                </tr>
+            </table>
+        </div>        
+    </div>
+    <div class="top-margin">
+        <h4>Pie Chart</h4>
+        <ul id="devices-select-list">
+            <li>
+                <span id="devices-chart-visits">Visits</span>
+            </li>
+            <li>
+                <span id="devices-chart-actions">Actions</span>
+            </li>
+            <li>
+                <span id="devices-chart-uvisitors">Unique Visitors</span>
+            </li>
+        </ul>
+        <div id="devices-chart">
+
+        </div>
     </div>
 </div>

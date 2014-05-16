@@ -1,12 +1,13 @@
-<div>
-    <h2>
-        <span>Real Time Values </span>
-        <img height="25" width="25" class="number-spinner" id="cumulative-values-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/>
-    </h2>
-    <span class="last-updated-text">Last updated: </span>
+<?php $this->headScript()->appendFile($this->basePath() . '/js/visualization/numbers/real-time-values.js'); ?>
 
+<div class="title">
+    <span class="title-text">Real Time Values </span>
+    <img height="25" width="25" class="number-spinner" id="real-time-values-spinner" src="/img/ajax_spinner.GIF" alt="Loading"/>
+    <br/>
+    <span id="real-time-update-text" class="last-updated-text">Last updated (h/m/s): </span>
 </div>
-<div id="real-time-values" class="hide-overflow small-table-font">
+
+<div id="real-time-values" class="hide-overflow small-table-font content-container">
 
     <div id="spinner" style="">
 
