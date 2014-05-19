@@ -127,7 +127,7 @@ function createDevicesVisits() {
 
         },
         title: {
-            text: '<div>Devices</div>'
+            text: '<div>Devices (visits)</div>'
 
         },
         subtitle: {

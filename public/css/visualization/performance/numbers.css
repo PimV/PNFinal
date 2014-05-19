@@ -12,18 +12,18 @@
 }
 
 .numberTitle {
-    font-size: 15px;    
+    font-size: 13px;    
 }
 
 .blockId {
-    border: 2px solid #000;
-    min-width: 200px;
+    border: 1px solid #000;
+    min-width: 180px;
     padding: 5px;
     display: inline-block;
 }
 
 .actualNumber {
-    font-size: 24px;
+    font-size: 16px;
 }
 
 .centerText {

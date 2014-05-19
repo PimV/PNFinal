@@ -1,11 +1,15 @@
 .title {
     border-bottom: #d4e6ff 1px solid;
+    border-radius:5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius:5px;
     background: #f6faff;
     padding: 5px;
 }
 
 .title-text {
     font-size: 24px;
+
 }
 
 .content-container {
@@ -14,7 +18,11 @@
 
 .separate-part {
     border: #d4e6ff 1px solid;
+    border-radius:20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius:20px;
     background: #fcfdff;
+    margin-top:25px;
 }
 
 #devices {
